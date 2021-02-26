@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1056662027345",
+    "project_id": "photolier-ru",
+    "storage_bucket": "photolier-ru.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056662027345:android:ce73cdcfdc1bdc7ee4cc70",
+        "android_client_info": {
+          "package_name": "com.adoishe.photolier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1056662027345-soinabjka37p8d12s3dbqej302lv6aic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0oDVk09YkllKXoTdgK-8vM-2UCSeymEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1056662027345-soinabjka37p8d12s3dbqej302lv6aic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

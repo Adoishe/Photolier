@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photolier</string>
+    <string name="crop">Обрезать</string>
+    <string name="selectPic">Выбрать фото</string>
+    <string name="photos">Фото</string>
+    <string name="printPhotos">Печать фото</string>
+    <string name="selectCrop">Выбрать и обрезать фото</string>
+    <string name="signed_in">signed_in</string>
+    <string name="sign_in_cancelled">sign_in_cancelled</string>
+    <string name="no_internet_connection">no_internet_connection</string>
+    <string name="unknown_error">unknown_error</string>
+    <string name="unknown_sign_in_response">unknown_sign_in_response</string>
+    <string name="ffor">" для "</string>
+    <string name="send_photos">Отправить фото</string>
+</resources>
