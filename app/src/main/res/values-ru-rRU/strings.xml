@@ -9,8 +9,9 @@
     <string name="signed_in">signed_in</string>
     <string name="sign_in_cancelled">sign_in_cancelled</string>
     <string name="no_internet_connection">no_internet_connection</string>
-    <string name="unknown_error">unknown_error</string>
+    <string name="unknown_error">Что-то пошло не так</string>
     <string name="unknown_sign_in_response">unknown_sign_in_response</string>
     <string name="ffor">" для "</string>
     <string name="send_photos">Отправить фото</string>
+    <string name="get_orders">Отправленные заказы</string>
 </resources>

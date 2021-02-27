@@ -99,9 +99,10 @@
     <string name="signed_in">signed in</string>
     <string name="sign_in_cancelled">sign_in_cancelled</string>
     <string name="no_internet_connection">no_internet_connection</string>
-    <string name="unknown_error" translatable="false">unknown_error</string>
+    <string name="unknown_error">unknown_error</string>
     <string name="unknown_sign_in_response">unknown_sign_in_response</string>
     <string name="ffor">for</string>
     <string name="send_photos">Send photos</string>
+    <string name="get_orders">Sent orders</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

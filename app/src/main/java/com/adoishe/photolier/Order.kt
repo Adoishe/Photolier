@@ -7,15 +7,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import org.kobjects.base64.Base64
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Order {
 
-    private             var imageUriList    : MutableList<Uri>  = ArrayList()
-    private             var byteArrayList    : MutableList<ByteArray>  = ArrayList()
-                        var imageOrderList    : MutableList<ImageOrder>  = ArrayList()
-                        val auth = FirebaseAuth.getInstance()!!
-                        var context : Activity
-                        var result = String()
+    private             val OrderUuid       : String                    = UUID.randomUUID().toString()
+                        var imageUriList    : MutableList<Uri>          = ArrayList()
+    private             var byteArrayList   : MutableList<ByteArray>    = ArrayList()
+                        var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
+                        val auth                                        = FirebaseAuth.getInstance()!!
+                        var context         : Activity
+                        var result                                      = String()
 
     constructor(context: Activity) {
 
@@ -39,19 +42,17 @@ class Order {
 
         var cvArrayList    : MutableList<ContentValues>  = ArrayList()
 
-
         imageOrderList.forEach(){
 
             var cv          = ContentValues()
             var byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            cv.put("name" , it.name)
-            cv.put("byteArray" , Base64.encode( byteArray!!))
+            cv.put("name"       , it.name)
+            cv.put("byteArray"  , Base64.encode( byteArray!!))
 
             cvArrayList.add(cv)
 
         }
-
 
         return cvArrayList
     }
@@ -64,6 +65,7 @@ class Order {
         cv.put("Email"          , this.auth.currentUser?.email)
         cv.put("PhoneNumber"    , this.auth.currentUser?.phoneNumber)
         cv.put("Uid"            , this.auth.currentUser?.uid)
+        cv.put("OrderUid"       , this.OrderUuid)
 
         return cv
     }
@@ -76,16 +78,8 @@ class Order {
             var cv                      = getCvForWs()
             val dl                      = DataLoader()
             val outputJson: String      = Gson().toJson(cv)
-
-            var cvArrayList = getCvArrayList()
-
-          //  var cvData = ContentValues()
-
-         //   cvData.put("data", cvArrayList)
-
+            var cvArrayList             = getCvArrayList()
             val jsoCvArrayList: String  = Gson().toJson(cvArrayList)
-
-
             var sendResult              = dl.doing(outputJson, jsoCvArrayList)
             val builder                 = GsonBuilder()
             val gson                    = builder.create()

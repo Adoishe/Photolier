@@ -19,6 +19,7 @@ import com.canhub.cropper.CropImage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.InputStream
+import java.net.URI
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -75,6 +76,7 @@ class PhotosFragment : Fragment() {
         val loadButton = root.findViewById<Button>(R.id.buttonLoadPicture)
         val cropButton = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton = root.findViewById<Button>(R.id.buttonSendPictures)
+        val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         val resultTextView = root.findViewById<TextView>(R.id.textViewResult)
        // linearLayout   = root.findViewById(R.id.linearLayout)
         listView        = root.findViewById(R.id.list) //ListView(context)
@@ -122,39 +124,56 @@ class PhotosFragment : Fragment() {
 
         sendButton.setOnClickListener{
 
-            Thread {
-
                 order.send()
-/*
 
-                var inputStream = requireActivity().contentResolver.openInputStream(imageUriList[0])
-                var byteArray = inputStream?.readBytes()
+        }
 
-                var cv =  order.getCvForWs()
+        ordersButton.setOnClickListener {
 
 
-                val dl                  = DataLoader()
-
-                val outputJson: String  = Gson().toJson(cv)
-                val jsoCvArrayList: String  = Gson().toJson(order.getCvArrayList())
-
-
-
-
-                var result              = dl.doing(outputJson , jsoCvArrayList)
-                val builder             = GsonBuilder()
-                val gson                = builder.create()
-
+            Thread {
+                var cv : ContentValues
+                var result : String
+                val dl                      = DataLoader()
+                var sendResult              = dl.getOrders( auth.currentUser!!.uid)
+                val builder                 = GsonBuilder()
+                val gson                    = builder.create()
 
                 try {
-                    cv                      = gson.fromJson(result, ContentValues::class.java)
-                    resultTextView.text     = cv.toString()
+                    var arrayCV      = gson.fromJson(sendResult, Array<ContentValues>::class.java).toList()//cv.toString()
+
+                    var orders : MutableList<Order> = ArrayList()
+
+                    arrayCV.forEach(){
+
+                        var order1c = Order(requireActivity())
+
+                        var imageUriList    : MutableList<Uri>          = ArrayList()
+
+                        (it.get("imageUriList") as ArrayList<String>).forEach(){
+
+                            var uri1c = Uri.parse(it)
+
+                            imageUriList.add(uri1c)
+
+                        }
+
+                        order1c.imageUriList = imageUriList
+
+                        orders.add(order1c)
+                    }
+
+                    result           = orders.toString()
+
+                    resultTextView.setText(result)
+
                 }
                 catch (e : Exception) {
-                    resultTextView.text     = result.toString()
-                }
 
- */
+                    result     = sendResult.toString()
+
+                    resultTextView.setText(result)
+                }
 
             }.start()
 
