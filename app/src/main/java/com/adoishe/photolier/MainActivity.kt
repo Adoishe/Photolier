@@ -29,7 +29,7 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
-val auth = FirebaseAuth.getInstance()!!
+
 /*
 fun showSnackbar(id : Int){
     Snackbar.make(findViewById(R.id.sign_in_container), resources.getString(id), Snackbar.LENGTH_LONG).show()
@@ -40,6 +40,8 @@ fun showSnackbar(id : Int){
 class MainActivity : AppCompatActivity() {
 
     var dbSq: DatabaseHelper= DatabaseHelper(this);
+
+    val auth = FirebaseAuth.getInstance()
 
     internal var output: File? = null
 
@@ -57,8 +59,8 @@ class MainActivity : AppCompatActivity() {
     private val CAMERA_REQUEST = 101
 
     val providers = arrayListOf(
-        AuthUI.IdpConfig.EmailBuilder().build(),
-        AuthUI.IdpConfig.PhoneBuilder().build(),
+     //   AuthUI.IdpConfig.EmailBuilder().build(),
+     //   AuthUI.IdpConfig.PhoneBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build()
         //    AuthUI.IdpConfig.FacebookBuilder().build(),
         //    AuthUI.IdpConfig.TwitterBuilder().build()
@@ -66,7 +68,22 @@ class MainActivity : AppCompatActivity() {
 
 
     var imageUriList: MutableList<Uri> = ArrayList()
+    var log : MutableList<String> = ArrayList()
 
+
+    fun authenticate(){
+
+        startActivityForResult(
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setIsSmartLockEnabled(!BuildConfig.DEBUG)
+                .setAvailableProviders(providers)
+                //     .setTosUrl("link to app terms and service")
+                //    .setPrivacyPolicyUrl("link to app privacy policy")
+                .build(),
+            RC_SIGN_IN)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -74,19 +91,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        if(auth.currentUser != null){ //If user is signed in
+        if(auth.currentUser == null){ //If user is signed in
 //                startActivity(Next Activity)
+            authenticate()
+                //log.add(auth.currentUser!!.email.toString())
+
+
         }
         else {
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                    .setAvailableProviders(providers)
-               //     .setTosUrl("link to app terms and service")
-                //    .setPrivacyPolicyUrl("link to app privacy policy")
-                    .build(),
-                    RC_SIGN_IN)
+
+           // log.add("auth.currentUser == null")
+
+            authenticate()
+
+
+
         }
     }
 //        imageView = findViewById(R.id.imageView)
@@ -125,7 +144,9 @@ class MainActivity : AppCompatActivity() {
 
 
      val REG = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
+
     private var PATTERN: Pattern = Pattern.compile(REG)
+
     fun CharSequence.isPhoneNumber() : Boolean = PATTERN.matcher(this).find()
 
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -18,66 +18,33 @@ class DataLoader () {
     private             var byteArrayList    : MutableList<ByteArray>  = ArrayList()
     private             var stringArrayList    : MutableList<String>  = ArrayList()
 
-    fun doing(jsonString: String , jsoncvArrayList :String): String {
+    fun sendOrder(jsonString: String , jsoncvArrayList :String): String {
+
+        var res = ""
 
             try {
 
-                val request     = SoapObject(NAMESPACE, METHOD_NAME)
-                val envelope    = SoapSerializationEnvelope(SoapEnvelope.VER12)
+                val request     = SoapObject(NAMESPACE, SEND_ORDER_METHOD_NAME)
 
                 request.addProperty("ID", jsonString)
                 request.addProperty("Num", jsoncvArrayList )
+//-----------------------------------------------------------------------------
+                res = sendSoapObject(request, SEND_ORDER_ACTION)
 
-                envelope.setOutputSoapObject(request)
-
-                val androidHttpTransport     = HttpTransportSE(URL)
-                androidHttpTransport.debug  = true
-
-                try {
-
-                    val headerList      : MutableList<HeaderProperty>   = ArrayList()
-                    val basicAuthName   : String                        = "web"
-                    val basicAuthPass   : String                        = "web"
-
-                    if (basicAuthName != null && basicAuthPass != null) {
-
-                        val token = "$basicAuthName:$basicAuthPass".toByteArray()
-
-                        headerList.add(HeaderProperty("Authorization", "Basic " + Base64.encode( token )))
-                    }
-
-                    headerList.add(HeaderProperty("Connection", "Close"))
-                    androidHttpTransport.call(SOAP_ACTION, envelope, headerList)
-
-                    var res = ""
-
-                    try {
-                        val resultsRequestSOAP  = envelope.bodyIn as SoapObject
-                         res                    = resultsRequestSOAP.getPropertyAsString(0)
-                    }
-                    catch (e: Exception) {
-
-                         res =  (envelope.bodyIn as SoapFault).faultstring
-                    }
-
-                    return  res
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
             } catch (e: Exception) {
+
                 e.printStackTrace()
+
+                res =  e.toString()
             }
-        return ""
+        return res
     }
 
-    fun getOrders(jsonString: String ) : String {
+    private fun sendSoapObject(soapObject : SoapObject, action : String) : String{
 
-        val request     = SoapObject(NAMESPACE, GET_ORDERS_METHOD_NAME)
         val envelope    = SoapSerializationEnvelope(SoapEnvelope.VER12)
 
-        request.addProperty("userUUid", jsonString)
-        envelope.setOutputSoapObject(request)
+        envelope.setOutputSoapObject(soapObject)
 
         val androidHttpTransport    = HttpTransportSE(URL)
         androidHttpTransport.debug  = true
@@ -85,35 +52,51 @@ class DataLoader () {
 
         try {
 
-            val headerList      : MutableList<HeaderProperty> = ArrayList()
-            val basicAuthName   : String = "web"
-            val basicAuthPass   : String = "web"
+            val headerList      : MutableList<HeaderProperty>   = ArrayList()
+            val basicAuthName   : String                        = "web"
+            val basicAuthPass   : String                        = "web"
 
             if (basicAuthName != null && basicAuthPass != null) {
 
                 val token = "$basicAuthName:$basicAuthPass".toByteArray()
 
-                headerList.add( HeaderProperty("Authorization", "Basic " + Base64.encode( token ) )
-                )
+                headerList.add(HeaderProperty("Authorization", "Basic " + Base64.encode( token )))
             }
 
             headerList.add(HeaderProperty("Connection", "Close"))
-            androidHttpTransport.call(GET_ORDERS_SOAP_ACTION, envelope, headerList)
+            androidHttpTransport.call(action, envelope, headerList)
 
             try {
+
                 val resultsRequestSOAP  = envelope.bodyIn as SoapObject
-                res                     = resultsRequestSOAP.getPropertyAsString(0)
+                res                    = resultsRequestSOAP.getPropertyAsString(0)
+
             }
             catch (e: Exception) {
 
                 res =  (envelope.bodyIn as SoapFault).faultstring
             }
 
+            return  res
+
         } catch (e: Exception) {
+
             e.printStackTrace()
 
             res =  e.toString()
         }
+
+        return res
+    }
+
+    fun getOrders(jsonString: String ) : String {
+
+        val request = SoapObject(NAMESPACE, GET_ORDERS_METHOD_NAME)
+        var res     = ""
+
+        request.addProperty("userUUid", jsonString)
+
+        res = sendSoapObject(request, GET_ORDERS_SOAP_ACTION)
 
         return  res
     }
@@ -123,9 +106,9 @@ class DataLoader () {
        // private const val URL = "https://seawolf.auxi.ru/photolier/ws/App/wsApp.1cws?wsdl"
         private const val URL = "https://seawolf.auxi.ru/photolier/ws/App/wsApp.1cws"
             //private const val SOAP_ACTION = "https://seawolf.auxi.ru/photolier/ws/App/wsApp"
-        private const val SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:ID"
+        private const val SEND_ORDER_ACTION = "http://www.w3.org/2001/XMLSchema#App:ID"
         private const val GET_ORDERS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getOrders"
-        private const val METHOD_NAME = "ID"
+        private const val SEND_ORDER_METHOD_NAME = "ID"
         private const val GET_ORDERS_METHOD_NAME = "getOrders"
     }
 }

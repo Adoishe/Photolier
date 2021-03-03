@@ -6,17 +6,20 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import org.json.JSONArray
+import org.json.JSONObject
 import org.kobjects.base64.Base64
 import java.util.*
 import kotlin.collections.ArrayList
 
 class Order {
 
-    private             val OrderUuid       : String                    = UUID.randomUUID().toString()
+    private             val uuid            : String                    = UUID.randomUUID().toString()
+                        var name            : String                    = UUID.randomUUID().toString()
                         var imageUriList    : MutableList<Uri>          = ArrayList()
     private             var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                         var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
-                        val auth                                        = FirebaseAuth.getInstance()!!
+                        val auth                                        = FirebaseAuth.getInstance()
                         var context         : Activity
                         var result                                      = String()
 
@@ -24,6 +27,11 @@ class Order {
 
         this.context = context
 
+    }
+
+    fun getUuid(): String {
+
+        return uuid
     }
 
     fun getByteArrayList() : MutableList<ByteArray>{
@@ -47,8 +55,8 @@ class Order {
             var cv          = ContentValues()
             var byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            cv.put("name"       , it.name)
-            cv.put("byteArray"  , Base64.encode( byteArray!!))
+            cv.put("name", it.name)
+            cv.put("byteArray", Base64.encode(byteArray!!))
 
             cvArrayList.add(cv)
 
@@ -57,39 +65,132 @@ class Order {
         return cvArrayList
     }
 
-    fun getCvForWs() : ContentValues{
+    fun getJSONArrayList() : JSONArray{
+
+      //  var cvArrayList    : MutableList<JSONObject>  = ArrayList()
+        var cvArrayList    =  JSONArray()
+
+        imageOrderList.forEach(){
+
+            var cv          = JSONObject()
+            var byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+
+            cv.put("name", it.name)
+            cv.put("byteArray", Base64.encode(byteArray!!))
+
+            var result = JSONObject()
+
+            result.put("mValues", cv)
+
+            cvArrayList.put(result)
+
+
+        }
+
+
+
+
+
+
+        return cvArrayList
+    }
+
+    private fun getCvForWs() : ContentValues{
 
         var cv = ContentValues()
 
-        cv.put("DisplayName"    , this.auth.currentUser?.displayName)
-        cv.put("Email"          , this.auth.currentUser?.email)
-        cv.put("PhoneNumber"    , this.auth.currentUser?.phoneNumber)
-        cv.put("Uid"            , this.auth.currentUser?.uid)
-        cv.put("OrderUid"       , this.OrderUuid)
+        (context as MainActivity).log.add("cv + orderuuid =" + this.uuid)
+        (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
+        (context as MainActivity).log.add("cv + email = " + (context as MainActivity).auth.currentUser?.email)
+        (context as MainActivity).log.add("cv + phoneNumber = " + (context as MainActivity).auth.currentUser?.phoneNumber)
+        (context as MainActivity).log.add("cv + uid = " + (context as MainActivity).auth.currentUser?.uid)
+
+
+        cv.put("orderUid", this.uuid)
+        cv.put("displayName", (context as MainActivity).auth.currentUser?.displayName.toString())
+        cv.put("email", (context as MainActivity).auth.currentUser?.email.toString())
+        cv.put("phoneNumber", (context as MainActivity).auth.currentUser?.phoneNumber.toString())
+        cv.put("uid", (context as MainActivity).auth.currentUser?.uid.toString())
 
         return cv
+    }
+
+    private fun getJSONForWs() : JSONObject{
+
+        var json = JSONObject()
+        var result = JSONObject()
+/*
+        (context as MainActivity).log.add("cv + orderuuid =" + this.uuid)
+        (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
+        (context as MainActivity).log.add("cv + email = " + (context as MainActivity).auth.currentUser?.email)
+        (context as MainActivity).log.add("cv + phoneNumber = " + (context as MainActivity).auth.currentUser?.phoneNumber)
+        (context as MainActivity).log.add("cv + uid = " + (context as MainActivity).auth.currentUser?.uid)
+
+ */
+
+
+        json.put("orderUid", this.uuid)
+        json.put("displayName", (context as MainActivity).auth.currentUser?.displayName.toString())
+        json.put("email", (context as MainActivity).auth.currentUser?.email.toString())
+        json.put("phoneNumber", (context as MainActivity).auth.currentUser?.phoneNumber.toString())
+        json.put("uid", (context as MainActivity).auth.currentUser?.uid.toString())
+
+        result.put("mValues", json)
+
+
+        return result
     }
 
     fun send (){
 
         Thread {
 
+            (context as MainActivity).log.add("send thread create")
+
             byteArrayList               = getByteArrayList()
             var cv                      = getCvForWs()
+            var jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
-            val outputJson: String      = Gson().toJson(cv)
-            var cvArrayList             = getCvArrayList()
-            val jsoCvArrayList: String  = Gson().toJson(cvArrayList)
-            var sendResult              = dl.doing(outputJson, jsoCvArrayList)
-            val builder                 = GsonBuilder()
-            val gson                    = builder.create()
+
+                //val gsonBuilder = GsonBuilder()
+                //.setPrettyPrinting()
+                //.create()
+
+                //val outputJson      = gsonBuilder.toJson(cv)
+                //val outputJson    =  cv.toString()
+            val outputJson   = jsonObject.toString()
+
+
+            (context as MainActivity).log.add("json to send = $outputJson")
+
+            //var cvArrayList             = getCvArrayList()
+            var cvArrayList             = getJSONArrayList()
+           // val jsoCvArrayList: String  = Gson().toJson(cvArrayList)
+            val jsoCvArrayList: String  = cvArrayList.toString()
+            //(context as MainActivity).log.add(jsoCvArrayList)
+            var sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+            (context as MainActivity).log.add("answer json = $sendResult")
+                //val builder                 = GsonBuilder()
+            //val gson                    = builder.create()
 
             try {
-                cv          = gson.fromJson(sendResult, ContentValues::class.java)
-                result      = cv.toString()
+                //cv          = gson.fromJson(sendResult, ContentValues::class.java)
+                //result      = cv.toString()
+
+                    var jsonObject = JSONObject(sendResult)
+
+                result = jsonObject.toString()
+
+
+
+
+                (context as MainActivity).log.add("result = $result")
             }
-            catch (e : Exception) {
-                result     = sendResult.toString()
+            catch (e: Exception) {
+
+                // тууут ошибка загрузки заказа
+                result     = sendResult
+                (context as MainActivity).log.add("result = $result")
             }
 
         }.start()

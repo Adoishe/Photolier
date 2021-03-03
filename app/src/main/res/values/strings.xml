@@ -104,5 +104,9 @@
     <string name="ffor">for</string>
     <string name="send_photos">Send photos</string>
     <string name="get_orders">Sent orders</string>
+    <string name="display_name">Name</string>
+    <string name="email">E-mail</string>
+    <string name="phoneNumber">Phone number</string>
+    <string name="uid">ID</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

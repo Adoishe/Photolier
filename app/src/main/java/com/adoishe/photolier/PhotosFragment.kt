@@ -9,12 +9,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.Button
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.canhub.cropper.CropImage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -64,11 +62,11 @@ class PhotosFragment : Fragment() {
         order = Order(requireActivity())
 
 
-        if(auth.currentUser != null){ //If user is signed in
+        if((context as MainActivity).auth.currentUser != null){ //If user is signed in
 
             this.requireActivity().title  = resources.getString(R.string.app_name) + ' ' + resources.getString(
                 R.string.ffor
-            ) + ' ' + auth.currentUser!!.displayName as CharSequence
+            ) + ' ' + (context as MainActivity).auth.currentUser!!.displayName as CharSequence
 //                startActivity(Next Activity)
         }
 
@@ -76,8 +74,11 @@ class PhotosFragment : Fragment() {
         val loadButton = root.findViewById<Button>(R.id.buttonLoadPicture)
         val cropButton = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton = root.findViewById<Button>(R.id.buttonSendPictures)
-        val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
+            //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         val resultTextView = root.findViewById<TextView>(R.id.textViewResult)
+
+
+
        // linearLayout   = root.findViewById(R.id.linearLayout)
         listView        = root.findViewById(R.id.list) //ListView(context)
 
@@ -128,56 +129,7 @@ class PhotosFragment : Fragment() {
 
         }
 
-        ordersButton.setOnClickListener {
 
-
-            Thread {
-                var cv : ContentValues
-                var result : String
-                val dl                      = DataLoader()
-                var sendResult              = dl.getOrders( auth.currentUser!!.uid)
-                val builder                 = GsonBuilder()
-                val gson                    = builder.create()
-
-                try {
-                    var arrayCV      = gson.fromJson(sendResult, Array<ContentValues>::class.java).toList()//cv.toString()
-
-                    var orders : MutableList<Order> = ArrayList()
-
-                    arrayCV.forEach(){
-
-                        var order1c = Order(requireActivity())
-
-                        var imageUriList    : MutableList<Uri>          = ArrayList()
-
-                        (it.get("imageUriList") as ArrayList<String>).forEach(){
-
-                            var uri1c = Uri.parse(it)
-
-                            imageUriList.add(uri1c)
-
-                        }
-
-                        order1c.imageUriList = imageUriList
-
-                        orders.add(order1c)
-                    }
-
-                    result           = orders.toString()
-
-                    resultTextView.setText(result)
-
-                }
-                catch (e : Exception) {
-
-                    result     = sendResult.toString()
-
-                    resultTextView.setText(result)
-                }
-
-            }.start()
-
-        }
 
         listView.setOnItemClickListener{ adapterView: AdapterView<*>, view: View, i: Int, l: Long ->
 

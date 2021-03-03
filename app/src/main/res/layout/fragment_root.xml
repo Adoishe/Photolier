@@ -3,12 +3,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".RootFragment">
 
 
-    <Button
-        android:id="@+id/goToPhotobutton"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/printPhotos" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/goToPhotobutton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/printPhotos"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <Button
+            android:id="@+id/buttonGetOrders"
+            android:layout_width="124dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/get_orders"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/goToPhotobutton" />
+
+
+        <Button
+            android:id="@+id/auth"
+            android:layout_width="124dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="auth"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonGetOrders" />
+
+        <EditText
+            android:id="@+id/log"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            android:text="tap here for log"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/auth"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

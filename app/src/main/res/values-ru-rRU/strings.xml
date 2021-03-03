@@ -14,4 +14,8 @@
     <string name="ffor">" для "</string>
     <string name="send_photos">Отправить фото</string>
     <string name="get_orders">Отправленные заказы</string>
+    <string name="display_name">Имя</string>
+    <string name="email">Электропочта</string>
+    <string name="phoneNumber">Номер телефона</string>
+    <string name="uid">Идентификатор</string>
 </resources>
