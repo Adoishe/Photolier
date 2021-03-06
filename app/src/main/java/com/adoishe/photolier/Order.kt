@@ -143,10 +143,8 @@ class Order {
     fun send (){
 
         //this = Order(context)
-        val progressBar             = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
-
-        progressBar.visibility  = ProgressBar.VISIBLE
-
+        val progressBar          = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
+            progressBar.visibility  = ProgressBar.VISIBLE
 
         Thread {
 
@@ -169,13 +167,14 @@ class Order {
             try {
 
                 val resultJSSONObj  = JSONObject(sendResult)
+                val mValues         = resultJSSONObj.getJSONObject("mValues")
                     result          = resultJSSONObj.toString()
 
                 (context as MainActivity).log.add("result = $result")
 
-                name            = resultJSSONObj.getJSONObject("mValues").getString("orderName")
-                orderStatus     = resultJSSONObj.getJSONObject("mValues").getString("orderStatus")
-                uuid            = resultJSSONObj.getJSONObject("mValues").getString("orderUuid")
+                name            = mValues.getString("orderName")
+                orderStatus     = mValues.getString("orderStatus")
+                uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
 
             }

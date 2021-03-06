@@ -24,11 +24,8 @@ class OrderFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-     var sendorder: Boolean? = null
 
-    var progressBar : ProgressBar? = null
-
-
+    var sendorder: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,69 +33,33 @@ class OrderFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
-
-
-
-
     }
 
     fun fill(v : View ){
 
-        val textViewResult  = v.findViewById<TextView>(R.id.textViewResult)
-        val main            = (context as MainActivity)
-        val orderUuid       = arguments?.getString("orderUuid")
-        val orderName       = arguments?.getString("orderName")
-        val orderStatus      = arguments?.getString("orderStatus")
-
-        textViewResult?.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
+        val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
+        val orderUuid           = arguments?.getString("orderUuid")
+        val orderName           = arguments?.getString("orderName")
+        val orderStatus         = arguments?.getString("orderStatus")
+            textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
     }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val root =  inflater.inflate(R.layout.fragment_order, container, false)
 
-
-
-            sendorder       = arguments?.getBoolean("sendorder")
+        val root        =  inflater.inflate(R.layout.fragment_order, container, false)
+            sendorder   = arguments?.getBoolean("sendorder")
 
         when {
             sendorder!! -> {
                 fill(root)
+
+                val main        = (requireActivity() as MainActivity)
+                    main.order  = Order(main)
             }
-
         }
-
-
-
-        /*
-        progressBar = view?.findViewById(R.id.progressBar) as ProgressBar
-
-        when {
-            sendorder!! ->
-            {
-                val main = (context as MainActivity)
-                progressBar!!.visibility = ProgressBar.VISIBLE
-                main.order.send()
-
-                main.order = Order(main)
-                progressBar!!.visibility = ProgressBar.INVISIBLE
-            }
-
-//            else -> "zero"
-        }
-
-
-         */
-
-
-
-// запускаем длительную операцию
-// запускаем длительную операцию
-
 
         return root
     }
