@@ -3,6 +3,7 @@ package com.adoishe.photolier
 import android.app.Activity
 import android.content.ContentValues
 import android.net.Uri
+import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -22,6 +23,8 @@ class Order {
                         val auth                                        = FirebaseAuth.getInstance()
                         var context         : Activity
                         var result                                      = String()
+                        var orderStatus     : String                    = ""
+                        var orderSendResult : String                    = ""
 
     constructor(context: Activity) {
 
@@ -84,13 +87,7 @@ class Order {
 
             cvArrayList.put(result)
 
-
         }
-
-
-
-
-
 
         return cvArrayList
     }
@@ -99,18 +96,17 @@ class Order {
 
         var cv = ContentValues()
 
-        (context as MainActivity).log.add("cv + orderuuid =" + this.uuid)
+        (context as MainActivity).log.add("cv + orderuuid ="    + this.uuid)
         (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
-        (context as MainActivity).log.add("cv + email = " + (context as MainActivity).auth.currentUser?.email)
+        (context as MainActivity).log.add("cv + email = "       + (context as MainActivity).auth.currentUser?.email)
         (context as MainActivity).log.add("cv + phoneNumber = " + (context as MainActivity).auth.currentUser?.phoneNumber)
-        (context as MainActivity).log.add("cv + uid = " + (context as MainActivity).auth.currentUser?.uid)
+        (context as MainActivity).log.add("cv + uid = "         + (context as MainActivity).auth.currentUser?.uid)
 
-
-        cv.put("orderUid", this.uuid)
-        cv.put("displayName", (context as MainActivity).auth.currentUser?.displayName.toString())
-        cv.put("email", (context as MainActivity).auth.currentUser?.email.toString())
-        cv.put("phoneNumber", (context as MainActivity).auth.currentUser?.phoneNumber.toString())
-        cv.put("uid", (context as MainActivity).auth.currentUser?.uid.toString())
+        cv.put("orderUid"       , this.uuid)
+        cv.put("displayName"    , (context as MainActivity).auth.currentUser?.displayName.toString())
+        cv.put("email"          , (context as MainActivity).auth.currentUser?.email.toString())
+        cv.put("phoneNumber"    , (context as MainActivity).auth.currentUser?.phoneNumber.toString())
+        cv.put("uid"            , (context as MainActivity).auth.currentUser?.uid.toString())
 
         return cv
     }
@@ -119,24 +115,14 @@ class Order {
 
         var json = JSONObject()
         var result = JSONObject()
-/*
-        (context as MainActivity).log.add("cv + orderuuid =" + this.uuid)
-        (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
-        (context as MainActivity).log.add("cv + email = " + (context as MainActivity).auth.currentUser?.email)
-        (context as MainActivity).log.add("cv + phoneNumber = " + (context as MainActivity).auth.currentUser?.phoneNumber)
-        (context as MainActivity).log.add("cv + uid = " + (context as MainActivity).auth.currentUser?.uid)
 
- */
-
-
-        json.put("orderUid", this.uuid)
-        json.put("displayName", (context as MainActivity).auth.currentUser?.displayName.toString())
-        json.put("email", (context as MainActivity).auth.currentUser?.email.toString())
-        json.put("phoneNumber", (context as MainActivity).auth.currentUser?.phoneNumber.toString())
-        json.put("uid", (context as MainActivity).auth.currentUser?.uid.toString())
+        json.put("orderUid"     , this.uuid)
+        json.put("displayName"  , (context as MainActivity).auth.currentUser?.displayName.toString())
+        json.put("email"        , (context as MainActivity).auth.currentUser?.email.toString())
+        json.put("phoneNumber"  , (context as MainActivity).auth.currentUser?.phoneNumber.toString())
+        json.put("uid"          , (context as MainActivity).auth.currentUser?.uid.toString())
 
         result.put("mValues", json)
-
 
         return result
     }
@@ -151,48 +137,34 @@ class Order {
             var cv                      = getCvForWs()
             var jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
-
-                //val gsonBuilder = GsonBuilder()
-                //.setPrettyPrinting()
-                //.create()
-
-                //val outputJson      = gsonBuilder.toJson(cv)
-                //val outputJson    =  cv.toString()
-            val outputJson   = jsonObject.toString()
-
+            val outputJson              = jsonObject.toString()
 
             (context as MainActivity).log.add("json to send = $outputJson")
 
-            //var cvArrayList             = getCvArrayList()
             var cvArrayList             = getJSONArrayList()
-           // val jsoCvArrayList: String  = Gson().toJson(cvArrayList)
             val jsoCvArrayList: String  = cvArrayList.toString()
-            //(context as MainActivity).log.add(jsoCvArrayList)
             var sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+
             (context as MainActivity).log.add("answer json = $sendResult")
-                //val builder                 = GsonBuilder()
-            //val gson                    = builder.create()
 
             try {
-                //cv          = gson.fromJson(sendResult, ContentValues::class.java)
-                //result      = cv.toString()
 
-                    var jsonObject = JSONObject(sendResult)
+                var resultJSSONObj = JSONObject(sendResult)
 
-                result = jsonObject.toString()
-
-
-
+                result = resultJSSONObj.toString()
 
                 (context as MainActivity).log.add("result = $result")
+
+                orderSendResult = resultJSSONObj.getJSONObject("mValues").getString("orderName")
+
             }
             catch (e: Exception) {
 
                 // тууут ошибка загрузки заказа
                 result     = sendResult
+
                 (context as MainActivity).log.add("result = $result")
             }
-
         }.start()
 
     }

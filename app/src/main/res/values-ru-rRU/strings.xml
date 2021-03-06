@@ -18,4 +18,5 @@
     <string name="email">Электропочта</string>
     <string name="phoneNumber">Номер телефона</string>
     <string name="uid">Идентификатор</string>
+    <string name="order">Заказ</string>
 </resources>

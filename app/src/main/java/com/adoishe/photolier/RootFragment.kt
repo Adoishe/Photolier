@@ -19,26 +19,20 @@ class RootFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val root =  inflater.inflate(R.layout.fragment_root, container, false)
-
-
-        val goToPhotoButton : Button = root.findViewById(R.id.goToPhotobutton)
-        val ordersButton : Button  = root.findViewById(R.id.buttonGetOrders)
-        val logView = root.findViewById<EditText>(R.id.log)
-        val atuhButton = root.findViewById<Button>(R.id.auth)
-
+        val root                        =  inflater.inflate(R.layout.fragment_root, container, false)
+        val goToPhotoButton : Button    = root.findViewById(R.id.goToPhotobutton)
+        val ordersButton    : Button    = root.findViewById(R.id.buttonGetOrders)
+        val logView                     = root.findViewById<EditText>(R.id.log)
+        val atuhButton                  = root.findViewById<Button>(R.id.auth)
 
         goToPhotoButton.setOnClickListener{
 
-           // navController.navigate(R.id.action_rootFragment_to_photosFragment)
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_photosFragment)
-
         }
 
         ordersButton.setOnClickListener {
 
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_ordersHistoryFragment)
-
         }
 
         logView.setOnClickListener {
@@ -48,12 +42,8 @@ class RootFragment : Fragment() {
 
         atuhButton.setOnClickListener{
 
-            //(requireActivity() as MainActivity).authenticate()
-
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
-
         }
-
         return root
     }
 }

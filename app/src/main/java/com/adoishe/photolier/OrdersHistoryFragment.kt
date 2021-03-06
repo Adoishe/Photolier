@@ -42,58 +42,49 @@ class OrdersHistoryFragment : Fragment() {
         }
     }
 
-
     fun getOrders(view: View) : Thread{
 
          return Thread {
 
+             orders = ArrayList()
+
              (requireActivity() as MainActivity).log.add("gwt orders thread started")
 
-             var cv : ContentValues
             var result : String
-            val dl                      = DataLoader()
+            val dl = DataLoader()
 
              (requireActivity() as MainActivity).log.add("getOrders rquested")
              (requireActivity() as MainActivity).log.add("uid = " + (context as MainActivity).auth.currentUser!!.uid)
 
-            var sendResult              = dl.getOrders((context as MainActivity).auth.currentUser!!.uid)
+            var sendResult = dl.getOrders((context as MainActivity).auth.currentUser!!.uid)
 
              (requireActivity() as MainActivity).log.add(sendResult)
 
-           // val builder                 = GsonBuilder()
-           // val gson                    = builder.create()
-
             try {
 
-                //val arrayCV  = gson.fromJson(sendResult, Array<ContentValues>::class.java).toList()//cv.toString()
                 val arrayCV  = JSONArray(sendResult)
-
 
                 if (arrayCV.length() !=0){
 
-                    //arrayCV.forEach()
                     for (i in 0 until arrayCV.length()) {
 
-                        var order1c = Order(requireActivity())
-
-                        val orderItem = arrayCV.getJSONObject(i)
-
-                        //order1c.name = orderItem.getAsString("orderName")
-                        order1c.name = orderItem.getJSONObject("mValues").getString("orderName")
-
-                        var uriJSONArray =orderItem.getJSONObject("mValues").getJSONArray("imageUriList")
+                        var order1c         = Order(requireActivity())
+                        val orderItem       = arrayCV.getJSONObject(i)
+                        order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
+                        var uriJSONArray    = orderItem.getJSONObject("mValues").getJSONArray("imageUriList")
+                        var orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
                         var imageUriList    : MutableList<Uri>  = ArrayList()
 
                         for (j in 0 until uriJSONArray.length()){
 
-                            var uri1c = Uri.parse( uriJSONArray.getString(j) )
+                            var uri1c = Uri.parse( uriJSONArray.getString(j))
 
                             imageUriList.add(uri1c)
 
                         }
 
-
                         order1c.imageUriList = imageUriList
+                        order1c.orderStatus = orderStatus
 
                         orders.add(order1c)
                     }
@@ -103,17 +94,16 @@ class OrdersHistoryFragment : Fragment() {
 
                 (requireActivity() as MainActivity).log.add(result)
 
-                //resultTextView.setText(result)
-
             }
             catch (e: Exception) {
 
-                result     = sendResult.toString()
+                result = sendResult.toString()
 
                 (requireActivity() as MainActivity).log.add(result)
 
-                //resultTextView.setText(result)
             }
+
+                    // createCardView(view)
         }
     }
 
@@ -129,8 +119,6 @@ class OrdersHistoryFragment : Fragment() {
         textView.layoutParams   = params
         textView.text           = string
         //textView.id             = orderIndex
-
-
 
 
         return textView
@@ -161,6 +149,7 @@ class OrdersHistoryFragment : Fragment() {
     }
 
     private fun createCardView(view: View){
+
         // Add an ImageView to the CardView
         val historyLayout = view.findViewById<LinearLayout>(R.id.history_layout)
 
@@ -186,34 +175,21 @@ class OrdersHistoryFragment : Fragment() {
             }
  */
 
-
             // Set margins for card view
             layoutParams.setMargins(20, 20, 20, 20)
-
-
-
-
-
             // Set the card view layout params
             cardView.layoutParams = layoutParams
-
             // Set the card view corner radius
             cardView.radius = 16F
-
             // Set the card view content padding
             cardView.setContentPadding(25, 25, 25, 25)
-
             // Set the card view background color
             cardView.setCardBackgroundColor(Color.LTGRAY)
-
             // Set card view elevation
             cardView.cardElevation = 8F
-
             // Set card view maximum elevation
             cardView.maxCardElevation = 12F
-
             // Set a click listener for card view
-
         /*
             cardView.setOnClickListener{
 
@@ -231,13 +207,14 @@ class OrdersHistoryFragment : Fragment() {
          */
 
 
-
             var textView = generateTextView(
                                     order.name
                                             + "\n "
                                             + order.imageUriList.size
                                             + " "
                                             + resources.getString(R.string.photos)
+                                            + " "
+                                            + order.orderStatus
                                             // , orders.indexOf(order)
                                             , cardView
                                             )
@@ -248,8 +225,8 @@ class OrdersHistoryFragment : Fragment() {
             cardView.setOnClickListener{
 
                 var order = orders[it.id]
-
                 val bundle = Bundle()
+
                 bundle.putString("orderUuid", order.getUuid())
                 bundle.putString("orderName", order.name)
                 //bundle.putInt("arg2", 2)
@@ -298,11 +275,10 @@ class OrdersHistoryFragment : Fragment() {
 
         try {
             getOrdersThread.join()
+            createCardView(root)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
-
-        createCardView(root)
 
         return root
     }

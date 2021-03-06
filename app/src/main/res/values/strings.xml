@@ -108,5 +108,6 @@
     <string name="email">E-mail</string>
     <string name="phoneNumber">Phone number</string>
     <string name="uid">ID</string>
+    <string name="order">Order</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

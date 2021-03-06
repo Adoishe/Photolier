@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -49,6 +51,14 @@ class ProfileFragment : Fragment() {
 
         profile.layoutManager = LinearLayoutManager(requireContext())
         profile.adapter = CustomRecyclerAdapter(fillList())
+
+        val ordersButton : Button = root.findViewById(R.id.buttonGetOrders)
+
+        ordersButton.setOnClickListener {
+
+            view?.findNavController()?.navigate(R.id.ordersHistoryFragment)
+
+        }
 
 
         return root

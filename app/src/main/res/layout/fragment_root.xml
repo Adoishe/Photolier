@@ -16,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/printPhotos"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/buttonGetOrders"
@@ -26,7 +27,9 @@
             android:text="@string/get_orders"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/goToPhotobutton" />
+            app:layout_constraintTop_toBottomOf="@id/goToPhotobutton"
+            android:visibility="gone"
+            />
 
 
         <Button
@@ -37,7 +40,8 @@
             android:text="auth"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/buttonGetOrders" />
+            app:layout_constraintTop_toBottomOf="@id/buttonGetOrders"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/log"

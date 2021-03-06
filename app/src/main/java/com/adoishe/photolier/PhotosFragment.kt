@@ -2,7 +2,6 @@ package com.adoishe.photolier
 
 //import com.theartofdev.edmodo.cropper.CropImage
 import android.app.Activity.RESULT_OK
-import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,14 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import java.io.InputStream
-import java.net.URI
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -39,6 +36,7 @@ class PhotosFragment : Fragment() {
     private             var imageUriList    : MutableList<Uri>  = ArrayList()
     private             var imageUri        : Uri?              = null
     private lateinit    var listView        : ListView
+    private lateinit    var recyclerView        : RecyclerView
     private lateinit    var adapter         : PhotoListAdapter
     private             var croppingPosition: Int = -1
      lateinit           var order: Order
@@ -54,7 +52,7 @@ class PhotosFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val root =  inflater.inflate(R.layout.fragment_photos, container, false)
@@ -65,7 +63,7 @@ class PhotosFragment : Fragment() {
         if((context as MainActivity).auth.currentUser != null){ //If user is signed in
 
             this.requireActivity().title  = resources.getString(R.string.app_name) + ' ' + resources.getString(
-                R.string.ffor
+                    R.string.ffor
             ) + ' ' + (context as MainActivity).auth.currentUser!!.displayName as CharSequence
 //                startActivity(Next Activity)
         }
@@ -81,6 +79,7 @@ class PhotosFragment : Fragment() {
 
        // linearLayout   = root.findViewById(R.id.linearLayout)
         listView        = root.findViewById(R.id.list) //ListView(context)
+    //    recyclerView     = root.findViewById(R.id.recycler) //ListView(context)
 
        // linearLayout?.addView(listView)
 
@@ -98,8 +97,8 @@ class PhotosFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
             startActivityForResult(
-                Intent.createChooser(intent, resources.getString(R.string.selectPic)),
-                SELECT_PICTURES
+                    Intent.createChooser(intent, resources.getString(R.string.selectPic)),
+                    SELECT_PICTURES
             ) //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
 
 
@@ -124,12 +123,33 @@ class PhotosFragment : Fragment() {
 
 
         sendButton.setOnClickListener{
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(resources.getString(R.string.send_photos) + "?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes") { dialog, id ->
 
-                order.send()
+                        order.send()
+
+                        val bundle = Bundle()
+
+                        bundle.putString("orderUuid", order.getUuid())
+                        bundle.putString("orderName", order.orderSendResult)
+
+                        view?.findNavController()?.navigate(R.id.orderFragment)
+
+                        order = Order(requireActivity())
+
+                    }
+                    .setNegativeButton("No") { dialog, id ->
+                        // Dismiss the dialog
+                        dialog.dismiss()
+                    }
+
+            val alert = builder.create()
+
+            alert.show()
 
         }
-
-
 
         listView.setOnItemClickListener{ adapterView: AdapterView<*>, view: View, i: Int, l: Long ->
 
@@ -150,6 +170,49 @@ class PhotosFragment : Fragment() {
 
         }
 
+/*
+        recyclerView.addOnItemTouchListener(
+                RecyclerItemClickListener(requireContext(), recyclerView, object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View?, position: Int) {
+
+                        val uri = recyclerView.getChildAt(position) as Uri
+
+
+                        CropImage.activity(uri)
+                                .setAllowRotation(true)
+                                .setAspectRatio(3, 4)
+                                .setCropMenuCropButtonTitle(resources.getString(R.string.crop))
+                                .setActivityTitle(resources.getString(R.string.crop))
+                                .start(requireActivity(), requireParentFragment())
+
+                        croppingPosition = position;
+
+                        //imageUriList.removeAt(i)
+
+                        adapter.notifyDataSetChanged()
+
+
+
+                    }
+
+                    override fun onLongItemClick(view: View?, position: Int) {
+                        TODO("Not yet implemented")
+                    }
+
+                    /*  fun onLongItemClick(view: View?, position: Int) {
+                          // do whatever
+                      }
+
+                     */
+                })
+        )
+
+ */
+
+
+
+
+
         return root
     }
 
@@ -159,7 +222,7 @@ class PhotosFragment : Fragment() {
 
             imageUriList.add(resultUri)
 
-            var imageOrder = ImageOrder(resultUri , resultUri.toString())
+            var imageOrder = ImageOrder(resultUri, resultUri.toString())
 
             order.imageOrderList.add(imageOrder)
         }

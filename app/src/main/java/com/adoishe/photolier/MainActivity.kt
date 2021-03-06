@@ -2,31 +2,28 @@ package com.adoishe.photolier
 
 
 
+//import com.theartofdev.edmodo.cropper.CropImage
+
+
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
-import android.widget.Button
+import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-//import com.theartofdev.edmodo.cropper.CropImage
-import com.canhub.cropper.CropImage
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
-import com.firebase.ui.auth.viewmodel.RequestCodes.GOOGLE_PROVIDER
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import java.io.File
-import java.io.IOException
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
+
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
 
@@ -59,11 +56,11 @@ class MainActivity : AppCompatActivity() {
     private val CAMERA_REQUEST = 101
 
     val providers = arrayListOf(
-     //   AuthUI.IdpConfig.EmailBuilder().build(),
-     //   AuthUI.IdpConfig.PhoneBuilder().build(),
-        AuthUI.IdpConfig.GoogleBuilder().build()
-        //    AuthUI.IdpConfig.FacebookBuilder().build(),
-        //    AuthUI.IdpConfig.TwitterBuilder().build()
+            //   AuthUI.IdpConfig.EmailBuilder().build(),
+            //   AuthUI.IdpConfig.PhoneBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+            //    AuthUI.IdpConfig.FacebookBuilder().build(),
+            //    AuthUI.IdpConfig.TwitterBuilder().build()
     )
 
 
@@ -74,14 +71,14 @@ class MainActivity : AppCompatActivity() {
     fun authenticate(){
 
         startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                .setAvailableProviders(providers)
-                //     .setTosUrl("link to app terms and service")
-                //    .setPrivacyPolicyUrl("link to app privacy policy")
-                .build(),
-            RC_SIGN_IN)
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(!BuildConfig.DEBUG)
+                        .setAvailableProviders(providers)
+                        //     .setTosUrl("link to app terms and service")
+                        //    .setPrivacyPolicyUrl("link to app privacy policy")
+                        .build(),
+                RC_SIGN_IN)
 
     }
 
@@ -90,23 +87,44 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         if(auth.currentUser == null){ //If user is signed in
-//                startActivity(Next Activity)
+        //  startActivity(Next Activity)
             authenticate()
-                //log.add(auth.currentUser!!.email.toString())
-
-
+        //log.add(auth.currentUser!!.email.toString())
         }
         else {
 
            // log.add("auth.currentUser == null")
-
-            authenticate()
-
-
-
+           // authenticate()
         }
+
+        val bottomNavigationView = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+
+            item.isChecked = true
+
+            when (item.itemId) {
+                R.id.action_map -> {
+
+                    findNavController(R.id.fragment).navigate(R.id.rootFragment)
+
+                }
+                R.id.action_dial -> {
+
+                    findNavController(R.id.fragment).navigate(R.id.photosFragment)
+
+                }
+                R.id.action_mail -> {
+
+                    findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
+
+                }
+            }
+
+            false
+        }
+
     }
 //        imageView = findViewById(R.id.imageView)
 
