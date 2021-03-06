@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
     private val SELECT_PHOTO = 100
     private val CAMERA_REQUEST = 101
 
+    var order: Order  = Order(this)
+
     val providers = arrayListOf(
             //   AuthUI.IdpConfig.EmailBuilder().build(),
             //   AuthUI.IdpConfig.PhoneBuilder().build(),

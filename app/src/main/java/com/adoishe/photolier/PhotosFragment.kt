@@ -36,10 +36,11 @@ class PhotosFragment : Fragment() {
     private             var imageUriList    : MutableList<Uri>  = ArrayList()
     private             var imageUri        : Uri?              = null
     private lateinit    var listView        : ListView
-    private lateinit    var recyclerView        : RecyclerView
+    //private lateinit    var recyclerView     : RecyclerView
     private lateinit    var adapter         : PhotoListAdapter
     private             var croppingPosition: Int = -1
-     lateinit           var order: Order
+    //lateinit           var order: Order
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -57,25 +58,23 @@ class PhotosFragment : Fragment() {
         // Inflate the layout for this fragment
         val root =  inflater.inflate(R.layout.fragment_photos, container, false)
 
-        order = Order(requireActivity())
 
+        val mainAct = context as MainActivity
+                //mainAct.order = Order(requireActivity())
 
-        if((context as MainActivity).auth.currentUser != null){ //If user is signed in
-
-            this.requireActivity().title  = resources.getString(R.string.app_name) + ' ' + resources.getString(
+        if(mainAct.auth.currentUser != null){
+            //If user is signed in
+            this.requireActivity().title  = resources.getString(R.string.app_name)  + ' '  + resources.getString(
                     R.string.ffor
-            ) + ' ' + (context as MainActivity).auth.currentUser!!.displayName as CharSequence
+            )  + ' ' + (context as MainActivity).auth.currentUser!!.displayName as CharSequence
 //                startActivity(Next Activity)
         }
-
 
         val loadButton = root.findViewById<Button>(R.id.buttonLoadPicture)
         val cropButton = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton = root.findViewById<Button>(R.id.buttonSendPictures)
             //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         val resultTextView = root.findViewById<TextView>(R.id.textViewResult)
-
-
 
        // linearLayout   = root.findViewById(R.id.linearLayout)
         listView        = root.findViewById(R.id.list) //ListView(context)
@@ -123,32 +122,30 @@ class PhotosFragment : Fragment() {
 
 
         sendButton.setOnClickListener{
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setMessage(resources.getString(R.string.send_photos) + "?")
-                    .setCancelable(false)
-                    .setPositiveButton("Yes") { dialog, id ->
 
-                        order.send()
+                    val builder = AlertDialog.Builder(requireContext())
 
-                        val bundle = Bundle()
+                        builder.setMessage(resources.getString(R.string.send_photos) + "?")
+                            .setCancelable(false)
+                            .setPositiveButton(resources.getString(R.string.yes))
+                            { dialog, id ->
 
-                        bundle.putString("orderUuid", order.getUuid())
-                        bundle.putString("orderName", order.orderSendResult)
+                                val main                    = (context as MainActivity)
 
-                        view?.findNavController()?.navigate(R.id.orderFragment)
+                                main.order.send()
 
-                        order = Order(requireActivity())
 
-                    }
-                    .setNegativeButton("No") { dialog, id ->
-                        // Dismiss the dialog
-                        dialog.dismiss()
-                    }
+
+                            }
+                            .setNegativeButton(resources.getString(R.string.no))
+                            { dialog, id ->
+                                // Dismiss the dialog
+                                dialog.dismiss()
+                            }
 
             val alert = builder.create()
 
             alert.show()
-
         }
 
         listView.setOnItemClickListener{ adapterView: AdapterView<*>, view: View, i: Int, l: Long ->
@@ -218,19 +215,21 @@ class PhotosFragment : Fragment() {
 
     private fun insertUriToListView(resultUri: Uri) {
 
+        val mainAct = context as MainActivity
+
         if (croppingPosition == -1) {
 
             imageUriList.add(resultUri)
 
             var imageOrder = ImageOrder(resultUri, resultUri.toString())
 
-            order.imageOrderList.add(imageOrder)
+            mainAct.order.imageOrderList.add(imageOrder)
         }
 
         else {
             imageUriList[croppingPosition]  = resultUri
 
-            order.imageOrderList[croppingPosition].imageUri = resultUri
+            mainAct.order.imageOrderList[croppingPosition].imageUri = resultUri
 
             croppingPosition                = -1
 

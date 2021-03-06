@@ -3,7 +3,12 @@ package com.adoishe.photolier
 import android.app.Activity
 import android.content.ContentValues
 import android.net.Uri
+import android.os.Bundle
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
+import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -14,14 +19,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Order {
-
-    private             val uuid            : String                    = UUID.randomUUID().toString()
-                        var name            : String                    = UUID.randomUUID().toString()
+                        var context         : Activity
+    private             var uuid            : String                    = UUID.randomUUID().toString()
+                        var name            : String                    = ""
                         var imageUriList    : MutableList<Uri>          = ArrayList()
     private             var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                         var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
                         val auth                                        = FirebaseAuth.getInstance()
-                        var context         : Activity
+
                         var result                                      = String()
                         var orderStatus     : String                    = ""
                         var orderSendResult : String                    = ""
@@ -30,11 +35,19 @@ class Order {
 
         this.context = context
 
+        this.name = "Пусто" //this.    .getString(R.string.order)
+
     }
 
     fun getUuid(): String {
 
         return uuid
+
+    }
+
+    fun setUuid(uuid: String) {
+
+        this.uuid = uuid
     }
 
     fun getByteArrayList() : MutableList<ByteArray>{
@@ -129,43 +142,75 @@ class Order {
 
     fun send (){
 
+        //this = Order(context)
+        val progressBar             = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
+
+        progressBar.visibility  = ProgressBar.VISIBLE
+
+
         Thread {
 
             (context as MainActivity).log.add("send thread create")
 
             byteArrayList               = getByteArrayList()
             var cv                      = getCvForWs()
-            var jsonObject              = getJSONForWs()
+            val jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
             val outputJson              = jsonObject.toString()
 
             (context as MainActivity).log.add("json to send = $outputJson")
 
-            var cvArrayList             = getJSONArrayList()
+            val cvArrayList             = getJSONArrayList()
             val jsoCvArrayList: String  = cvArrayList.toString()
-            var sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+            val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
 
             (context as MainActivity).log.add("answer json = $sendResult")
 
             try {
 
-                var resultJSSONObj = JSONObject(sendResult)
-
-                result = resultJSSONObj.toString()
+                val resultJSSONObj  = JSONObject(sendResult)
+                    result          = resultJSSONObj.toString()
 
                 (context as MainActivity).log.add("result = $result")
 
-                orderSendResult = resultJSSONObj.getJSONObject("mValues").getString("orderName")
+                name            = resultJSSONObj.getJSONObject("mValues").getString("orderName")
+                orderStatus     = resultJSSONObj.getJSONObject("mValues").getString("orderStatus")
+                uuid            = resultJSSONObj.getJSONObject("mValues").getString("orderUuid")
+                orderSendResult = name
 
             }
             catch (e: Exception) {
 
                 // тууут ошибка загрузки заказа
-                result     = sendResult
+                result = sendResult
 
                 (context as MainActivity).log.add("result = $result")
             }
-        }.start()
 
+                progressBar.visibility  = ProgressBar.INVISIBLE
+
+            val bundle = Bundle()
+
+            bundle.putBoolean("sendorder"   , true)
+            bundle.putString("orderName"    , name)
+            bundle.putString("orderStatus"  , orderStatus)
+            bundle.putString("orderUuid"    , uuid)
+
+            (context as MainActivity).findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+
+/*            val main                    = (context as MainActivity)
+            val navFragment             = main.supportFragmentManager.findFragmentById(R.id.fragment)
+            val orderFragment            = main.supportFragmentManager.findFragmentById(R.id.orderFragment)
+
+            (orderFragment as OrderFragment).fill()
+
+            navFragment?.let { navFragment ->
+                navFragment.childFragmentManager.primaryNavigationFragment?.let {fragment->
+                    (fragment as OrderFragment).fill()
+                }
+            }
+
+ */
+        }.start()
     }
 }

@@ -19,4 +19,6 @@
     <string name="phoneNumber">Номер телефона</string>
     <string name="uid">Идентификатор</string>
     <string name="order">Заказ</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>
