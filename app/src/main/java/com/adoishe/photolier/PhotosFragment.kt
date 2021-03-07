@@ -56,18 +56,14 @@ class PhotosFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val root =  inflater.inflate(R.layout.fragment_photos, container, false)
-
-
+        val root    = inflater.inflate(R.layout.fragment_photos, container, false)
         val mainAct = context as MainActivity
-                //mainAct.order = Order(requireActivity())
 
         if(mainAct.auth.currentUser != null){
             //If user is signed in
             this.requireActivity().title  = resources.getString(R.string.app_name)  + ' '  + resources.getString(
                     R.string.ffor
             )  + ' ' + (context as MainActivity).auth.currentUser!!.displayName as CharSequence
-//                startActivity(Next Activity)
         }
 
         val loadButton = root.findViewById<Button>(R.id.buttonLoadPicture)
@@ -84,12 +80,6 @@ class PhotosFragment : Fragment() {
 
         loadButton.setOnClickListener{
 
-        //    val intent = Intent()
-        //    intent.type = "image/*"
-         //   intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-         //   intent.action = Intent.ACTION_GET_CONTENT
-          //  startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1)
-
             val intent  = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
 
@@ -98,20 +88,11 @@ class PhotosFragment : Fragment() {
             startActivityForResult(
                     Intent.createChooser(intent, resources.getString(R.string.selectPic)),
                     SELECT_PICTURES
-            ) //SELECT_PICTURES is simply a global int used to check the calling intent in onActivityResult
-
-
-            //      val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-
-       //     startActivityForResult(gallery, pickImage)
-
-          //  CropImage.activity(imageUri).start(this.requireActivity());
-        // CropImage.activity().start(requireContext(), this);
+            )
 
         }
 
         cropButton.setOnClickListener{
-
             CropImage.activity()
                 .setAllowRotation(true)
                 .setAspectRatio(3, 4)
@@ -119,7 +100,6 @@ class PhotosFragment : Fragment() {
                 .setActivityTitle(resources.getString(R.string.selectCrop))
                 .start(requireContext(), this)
         }
-
 
         sendButton.setOnClickListener{
 
@@ -130,11 +110,9 @@ class PhotosFragment : Fragment() {
                             .setPositiveButton(resources.getString(R.string.yes))
                             { dialog, id ->
 
-                                val main                    = (context as MainActivity)
+                                val main = (context as MainActivity)
 
                                 main.order.send()
-
-
 
                             }
                             .setNegativeButton(resources.getString(R.string.no))
@@ -207,16 +185,13 @@ class PhotosFragment : Fragment() {
  */
 
 
-
-
-
         return root
     }
 
     private fun insertUriToListView(resultUri: Uri) {
 
         val mainAct = context as MainActivity
-
+// если добавление нового фото
         if (croppingPosition == -1) {
 
             imageUriList.add(resultUri)
@@ -225,14 +200,12 @@ class PhotosFragment : Fragment() {
 
             mainAct.order.imageOrderList.add(imageOrder)
         }
-
+// если редактирование ранее добавленного
         else {
-            imageUriList[croppingPosition]  = resultUri
 
+            imageUriList[croppingPosition]                          = resultUri
             mainAct.order.imageOrderList[croppingPosition].imageUri = resultUri
-
-            croppingPosition                = -1
-
+            croppingPosition                                        = -1
         }
 
         adapter             = PhotoListAdapter(this.requireActivity(), imageUriList)
@@ -245,7 +218,7 @@ class PhotosFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-
+// если фото получено из редактора
             val result = CropImage.getActivityResult(data)
 
             if (resultCode == AppCompatActivity.RESULT_OK) {
@@ -256,7 +229,7 @@ class PhotosFragment : Fragment() {
                 val error = result!!.error
             }
         } else
-
+// если фото получено из галереи
             if(requestCode == SELECT_PICTURES) {
                 if(resultCode == RESULT_OK) {
 
@@ -268,7 +241,7 @@ class PhotosFragment : Fragment() {
 
                     }
                     else  {
-
+// если было выбрано много фото
                         val count = data.clipData!!.itemCount //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
 
                         for( i in 0 until count)

@@ -22,10 +22,9 @@ private const val ARG_PARAM2 = "param2"
  */
 class OrderFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    var sendorder: Boolean? = null
+    private var param1      : String? = null
+    private var param2      : String? = null
+            var sendorder   : Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +48,7 @@ class OrderFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
 
-        val root        =  inflater.inflate(R.layout.fragment_order, container, false)
+        val root        = inflater.inflate(R.layout.fragment_order, container, false)
             sendorder   = arguments?.getBoolean("sendorder")
 
         when {
@@ -60,7 +59,6 @@ class OrderFragment : Fragment() {
                     main.order  = Order(main)
             }
         }
-
         return root
     }
 
