@@ -33,6 +33,17 @@
 
 
         <Button
+            android:id="@+id/sync"
+            android:layout_width="124dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="sync"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/auth"
+            android:visibility="visible"/>
+
+        <Button
             android:id="@+id/auth"
             android:layout_width="124dp"
             android:layout_height="wrap_content"

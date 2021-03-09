@@ -24,6 +24,7 @@ class RootFragment : Fragment() {
         val ordersButton    : Button    = root.findViewById(R.id.buttonGetOrders)
         val logView                     = root.findViewById<EditText>(R.id.log)
         val atuhButton                  = root.findViewById<Button>(R.id.auth)
+        val syncButton                  = root.findViewById<Button>(R.id.sync)
 
         goToPhotoButton.setOnClickListener{
 
@@ -43,6 +44,10 @@ class RootFragment : Fragment() {
         atuhButton.setOnClickListener{
 
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
+        }
+        syncButton.setOnClickListener{
+
+            ImageFormat.sync(requireContext())
         }
         return root
     }

@@ -126,8 +126,8 @@ class Order {
 
     private fun getJSONForWs() : JSONObject{
 
-        var json = JSONObject()
-        var result = JSONObject()
+        val json = JSONObject()
+        val result = JSONObject()
 
         json.put("orderUid"     , this.uuid)
         json.put("displayName"  , (context as MainActivity).auth.currentUser?.displayName.toString())
@@ -151,7 +151,6 @@ class Order {
             (context as MainActivity).log.add("send thread create")
 
             byteArrayList               = getByteArrayList()
-            var cv                      = getCvForWs()
             val jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
             val outputJson              = jsonObject.toString()
