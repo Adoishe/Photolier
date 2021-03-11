@@ -25,6 +25,7 @@ class Order {
                         var imageUriList    : MutableList<Uri>          = ArrayList()
     private             var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                         var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
+
                         val auth                                        = FirebaseAuth.getInstance()
 
                         var result                                      = String()

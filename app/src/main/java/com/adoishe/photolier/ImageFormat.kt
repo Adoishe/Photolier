@@ -1,6 +1,9 @@
 package com.adoishe.photolier
 
 import android.content.Context
+import android.provider.ContactsContract
+import android.util.Log
+import com.google.firebase.FirebaseError
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -8,7 +11,7 @@ import com.google.firebase.database.ValueEventListener
 import org.json.JSONObject
 
 
-class ImageFormat
+ class ImageFormat
 {
     var width : Int = 0
     var height : Int = 0
@@ -50,88 +53,40 @@ class ImageFormat
 
         imageFormatsFire.push()
 
-
-
     }
-
-
-
 
     companion object{
 
         @JvmStatic
         fun getHashes(context: Context) {
 
-            var collection = FirebaseDatabase.getInstance().getReference("ImageFormats")
+           // var collection = FirebaseDatabase.getInstance().getReference("ImageFormats")
 //            var query = collection.orderByChild("id").
 
+            val ref = FirebaseDatabase.getInstance().reference.child("ImageFormats")
 
-        }
-        @JvmStatic
-        fun sync(context: Context) :JSONObject {
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
 
-            var hashArrayList0 = ImageFormat.getHashes(context)
-
-            val hashArrayList   : MutableList<Int>  = ArrayList()
-
-
-
-
-            hashArrayList.add(1)
-            hashArrayList.add(2)
-            hashArrayList.add(3)
-
-
-
-            val dl                                  = DataLoader()
-            val sendResult                          = dl.syncFormats(hashArrayList, context)
-            var resultJSSONObj                      = JSONObject()
-            var succ: Boolean = (sendResult != "")
-
-            when (succ) {
-
-                true -> {
-                    resultJSSONObj = JSONObject(sendResult)
-
-                    when (resultJSSONObj.getBoolean("succ")) {
-                        true -> {
-
-                            var resArray = resultJSSONObj.getJSONArray("resArray")
-/*
-                            "Код": "000000018",
-                            "Наименование": "09 х 13",
-                            "ПометкаУдаления": false,
-                            "Высота": 9,
-                            "Ширина": 13,
-                            "uid": "7a3e31ea-77b7-11eb-b993-60a44c65164b"
-                                constructor (width : Int, height : Int , uid : String)
-
- */
-
-                            for (i: Int in 0 until resArray.length()) {
-
-                                val item = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
-                                val height = item.getInt("height")
-                                val width = item.getInt("width")
-                                val hash = item.getInt("hash")
-                                val uid = item.getString("uid")
-                                val name = item.getString("name")
-                                val imageFormat = ImageFormat(width, height, uid, name, hash)
-
-                                imageFormat.save()
-                            }
-
-                            //renewImageFormats()
-                        }
+                override fun onDataChange(p0: DataSnapshot) {
+                    p0.children.forEach {
+                        Log.d("FirebaseActivity", it.toString())
                     }
                 }
-            }
 
-            return resultJSSONObj
+                override fun onCancelled(p0: DatabaseError) {
+
+                }
+            })
+        }
+
+        @JvmStatic
+        fun sync(context: Context) :JSONObject {
+           return DataLoader.sync(context, "Справочник.Форматы")
         }
 
         @JvmStatic
         var syncSucc = false
         var res = ""
+        var imageFormats    : MutableList<ImageFormat>  = ArrayList()
     }
 }

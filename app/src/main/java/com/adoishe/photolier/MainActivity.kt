@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     var order: Order  = Order(this)
 
+
     val providers = arrayListOf(
             //   AuthUI.IdpConfig.EmailBuilder().build(),
             //   AuthUI.IdpConfig.PhoneBuilder().build(),

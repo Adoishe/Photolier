@@ -48,6 +48,7 @@ class RootFragment : Fragment() {
         syncButton.setOnClickListener{
 
             ImageFormat.sync(requireContext())
+            MaterialPhoto.sync(requireContext())
         }
         return root
     }
