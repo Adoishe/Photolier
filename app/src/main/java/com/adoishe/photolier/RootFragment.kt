@@ -26,6 +26,9 @@ class RootFragment : Fragment() {
         val atuhButton                  = root.findViewById<Button>(R.id.auth)
         val syncButton                  = root.findViewById<Button>(R.id.sync)
 
+        ImageFormat.sync(requireContext())
+        MaterialPhoto.sync(requireContext())
+
         goToPhotoButton.setOnClickListener{
 
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_photosFragment)
@@ -47,8 +50,8 @@ class RootFragment : Fragment() {
         }
         syncButton.setOnClickListener{
 
-            ImageFormat.sync(requireContext())
-            MaterialPhoto.sync(requireContext())
+            var jImageFormat = ImageFormat.sync(requireContext())
+            var jMaterialPhoto = MaterialPhoto.sync(requireContext())
         }
         return root
     }

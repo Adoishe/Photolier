@@ -2,6 +2,7 @@ package com.adoishe.photolier
 
 //import com.theartofdev.edmodo.cropper.CropImage
 import android.app.Activity.RESULT_OK
+import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +16,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
+import com.google.android.material.tabs.TabLayout
+import org.json.JSONArray
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,10 +40,10 @@ class PhotosFragment : Fragment() {
     private             var imageUri        : Uri?              = null
     private lateinit    var listView        : ListView
     //private lateinit    var recyclerView     : RecyclerView
-    private lateinit    var adapter         : PhotoListAdapter
-    private             var croppingPosition: Int = -1
-    //lateinit           var order: Order
 
+    private lateinit    var adapter                 : PhotoListAdapter
+    private             var croppingPosition        : Int = -1
+                        var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -49,6 +52,27 @@ class PhotosFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+        }
+    }
+
+    fun getFormatsByMaterialThread(materialUid :String): Thread{
+
+        return Thread{
+            //viewPager.currentItem = tab.position
+            var dl = DataLoader()
+            var res = dl.getFormatsByMaterial(materialUid)
+
+            var resJarray = JSONArray(res)
+
+            availableImageFormats  = ArrayList()
+
+            for (j in 0 until resJarray.length()){
+
+                availableImageFormats
+                    .add(ImageFormat.imageFormats.find { imageFormat -> imageFormat.uid == resJarray.getString(j) })
+            }
+            val progressBar = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
+            progressBar.visibility = ProgressBar.INVISIBLE
         }
     }
 
@@ -71,6 +95,89 @@ class PhotosFragment : Fragment() {
         val sendButton = root.findViewById<Button>(R.id.buttonSendPictures)
             //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         val resultTextView = root.findViewById<TextView>(R.id.textViewResult)
+        var tabLayout = root.findViewById<TabLayout>(R.id.tabLayout)
+        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+
+
+        MaterialPhoto.materialsPhoto.forEach {
+
+            var matTab = tabLayout.newTab()
+
+            matTab.id = it.hash
+            matTab.tag = it.uid
+            matTab.text = it.name
+
+            tabLayout.addTab(matTab);
+        }
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+
+                fun getListener() : AdapterView.OnItemSelectedListener{
+                    return object : AdapterView.OnItemSelectedListener {
+
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            itemSelected: View?,
+                            selectedItemPosition: Int,
+                            selectedId: Long
+                        ) {
+
+
+                            val toast = Toast.makeText( context
+                                ,"Ваш выбор: $selectedItemPosition"
+                                , Toast.LENGTH_SHORT)
+                            toast.show()
+
+
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                            TODO("Not yet implemented")
+                        }
+                    }
+                    fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
+
+                var getFormatsByMaterialThread = getFormatsByMaterialThread(tab.tag.toString())
+
+                val progressBar = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
+                progressBar.visibility = ProgressBar.VISIBLE
+                getFormatsByMaterialThread.start()
+                getFormatsByMaterialThread.join()
+
+                    // resultTextView.text = availableImageFormats.toString()
+
+
+                val spinnerFormat : Spinner = requireActivity().findViewById(R.id.spinnerFormat)
+
+
+
+                val arrNames : Array<String> = Array(availableImageFormats.size) { index ->
+                    availableImageFormats[index]!!.name
+
+                }
+
+
+                val adapter : ArrayAdapter<String> = ArrayAdapter<String>(requireContext()
+                    , R.layout.support_simple_spinner_dropdown_item
+                    , arrNames)
+
+                adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+
+
+                spinnerFormat.adapter = adapter
+                spinnerFormat.post {
+                    spinnerFormat.onItemSelectedListener =  getListener()
+                }
+
+
+
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+
 
        // linearLayout   = root.findViewById(R.id.linearLayout)
         listView        = root.findViewById(R.id.list) //ListView(context)
@@ -144,6 +251,9 @@ class PhotosFragment : Fragment() {
             adapter.notifyDataSetChanged()
 
         }
+
+
+
 
 /*
         recyclerView.addOnItemTouchListener(

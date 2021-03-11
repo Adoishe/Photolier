@@ -49,8 +49,7 @@ class PhotoListAdapter(private val context: Activity, private val imageIdList: M
         val rowView                 = inflater.inflate(R.layout.photo_list_layout, null)
         val imageView : ImageView   = rowView.findViewById(R.id.image_item)
         val spinnerFormat : Spinner = rowView.findViewById(R.id.spinnerFormat)
-
-        var formatsArrCV        = ArrayList<ContentValues>()
+        var formatsArrCV            = ArrayList<ContentValues>()
 
         var cv = ContentValues()
 

@@ -184,6 +184,19 @@ class DataLoader () {
         return res
     }
 
+    fun getFormatsByMaterial(materialUid : String) : String{
+
+        val request = SoapObject(NAMESPACE, GET_FORMATSBYMATERIAL_METHOD_NAME)
+        var res = ""
+
+        request.addProperty("materialUid", materialUid )
+
+        res = sendSoapObject(request, GET_FORMATSBYMATERIAL_SOAP_ACTION)
+
+        return res
+
+    }
+
     companion object {
         private const val NAMESPACE = "http://www.w3.org/2001/XMLSchema"
 
@@ -203,6 +216,10 @@ class DataLoader () {
         private const val GET_MATERIALS_SOAP_ACTION =
             "http://www.w3.org/2001/XMLSchema#App:getFormaats"
         private const val GET_MATERIALS_METHOD_NAME = "getFormaats"
+
+        private const val GET_FORMATSBYMATERIAL_SOAP_ACTION =
+            "http://www.w3.org/2001/XMLSchema#App:getFormatsByMaterial"
+        private const val GET_FORMATSBYMATERIAL_METHOD_NAME = "getFormatsByMaterial"
 
         @JvmStatic
         fun fillFormats(resArray: JSONArray) {
@@ -271,7 +288,20 @@ class DataLoader () {
             when (succ) {
                 true -> {
 
-                    resultJSSONObj = JSONObject(sendResult)
+                    try {
+                        resultJSSONObj = JSONObject(sendResult)
+                    }
+                    catch (e: Exception) {
+
+                        e.printStackTrace()
+
+                        res = sendResult + "\n" + e.toString()
+
+                        var jObject = JSONObject()
+                        jObject.put("res", res)
+
+                        return jObject
+                    }
 
                     when (resultJSSONObj.getBoolean("succ")) {
                         true -> {
@@ -292,7 +322,6 @@ class DataLoader () {
 
                                 }
                             }
-
                         }
                     }
                 }
