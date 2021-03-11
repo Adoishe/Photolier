@@ -49,9 +49,9 @@ class DataLoader () {
                     }
                 }
 
-                val request = SoapObject(NAMESPACE, method)
-                val json2send = JSONObject()
-                val hashArray = Gson().toJson(hashArrayList)
+                val request     = SoapObject(NAMESPACE, method)
+                val json2send   = JSONObject()
+                val hashArray   = Gson().toJson(hashArrayList)
 
                 json2send.put("hashArray"       , hashArray)
                 json2send.put("MetaDataName"    , sourceName)
@@ -129,15 +129,15 @@ class DataLoader () {
 
         envelope.setOutputSoapObject(soapObject)
 
-        val androidHttpTransport = HttpTransportSE(URL)
-        androidHttpTransport.debug = true
-        var res = ""
+        val androidHttpTransport    = HttpTransportSE(URL)
+        androidHttpTransport.debug  = true
+        var res                     = ""
 
         try {
 
             val headerList: MutableList<HeaderProperty> = ArrayList()
-            val basicAuthName: String = "web"
-            val basicAuthPass: String = "web"
+            val basicAuthName: String                   = "web"
+            val basicAuthPass: String                   = "web"
 
             if (basicAuthName != null && basicAuthPass != null) {
 
@@ -147,7 +147,9 @@ class DataLoader () {
             }
 
             headerList.add(HeaderProperty("Connection", "Close"))
+            //----------------------------------------------
             androidHttpTransport.call(action, envelope, headerList)
+            //----------------------------------------------
 
             try {
 
@@ -182,11 +184,6 @@ class DataLoader () {
         return res
     }
 
-
-
-
-
-
     companion object {
         private const val NAMESPACE = "http://www.w3.org/2001/XMLSchema"
 
@@ -204,8 +201,8 @@ class DataLoader () {
         private const val GET_FORMATS_METHOD_NAME = "getFormaats"
 
         private const val GET_MATERIALS_SOAP_ACTION =
-            "http://www.w3.org/2001/XMLSchema#App:getMaterials"
-        private const val GET_MATERIALS_METHOD_NAME = "getMaterials"
+            "http://www.w3.org/2001/XMLSchema#App:getFormaats"
+        private const val GET_MATERIALS_METHOD_NAME = "getFormaats"
 
         @JvmStatic
         fun fillFormats(resArray: JSONArray) {
