@@ -31,7 +31,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonLoadPicture"/>
 
-
+    <Button
+        android:id="@+id/buttonAddOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="@string/add_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCropPicture"/>
 
     <Button
         android:id="@+id/buttonSendPictures"
@@ -40,7 +49,7 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="@string/send_photos"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLoadPicture"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAddOrder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

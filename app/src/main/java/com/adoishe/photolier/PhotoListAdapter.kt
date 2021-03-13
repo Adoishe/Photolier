@@ -81,10 +81,6 @@ class PhotoListAdapter(private val context: Activity, private val imageIdList: M
         }
 
 
-
-
-
-
 // каждый четный красим
         view?.setBackgroundColor(if ((imageId % 2)==0) Color.RED else Color.GREEN)
 

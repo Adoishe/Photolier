@@ -111,5 +111,6 @@
     <string name="order">Order</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="add_order">Add to order</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

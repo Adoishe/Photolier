@@ -6,18 +6,21 @@ package com.adoishe.photolier
 
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import org.json.JSONArray
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -35,42 +38,73 @@ fun showSnackbar(id : Int){
 
 class MainActivity : AppCompatActivity() {
 
-    var dbSq: DatabaseHelper= DatabaseHelper(this);
-
-    val auth = FirebaseAuth.getInstance()
-
-    internal var output: File? = null
-
-    private val pickImage = 100
-    private var imageUri: Uri? = null
-    lateinit var imageView: ImageView
-
-    private val FixBitmap: Bitmap? = null
-    var thePicBitmap: Bitmap? = null
-    var ImagePath = "image_path"
-    var ImagePath_1: String? = null
-    private val TEMP_PHOTO_FILE = "temporary_holder.jpg"
-    private val REQ_CODE_PICK_IMAGE = 0
-    private val SELECT_PHOTO = 100
-    private val CAMERA_REQUEST = 101
-
-    var order: Order  = Order(this)
-
-
-    val providers = arrayListOf(
-            //   AuthUI.IdpConfig.EmailBuilder().build(),
-            //   AuthUI.IdpConfig.PhoneBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build()
-            //    AuthUI.IdpConfig.FacebookBuilder().build(),
-            //    AuthUI.IdpConfig.TwitterBuilder().build()
-    )
+                var dbSq                : DatabaseHelper    = DatabaseHelper(this);
+                val auth                                    = FirebaseAuth.getInstance()
+                var session             : String            = UUID.randomUUID().toString()
+    internal    var output              : File?             = null
+    private     val pickImage                               = 100
+    private     var imageUri            : Uri?              = null
+    lateinit    var imageView           : ImageView
+    private     val FixBitmap           : Bitmap?           = null
+                var thePicBitmap        : Bitmap?           = null
+                var ImagePath                               = "image_path"
+                var ImagePath_1         : String?           = null
+    private     val TEMP_PHOTO_FILE                         = "temporary_holder.jpg"
+    private     val REQ_CODE_PICK_IMAGE                     = 0
+    private     val SELECT_PHOTO                            = 100
+    private     val CAMERA_REQUEST                          = 101
+                var order               : Order             = Order(this)
+                val providers                               = arrayListOf(
+                                                            //   AuthUI.IdpConfig.EmailBuilder().build(),
+                                                            //   AuthUI.IdpConfig.PhoneBuilder().build(),
+                                                            AuthUI.IdpConfig.GoogleBuilder().build()
+                                                            //    AuthUI.IdpConfig.FacebookBuilder().build(),
+                                                            //    AuthUI.IdpConfig.TwitterBuilder().build()
+                                                            )
 
 
-    var imageUriList: MutableList<Uri> = ArrayList()
-    var log : MutableList<String> = ArrayList()
+                var imageUriList        : MutableList<Uri>      = ArrayList()
+                var log                 : MutableList<String>   = ArrayList()
+    var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
+
+    private fun getFormatsByMaterialThread(materialUid :String): Thread{
+
+        return Thread{
+            //viewPager.currentItem = tab.position
+            val dl                  = DataLoader()
+            val res                 = dl.getFormatsByMaterial(materialUid)
+            val resJarray           = JSONArray(res)
+            availableImageFormats   = ArrayList()
+
+            log.add("getFormatsByMaterialThread = $res")
+
+            for (j in 0 until resJarray.length()){
 
 
-    fun authenticate(){
+
+                val availableImageFormat = ImageFormat.imageFormats.find { imageFormat ->
+                    imageFormat.uid == resJarray.getString(j)
+                }
+
+                when (availableImageFormat) {
+                    null ->{}
+                    else ->{
+                        availableImageFormats.add(availableImageFormat)
+                    }
+                }
+
+
+            }
+
+            // resultTextView.text = availableImageFormats.toString()
+            //val spinnerFormat   : Spinner       = requireActivity().findViewById(R.id.spinnerFormat)
+
+            val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+            progressBar.visibility = ProgressBar.INVISIBLE
+        }
+    }
+
+    private fun authenticate(){
 
         startActivityForResult(
                 AuthUI.getInstance()
@@ -100,6 +134,16 @@ class MainActivity : AppCompatActivity() {
            // authenticate()
         }
 
+        var progressBar = findViewById<ProgressBar>(R.id.progressBar)
+
+
+        progressBar.visibility = ProgressBar.VISIBLE
+        ImageFormat.sync(this)
+    //    log.add("ImageFormat = ")
+        MaterialPhoto.sync(this)
+      //  log.add("MaterialPhoto = ")
+        progressBar.visibility = ProgressBar.INVISIBLE
+
         val bottomNavigationView = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -114,7 +158,28 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.action_dial -> {
 
-                    findNavController(R.id.fragment).navigate(R.id.photosFragment)
+
+                    when (MaterialPhoto.materialsPhoto.size){
+                        0->{
+
+                        }
+                        else -> {
+
+                            val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
+                            val progressBar                 = findViewById<ProgressBar>(R.id.progressBar)
+
+                            progressBar.visibility          = ProgressBar.VISIBLE
+
+                            getFormatsByMaterialThread.start()
+
+                            getFormatsByMaterialThread.join()
+
+                            findNavController(R.id.fragment).navigate(R.id.photosFragment)
+
+
+                        }
+                    }
+
 
                 }
                 R.id.action_mail -> {

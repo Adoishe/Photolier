@@ -19,15 +19,15 @@ class RootFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val root                        =  inflater.inflate(R.layout.fragment_root, container, false)
+        val root                        = inflater.inflate(R.layout.fragment_root, container, false)
         val goToPhotoButton : Button    = root.findViewById(R.id.goToPhotobutton)
         val ordersButton    : Button    = root.findViewById(R.id.buttonGetOrders)
         val logView                     = root.findViewById<EditText>(R.id.log)
         val atuhButton                  = root.findViewById<Button>(R.id.auth)
         val syncButton                  = root.findViewById<Button>(R.id.sync)
 
-        ImageFormat.sync(requireContext())
-        MaterialPhoto.sync(requireContext())
+        //ImageFormat.sync(requireContext())
+        //MaterialPhoto.sync(requireContext())
 
         goToPhotoButton.setOnClickListener{
 

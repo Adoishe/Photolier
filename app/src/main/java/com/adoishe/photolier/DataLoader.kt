@@ -147,17 +147,21 @@ class DataLoader () {
             }
 
             headerList.add(HeaderProperty("Connection", "Close"))
-            //----------------------------------------------
-            androidHttpTransport.call(action, envelope, headerList)
-            //----------------------------------------------
+
 
             try {
+
+                //----------------------------------------------
+                androidHttpTransport.call(action, envelope, headerList)
+                //----------------------------------------------
 
                 res = (envelope.bodyIn as SoapObject).getPropertyAsString(0)
 
             } catch (e: Exception) {
 
-                res = (envelope.bodyIn as SoapFault).faultstring
+                e.printStackTrace()
+
+                res = (envelope.bodyIn as SoapFault).faultstring + "\n" + e.toString()
             }
 
             return res
@@ -284,6 +288,20 @@ class DataLoader () {
             val sendResult = dl.syncFormats(hashArrayList, context, sourceName)
             var resultJSSONObj = JSONObject()
             var succ: Boolean = (sendResult != "")
+
+
+            var c : Collection<String>
+
+            c = ArrayList()
+
+            c.add("java.io.IOException: unexpected end of stream on com.android.okhttp.Address")
+
+
+            when (sendResult.findAnyOf(c,ignoreCase = true)?.first){
+                0 -> {
+                    succ = false
+                }
+            }
 
             when (succ) {
                 true -> {
