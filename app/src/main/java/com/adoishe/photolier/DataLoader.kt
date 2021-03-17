@@ -279,6 +279,8 @@ class DataLoader () {
         fun sync(context: Context, sourceName: String): JSONObject {
 
             val hashArrayList: MutableList<Int> = ArrayList()
+            val progressBar             = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
+            progressBar.visibility  = ProgressBar.VISIBLE
 
             hashArrayList.add(1)
             hashArrayList.add(2)
@@ -289,6 +291,7 @@ class DataLoader () {
             var resultJSSONObj = JSONObject()
             var succ: Boolean = (sendResult != "")
 
+            progressBar.visibility  = ProgressBar.INVISIBLE
 
             var c : Collection<String>
 

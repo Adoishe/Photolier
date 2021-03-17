@@ -2,7 +2,6 @@ package com.adoishe.photolier
 
 //import com.theartofdev.edmodo.cropper.CropImage
 import android.app.Activity.RESULT_OK
-import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,8 +12,6 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
@@ -43,8 +40,8 @@ class PhotosFragment : Fragment() {
 
     private lateinit    var adapter                 : PhotoListAdapter
     private             var croppingPosition        : Int = -1
-   //                     var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
-    lateinit            var mainAct                : MainActivity
+                        var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
+    lateinit            var mainAct                 : MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -58,12 +55,38 @@ class PhotosFragment : Fragment() {
 
     }
 
-    fun blankOrderData(){
+    private fun blankOrderData(){
 
         imageUriList    = ArrayList()
         mainAct.order   = Order(mainAct)
 
         //mainAct.order.imageOrderList    = ArrayList()
+    }
+
+    private fun setQtyText(){
+
+        val photosInPack = requireView().findViewById<TextView>(R.id.textViewPhotosInPack)
+        val packsInOrder = requireView().findViewById<TextView>(R.id.textViewPacksInOrder)
+
+        val numPiP = mainAct.order.imageOrderList.size.toString()
+        val numPiO = Order.ordersArray.size.toString()
+
+
+        var orderContent : String = ""
+
+        Order.ordersArray.forEach { order ->
+
+            orderContent = orderContent + order.indexInPacket + "/" + order.countOfPacket + " " + order.imageFormat?.name + "::" + order.materialPhoto?.name + "\n"
+
+        }
+
+
+        val photosInPackText = resources.getString(R.string.photosInPack)
+        val packsInOrderText = resources.getString(R.string.packsInOrder)
+
+        photosInPack.text = numPiP +  photosInPackText
+        packsInOrder.text = orderContent
+
     }
 
     private fun getSpinnerListener() : AdapterView.OnItemSelectedListener{
@@ -87,10 +110,9 @@ class PhotosFragment : Fragment() {
     }
 
 
-
     fun fillSpinner(selectedItemPosition : Int) {
 
-        mainAct.order.imageFormat = mainAct.availableImageFormats[selectedItemPosition]
+        mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
 
         val toast = Toast.makeText( context
             ,"Ваш выбор: " + mainAct.order.imageFormat!!.name
@@ -106,8 +128,7 @@ class PhotosFragment : Fragment() {
 
         mainAct.order.materialPhoto     = currentMaterialPhoto
 
-
-        when (mainAct.availableImageFormats.size ) {
+        when (availableImageFormats.size ) {
             0-> {
 
               //  mainAct.log.add("ImageFormat.imageFormats = " + ImageFormat.imageFormats.size )
@@ -116,9 +137,8 @@ class PhotosFragment : Fragment() {
             }
         }
 
-
-        val arrNames        : Array<String> = Array(mainAct.availableImageFormats.size - 1) { index ->
-            mainAct.availableImageFormats[index]!!.name
+        val arrNames : Array<String> = Array(availableImageFormats.size - 1) { index ->
+            availableImageFormats[index]!!.name
         }
 
         val adapter : ArrayAdapter<String> = ArrayAdapter<String>(requireContext()
@@ -127,7 +147,7 @@ class PhotosFragment : Fragment() {
 
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
 
-        val spinnerFormat   : Spinner       = requireView().findViewById(R.id.spinnerFormat)
+        val spinnerFormat : Spinner = requireView().findViewById(R.id.spinnerFormat)
         spinnerFormat.adapter = adapter
 
         spinnerFormat.post {
@@ -135,10 +155,6 @@ class PhotosFragment : Fragment() {
         }
 
         fillSpinner(0)
-
-
-
-
     }
 
     override fun onCreateView(
@@ -167,11 +183,9 @@ class PhotosFragment : Fragment() {
 
         val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
         listView                = root.findViewById(R.id.list)
-        var tabLayout           = root.findViewById<TabLayout>(R.id.tabLayout)
+        val tabLayout           = root.findViewById<TabLayout>(R.id.tabLayout)
 
         tabLayout.tabGravity    = TabLayout.GRAVITY_FILL
-
-
 
         MaterialPhoto.materialsPhoto.forEach {
 
@@ -180,13 +194,10 @@ class PhotosFragment : Fragment() {
             matTab.tag  = it.uid
             matTab.text = it.name
 
-            tabLayout.addTab(matTab);
+            tabLayout.addTab(matTab)
         }
 
         mainAct.order.materialPhoto =  MaterialPhoto.materialsPhoto[0]
-
-
-
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
             {
@@ -203,10 +214,6 @@ class PhotosFragment : Fragment() {
                 }
             }
         )
-
-
-
-        // tabLayout.selectTab(tabLayout.getTabAt(0))
 
         loadButton.setOnClickListener{
 
@@ -238,8 +245,6 @@ class PhotosFragment : Fragment() {
                 .setCancelable(false)
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
 
-                    //val main = (context as MainActivity)
-                    //main.order.send()
                     Order.sendAll()
 
                 }
@@ -257,7 +262,11 @@ class PhotosFragment : Fragment() {
 
             Order.ordersArray.add(mainAct.order)
 
-            //blankOrderData()
+            Order.updateIndices()
+
+            blankOrderData()
+
+            setQtyText()
 
         }
 
@@ -272,7 +281,7 @@ class PhotosFragment : Fragment() {
                 .setActivityTitle(resources.getString(R.string.crop))
                 .start(requireContext(), this)
 
-            croppingPosition = i;
+            croppingPosition = i
 
             //imageUriList.removeAt(i)
 
@@ -327,18 +336,72 @@ class PhotosFragment : Fragment() {
     }
 
 
+    private fun getFormatsByMaterialThread(materialUid :String): Thread{
+
+        return Thread{
+            //viewPager.currentItem = tab.position
+            val dl                  = DataLoader()
+            val res                 = dl.getFormatsByMaterial(materialUid)
+            val resJarray           = JSONArray(res)
+            availableImageFormats   = ArrayList()
+
+            mainAct.log.add("getFormatsByMaterialThread = $res")
+
+            for (j in 0 until resJarray.length()){
+
+
+
+                val availableImageFormat = ImageFormat.imageFormats.find { imageFormat ->
+                    imageFormat.uid == resJarray.getString(j)
+                }
+
+                when (availableImageFormat) {
+                    null ->{}
+                    else ->{
+                        availableImageFormats.add(availableImageFormat)
+                    }
+                }
+            }
+            val progressBar = mainAct.findViewById<ProgressBar>(R.id.progressBar)
+            progressBar.visibility = ProgressBar.INVISIBLE
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var tabLayout  = requireView().findViewById<TabLayout>(R.id.tabLayout)
 
-        var tab0 = tabLayout.getTabAt(0)
+        when (MaterialPhoto.materialsPhoto.size){
+            0->{
+
+                val messsage = resources.getString(R.string.netTrouble)
+
+                mainAct.log.add(messsage + DataLoader.res)
+
+            }
+            else -> {
+
+                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
+                val progressBar                 = mainAct.findViewById<ProgressBar>(R.id.progressBar)
+
+                progressBar.visibility          = ProgressBar.VISIBLE
+
+                getFormatsByMaterialThread.start()
+
+                getFormatsByMaterialThread.join()
+
+            }
+        }
+
+
+        val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
+        val tab0        = tabLayout.getTabAt(0)
 
         tab0?.select()
 
         tab0?.let { afterTabselected(it) }
 
-
+        setQtyText()
 
     }
 
@@ -379,6 +442,8 @@ class PhotosFragment : Fragment() {
 
                 insertUriToListView(result!!.uri)
 
+                setQtyText()
+
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result!!.error
             }
@@ -387,11 +452,12 @@ class PhotosFragment : Fragment() {
             if(requestCode == SELECT_PICTURES) {
                 if(resultCode == RESULT_OK) {
                     if(data!!.clipData == null)
-                        if(data!!.data != null)
+                        if(data.data != null) {
 //----------------------------------------------------------------------------
                             insertUriToListView(data.data!!)
+                            setQtyText()
 //----------------------------------------------------------------------------
-
+                        }
                     else  {
 // если было выбрано много фото
                         val count = data.clipData!!.itemCount
@@ -400,6 +466,8 @@ class PhotosFragment : Fragment() {
 //----------------------------------------------------------------------------
                             insertUriToListView(data.clipData!!.getItemAt(i).uri)
 //----------------------------------------------------------------------------
+                        setQtyText()
+
                         //String imagePath = data.getData().getPath();
                         //do something with the image (save it to some directory or whatever you need to do with it here)
                     }//if(data!!.clipData == null)

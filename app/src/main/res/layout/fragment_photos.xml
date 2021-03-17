@@ -38,24 +38,42 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="@string/add_order"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonCropPicture"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCropPicture" />
+
+    <TextView
+        android:id="@+id/textViewPhotosInPack"
+        android:layout_width="wrap_content"
+        android:layout_height="@+id/buttonAddOrder"
+        android:layout_weight="0"
+        android:text="% phoros in pACK"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCropPicture"
+
+        app:layout_constraintStart_toEndOf="@+id/buttonAddOrder"/>
 
     <Button
         android:id="@+id/buttonSendPictures"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="@string/send_photos"
-        app:layout_constraintTop_toBottomOf="@+id/buttonAddOrder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/buttonAddOrder" />
 
+    <TextView
+        android:id="@+id/textViewPacksInOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="@+id/buttonAddOrder"
+        android:layout_weight="0"
+        android:text="% packs in order"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAddOrder"
 
-
-
+        app:layout_constraintStart_toEndOf="@+id/buttonSendPictures"/>
 
         <TextView
             android:id="@+id/textViewResult"

@@ -90,7 +90,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="crop">Crop</string>
-    <string name="selectPic">Select photo(s)</string>
+    <string name="selectPic">Select photo(s) to the pack</string>
     <string name="photos">Photos</string>
     <string name="printPhotos">Print photos</string>
     <string name="selectCrop">Select and crop photo</string>
@@ -102,7 +102,7 @@
     <string name="unknown_error">unknown_error</string>
     <string name="unknown_sign_in_response">unknown_sign_in_response</string>
     <string name="ffor">for</string>
-    <string name="send_photos">Send photos</string>
+    <string name="send_photos">Send order</string>
     <string name="get_orders">Sent orders</string>
     <string name="display_name">Name</string>
     <string name="email">E-mail</string>
@@ -111,6 +111,9 @@
     <string name="order">Order</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="add_order">Add to order</string>
+    <string name="add_order">Add pack  to order</string>
+    <string name="photosInPack">"  photos in pack"</string>
+    <string name="packsInOrder">"  packs in order"</string>
+    <string name="netTrouble">We\'ve got a link problem. Try later</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

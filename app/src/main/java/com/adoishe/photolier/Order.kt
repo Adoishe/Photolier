@@ -1,17 +1,10 @@
 package com.adoishe.photolier
 
 import android.app.Activity
-import android.content.ContentValues
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
 import androidx.navigation.findNavController
-import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kobjects.base64.Base64
@@ -30,6 +23,9 @@ class Order(var context: Activity) {
                         var result                                      = String()
                         var orderStatus     : String                    = ""
                         var orderSendResult : String                    = ""
+                        var indexInPacket    : Int                       = 0
+                        var countOfPacket    : Int                       = 0
+
 
     init {
         this.name       = "blank"
@@ -51,25 +47,25 @@ class Order(var context: Activity) {
 
         imageOrderList.forEach(){
 
-            var byteArray = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+            val byteArray = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            byteArrayList.add(byteArray!!)
+            byteArrayList.add(byteArray)
         }
 
         return byteArrayList
     }
-
+/*
     fun getCvArrayList() : MutableList<ContentValues>{
 
-        var cvArrayList    : MutableList<ContentValues>  = ArrayList()
+        val cvArrayList    : MutableList<ContentValues>  = ArrayList()
 
         imageOrderList.forEach(){
 
-            var cv          = ContentValues()
-            var byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+            val cv          = ContentValues()
+            val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
             cv.put("name", it.name)
-            cv.put("byteArray", Base64.encode(byteArray!!))
+            cv.put("byteArray", Base64.encode(byteArray))
 
             cvArrayList.add(cv)
 
@@ -78,20 +74,22 @@ class Order(var context: Activity) {
         return cvArrayList
     }
 
+ */
+
     private fun getJSONArrayList() : JSONArray{
 
       //  var cvArrayList    : MutableList<JSONObject>  = ArrayList()
-        var cvArrayList    =  JSONArray()
+        val cvArrayList    =  JSONArray()
 
         imageOrderList.forEach(){
 
-            var cv          = JSONObject()
-            var byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+            val cv          = JSONObject()
+            val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
             cv.put("name"       , it.name)
-            cv.put("byteArray"  , Base64.encode(byteArray!!))
+            cv.put("byteArray"  , Base64.encode(byteArray))
 
-            var result = JSONObject()
+            val result = JSONObject()
 
             result.put("mValues", cv)
 
@@ -102,9 +100,10 @@ class Order(var context: Activity) {
         return cvArrayList
     }
 
+    /*
     private fun getCvForWs() : ContentValues{
 
-        var cv = ContentValues()
+        val cv = ContentValues()
 
         (context as MainActivity).log.add("cv + orderuuid ="    + this.uuid)
         (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
@@ -121,6 +120,8 @@ class Order(var context: Activity) {
         return cv
     }
 
+     */
+
     private fun getJSONForWs() : JSONObject{
 
         val json    = JSONObject()
@@ -135,18 +136,16 @@ class Order(var context: Activity) {
         json.put("email"        , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"  , mainAct.auth.currentUser?.phoneNumber.toString())
         json.put("uid"          , mainAct.auth.currentUser?.uid.toString())
+        json.put("indexInPacket", this.indexInPacket)
+        json.put("countOfPacket", this.countOfPacket)
 
         result.put("mValues", json)
 
         return result
     }
 
-    fun send (){
-
-        val progressBar             = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
-            progressBar.visibility  = ProgressBar.VISIBLE
-
-        Thread {
+    private fun getSendThread (progressBar: ProgressBar) : Thread {
+        return Thread {
 
             val mainAct = context as MainActivity
 
@@ -169,7 +168,7 @@ class Order(var context: Activity) {
 
                 val resultJSSONObj  = JSONObject(sendResult)
                 val mValues         = resultJSSONObj.getJSONObject("mValues")
-                    result          = resultJSSONObj.toString()
+                result              = resultJSSONObj.toString()
 
                 mainAct.log.add("result = $result")
 
@@ -178,48 +177,70 @@ class Order(var context: Activity) {
                 uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
 
-            }
+                }
             catch (e: Exception) {
 
                 // тууут ошибка загрузки заказа
                 result = sendResult
 
                 mainAct.log.add("result = $result")
-            }
+                }
 
-                progressBar.visibility  = ProgressBar.INVISIBLE
+            progressBar.visibility  = ProgressBar.INVISIBLE
 
-            val bundle = Bundle()
+            when (this.indexInPacket == this.countOfPacket -1){
+            true ->{
 
-            bundle.putBoolean(  "sendorder"     , true)
-            bundle.putString(   "orderName"     , name)
-            bundle.putString(   "orderStatus"   , orderStatus)
-            bundle.putString(   "orderUuid"     , uuid)
+                 val bundle = Bundle()
 
-            mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+                 bundle.putBoolean(  "sendorder"     , true)
+                 bundle.putString(   "orderName"     , name)
+                 bundle.putString(   "orderStatus"   , orderStatus)
+                 bundle.putString(   "orderUuid"     , uuid)
 
-/*            val main                    = (context as MainActivity)
-            val navFragment             = main.supportFragmentManager.findFragmentById(R.id.fragment)
-            val orderFragment            = main.supportFragmentManager.findFragmentById(R.id.orderFragment)
+                 mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
-            (orderFragment as OrderFragment).fill()
-
-            navFragment?.let { navFragment ->
-                navFragment.childFragmentManager.primaryNavigationFragment?.let {fragment->
-                    (fragment as OrderFragment).fill()
                 }
             }
-
- */
-        }.start()
+        }
     }
+
+    fun send (){
+
+        when (imageOrderList.size){
+            0 -> {
+                // nothing
+                (context as MainActivity).log.add("nothing to send ")
+            }
+            else ->{
+
+                val progressBar         = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
+                progressBar.visibility  = ProgressBar.VISIBLE
+
+                getSendThread(progressBar).start()
+
+            }//else ->{
+        }//when (imageOrderList.size)
+    }//fun send (
 
     companion object {
 
         @JvmStatic
         fun sendAll(){
-            ordersArray.forEach {
-                it.send()
+
+            updateIndices()
+
+            ordersArray.forEach {  it.send()  }
+
+        }
+        @JvmStatic
+        fun updateIndices(){
+
+            ordersArray.forEach { currentOrder ->
+
+                currentOrder.indexInPacket = ordersArray.indexOf(currentOrder) + 1
+                currentOrder.countOfPacket = ordersArray.size
+
             }
         }
 

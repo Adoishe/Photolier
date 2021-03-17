@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
@@ -65,44 +66,9 @@ class MainActivity : AppCompatActivity() {
 
                 var imageUriList        : MutableList<Uri>      = ArrayList()
                 var log                 : MutableList<String>   = ArrayList()
-    var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
-
-    private fun getFormatsByMaterialThread(materialUid :String): Thread{
-
-        return Thread{
-            //viewPager.currentItem = tab.position
-            val dl                  = DataLoader()
-            val res                 = dl.getFormatsByMaterial(materialUid)
-            val resJarray           = JSONArray(res)
-            availableImageFormats   = ArrayList()
-
-            log.add("getFormatsByMaterialThread = $res")
-
-            for (j in 0 until resJarray.length()){
 
 
 
-                val availableImageFormat = ImageFormat.imageFormats.find { imageFormat ->
-                    imageFormat.uid == resJarray.getString(j)
-                }
-
-                when (availableImageFormat) {
-                    null ->{}
-                    else ->{
-                        availableImageFormats.add(availableImageFormat)
-                    }
-                }
-
-
-            }
-
-            // resultTextView.text = availableImageFormats.toString()
-            //val spinnerFormat   : Spinner       = requireActivity().findViewById(R.id.spinnerFormat)
-
-            val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-            progressBar.visibility = ProgressBar.INVISIBLE
-        }
-    }
 
     private fun authenticate(){
 
@@ -115,6 +81,26 @@ class MainActivity : AppCompatActivity() {
                         //    .setPrivacyPolicyUrl("link to app privacy policy")
                         .build(),
                 RC_SIGN_IN)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        var progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.visibility  = ProgressBar.VISIBLE
+
+        if(auth.currentUser == null){ //If user is signed in
+            //  startActivity(Next Activity)
+            authenticate()
+            //log.add(auth.currentUser!!.email.toString())
+        }
+        else {
+
+            // log.add("auth.currentUser == null")
+            // authenticate()
+        }
+
+        progressBar.visibility  = ProgressBar.INVISIBLE
 
     }
 
@@ -123,26 +109,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(auth.currentUser == null){ //If user is signed in
-        //  startActivity(Next Activity)
-            authenticate()
-        //log.add(auth.currentUser!!.email.toString())
-        }
-        else {
 
-           // log.add("auth.currentUser == null")
-           // authenticate()
-        }
-
-        var progressBar = findViewById<ProgressBar>(R.id.progressBar)
-
-
-        progressBar.visibility = ProgressBar.VISIBLE
-        ImageFormat.sync(this)
-    //    log.add("ImageFormat = ")
-        MaterialPhoto.sync(this)
-      //  log.add("MaterialPhoto = ")
-        progressBar.visibility = ProgressBar.INVISIBLE
 
         val bottomNavigationView = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
 
@@ -159,28 +126,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_dial -> {
 
 
-                    when (MaterialPhoto.materialsPhoto.size){
-                        0->{
 
-                        }
-                        else -> {
-
-                            val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
-                            val progressBar                 = findViewById<ProgressBar>(R.id.progressBar)
-
-                            progressBar.visibility          = ProgressBar.VISIBLE
-
-                            getFormatsByMaterialThread.start()
-
-                            getFormatsByMaterialThread.join()
-
-                            findNavController(R.id.fragment).navigate(R.id.photosFragment)
-
-
-                        }
-                    }
-
-
+                    findNavController(R.id.fragment).navigate(R.id.photosFragment)
                 }
                 R.id.action_mail -> {
 
@@ -193,6 +140,9 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+
+
 //        imageView = findViewById(R.id.imageView)
 
 /*

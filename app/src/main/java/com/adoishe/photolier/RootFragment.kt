@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -55,4 +56,20 @@ class RootFragment : Fragment() {
         }
         return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val progressBar = (requireContext() as MainActivity). findViewById<ProgressBar>(R.id.progressBar)
+        progressBar.visibility = ProgressBar.VISIBLE
+
+        ImageFormat.sync(requireContext() )
+        //    log.add("ImageFormat = ")
+        MaterialPhoto.sync(requireContext() )
+        //  log.add("MaterialPhoto = ")
+
+        progressBar.visibility = ProgressBar.INVISIBLE
+
+    }
+
 }
