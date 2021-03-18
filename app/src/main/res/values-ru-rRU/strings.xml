@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Photolier</string>
     <string name="crop">Обрезать</string>
-    <string name="selectPic">Добавить фото  в пачку</string>
+    <string name="selectPic">Добавить фото  в папку</string>
     <string name="photos">Фото</string>
     <string name="printPhotos">Печать фото</string>
     <string name="selectCrop">Выбрать и обрезать фото</string>
@@ -21,8 +21,8 @@
     <string name="order">Заказ</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="add_order">Добавить пачку в заказ</string>
-    <string name="photosInPack">"  фото в пачке"</string>
-    <string name="packsInOrder">"  пачек в заказе"</string>
+    <string name="add_order">Добавить папку в заказ</string>
+    <string name="photosInPack">"  фото в папке"</string>
+    <string name="packsInOrder">"  папок в заказе"</string>
     <string name="netTrouble">Проблемы со связью. Попробуйте позже</string>
 </resources>

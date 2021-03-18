@@ -428,6 +428,8 @@ class PhotosFragment : Fragment() {
         adapter             = PhotoListAdapter(this.requireActivity(), imageUriList)
         listView.adapter    = adapter
 
+        Utility.setListViewHeightBasedOnChildren(listView)
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -451,13 +453,14 @@ class PhotosFragment : Fragment() {
 // если фото получено из галереи
             if(requestCode == SELECT_PICTURES) {
                 if(resultCode == RESULT_OK) {
-                    if(data!!.clipData == null)
-                        if(data.data != null) {
+                    if(data!!.clipData == null) {
+                        if (data.data != null) {
 //----------------------------------------------------------------------------
                             insertUriToListView(data.data!!)
                             setQtyText()
 //----------------------------------------------------------------------------
                         }
+                    }
                     else  {
 // если было выбрано много фото
                         val count = data.clipData!!.itemCount

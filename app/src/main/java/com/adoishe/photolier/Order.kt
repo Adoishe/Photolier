@@ -12,20 +12,19 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Order(var context: Activity) {
-    private             var uuid            : String                    = UUID.randomUUID().toString()
-                        var session         : String                    = ""
-                        var name            : String                    = ""
-                        var imageFormat     : ImageFormat?              = null
-                        var materialPhoto   : MaterialPhoto?             = null
-                        var imageUriList    : MutableList<Uri>          = ArrayList()
-    private             var byteArrayList   : MutableList<ByteArray>    = ArrayList()
-                        var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
-                        var result                                      = String()
-                        var orderStatus     : String                    = ""
-                        var orderSendResult : String                    = ""
-                        var indexInPacket    : Int                       = 0
-                        var countOfPacket    : Int                       = 0
-
+    private     var uuid            : String                    = UUID.randomUUID().toString()
+                var session         : String                    = ""
+                var name            : String                    = ""
+                var imageFormat     : ImageFormat?              = null
+                var materialPhoto   : MaterialPhoto?             = null
+                var imageUriList    : MutableList<Uri>          = ArrayList()
+    private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
+                var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
+                var result                                      = String()
+                var orderStatus     : String                    = ""
+                var orderSendResult : String                    = ""
+                var indexInPacket    : Int                       = 0
+                var countOfPacket    : Int                       = 0
 
     init {
         this.name       = "blank"
@@ -86,15 +85,14 @@ class Order(var context: Activity) {
             val cv          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            cv.put("name"       , it.name)
-            cv.put("byteArray"  , Base64.encode(byteArray))
+            cv.put("name", it.name)
+            cv.put("byteArray", Base64.encode(byteArray))
 
             val result = JSONObject()
 
             result.put("mValues", cv)
 
             cvArrayList.put(result)
-
         }
 
         return cvArrayList
@@ -128,14 +126,14 @@ class Order(var context: Activity) {
         val result  = JSONObject()
         val mainAct = context as MainActivity
 
-        json.put("orderUid"     , this.uuid)
-        json.put("imageFormat"  , this.imageFormat?.uid)
+        json.put("orderUid", this.uuid)
+        json.put("imageFormat", this.imageFormat?.uid)
         json.put("materialPhoto", this.materialPhoto?.uid)
-        json.put("session"      , this.session)
-        json.put("displayName"  , mainAct.auth.currentUser?.displayName.toString())
-        json.put("email"        , mainAct.auth.currentUser?.email.toString())
-        json.put("phoneNumber"  , mainAct.auth.currentUser?.phoneNumber.toString())
-        json.put("uid"          , mainAct.auth.currentUser?.uid.toString())
+        json.put("session", this.session)
+        json.put("displayName", mainAct.auth.currentUser?.displayName.toString())
+        json.put("email", mainAct.auth.currentUser?.email.toString())
+        json.put("phoneNumber", mainAct.auth.currentUser?.phoneNumber.toString())
+        json.put("uid", mainAct.auth.currentUser?.uid.toString())
         json.put("indexInPacket", this.indexInPacket)
         json.put("countOfPacket", this.countOfPacket)
 
@@ -144,7 +142,7 @@ class Order(var context: Activity) {
         return result
     }
 
-    private fun getSendThread (progressBar: ProgressBar) : Thread {
+    private fun getSendThread(progressBar: ProgressBar) : Thread {
         return Thread {
 
             val mainAct = context as MainActivity
@@ -177,6 +175,7 @@ class Order(var context: Activity) {
                 uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
 
+                progressBar.progress
                 }
             catch (e: Exception) {
 
@@ -189,16 +188,16 @@ class Order(var context: Activity) {
             progressBar.visibility  = ProgressBar.INVISIBLE
 
             when (this.indexInPacket == this.countOfPacket -1){
-            true ->{
+                true -> {
 
-                 val bundle = Bundle()
+                    val bundle = Bundle()
 
-                 bundle.putBoolean(  "sendorder"     , true)
-                 bundle.putString(   "orderName"     , name)
-                 bundle.putString(   "orderStatus"   , orderStatus)
-                 bundle.putString(   "orderUuid"     , uuid)
+                    bundle.putBoolean("sendorder", true)
+                    bundle.putString("orderName", name)
+                    bundle.putString("orderStatus", orderStatus)
+                    bundle.putString("orderUuid", uuid)
 
-                 mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+                    mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                 }
             }
@@ -217,7 +216,16 @@ class Order(var context: Activity) {
                 val progressBar         = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
                 progressBar.visibility  = ProgressBar.VISIBLE
 
-                getSendThread(progressBar).start()
+
+
+
+
+                val sendThread = getSendThread(progressBar)
+
+                sendThread.start()
+                //sendThread.join()
+
+                //progressBar.visibility  = ProgressBar.INVISIBLE
 
             }//else ->{
         }//when (imageOrderList.size)
@@ -230,7 +238,25 @@ class Order(var context: Activity) {
 
             updateIndices()
 
-            ordersArray.forEach {  it.send()  }
+            //val pb = ProgressBar(ordersArray[0].context,
+              //      null,
+                //    android.R.attr.progressBarStyleHorizontal)
+
+            //pb.max = ordersArray.size
+
+            //pb.incrementProgressBy(1)
+
+            ///pb.progress = 0
+
+            ordersArray.forEach {
+
+                it.send()
+
+                //pb.progress += 1
+
+            }
+
+            //pb.visibility = ProgressBar.INVISIBLE
 
         }
         @JvmStatic
