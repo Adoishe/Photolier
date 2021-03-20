@@ -175,7 +175,7 @@ class Order(var context: Activity) {
                 uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
 
-                progressBar.progress
+                        //  progressBar.progress
                 }
             catch (e: Exception) {
 

@@ -2,6 +2,7 @@ package com.adoishe.photolier
 
 //import com.theartofdev.edmodo.cropper.CropImage
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
@@ -40,7 +43,6 @@ class PhotosFragment : Fragment() {
 
     private lateinit    var adapter                 : PhotoListAdapter
     private             var croppingPosition        : Int = -1
-                        var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
     lateinit            var mainAct                 : MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +53,6 @@ class PhotosFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
-
     }
 
     private fun blankOrderData(){
@@ -79,7 +79,6 @@ class PhotosFragment : Fragment() {
             orderContent = orderContent + order.indexInPacket + "/" + order.countOfPacket + " " + order.imageFormat?.name + "::" + order.materialPhoto?.name + "\n"
 
         }
-
 
         val photosInPackText = resources.getString(R.string.photosInPack)
         val packsInOrderText = resources.getString(R.string.packsInOrder)
@@ -120,7 +119,9 @@ class PhotosFragment : Fragment() {
         toast.show()
     }
 
-    fun afterTabselected(tab: TabLayout.Tab){
+
+
+    fun afterTabSelected(tab: TabLayout.Tab){
 
         val currentMaterialPhoto =  MaterialPhoto.materialsPhoto.find {
             it.uid == tab.tag.toString()
@@ -137,18 +138,9 @@ class PhotosFragment : Fragment() {
             }
         }
 
-        val arrNames : Array<String> = Array(availableImageFormats.size - 1) { index ->
-            availableImageFormats[index]!!.name
-        }
-
-        val adapter : ArrayAdapter<String> = ArrayAdapter<String>(requireContext()
-            , R.layout.support_simple_spinner_dropdown_item
-            ,  arrNames)
-
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-
-        val spinnerFormat : Spinner = requireView().findViewById(R.id.spinnerFormat)
-        spinnerFormat.adapter = adapter
+        val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
+        val spinnerAdapter      = getSpinnerFormatAdapter(requireContext())
+        spinnerFormat.adapter   = spinnerAdapter
 
         spinnerFormat.post {
             spinnerFormat.onItemSelectedListener =  getSpinnerListener()
@@ -175,6 +167,8 @@ class PhotosFragment : Fragment() {
             )  + ' ' + mainAct.auth.currentUser!!.displayName as CharSequence
         }
 
+
+
         val loadButton      = root.findViewById<Button>(R.id.buttonLoadPicture)
         val cropButton      = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton      = root.findViewById<Button>(R.id.buttonSendPictures)
@@ -184,6 +178,9 @@ class PhotosFragment : Fragment() {
         val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
         listView                = root.findViewById(R.id.list)
         val tabLayout           = root.findViewById<TabLayout>(R.id.tabLayout)
+
+
+
 
         tabLayout.tabGravity    = TabLayout.GRAVITY_FILL
 
@@ -203,7 +200,7 @@ class PhotosFragment : Fragment() {
             {
                 override fun onTabSelected(tab: TabLayout.Tab ) {
 
-                    afterTabselected(tab)
+                    afterTabSelected(tab)
 
                 }
                 override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -222,7 +219,7 @@ class PhotosFragment : Fragment() {
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
-            startActivityForResult(
+           startActivityForResult(
                     Intent.createChooser(intent, resources.getString(R.string.selectPic)),
                     SELECT_PICTURES
             )
@@ -284,8 +281,8 @@ class PhotosFragment : Fragment() {
             croppingPosition = i
 
             //imageUriList.removeAt(i)
-
-            adapter.notifyDataSetChanged()
+                    // Utility.setListViewHeightBasedOnChildren(listView)
+            //adapter.notifyDataSetChanged()
 
         }
 
@@ -336,7 +333,7 @@ class PhotosFragment : Fragment() {
     }
 
 
-    private fun getFormatsByMaterialThread(materialUid :String): Thread{
+    private fun getFormatsByMaterialThread(materialUid :String , progressBar: ProgressBar): Thread{
 
         return Thread{
             //viewPager.currentItem = tab.position
@@ -349,8 +346,6 @@ class PhotosFragment : Fragment() {
 
             for (j in 0 until resJarray.length()){
 
-
-
                 val availableImageFormat = ImageFormat.imageFormats.find { imageFormat ->
                     imageFormat.uid == resJarray.getString(j)
                 }
@@ -362,14 +357,12 @@ class PhotosFragment : Fragment() {
                     }
                 }
             }
-            val progressBar = mainAct.findViewById<ProgressBar>(R.id.progressBar)
             progressBar.visibility = ProgressBar.INVISIBLE
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         when (MaterialPhoto.materialsPhoto.size){
             0->{
@@ -381,41 +374,49 @@ class PhotosFragment : Fragment() {
             }
             else -> {
 
-                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
                 val progressBar                 = mainAct.findViewById<ProgressBar>(R.id.progressBar)
-
                 progressBar.visibility          = ProgressBar.VISIBLE
+                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid , progressBar)
 
                 getFormatsByMaterialThread.start()
-
                 getFormatsByMaterialThread.join()
-
             }
         }
-
 
         val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
         val tab0        = tabLayout.getTabAt(0)
 
         tab0?.select()
-
-        tab0?.let { afterTabselected(it) }
+        tab0?.let { afterTabSelected(it) }
 
         setQtyText()
+    }
 
+    private fun fillPhotosList(): List<String> {
+
+        val data = mutableListOf<String>()
+
+        imageUriList.forEach { uri ->
+
+            data.add("$uri element")
+        }
+
+        return data
     }
 
     private fun insertUriToListView(resultUri: Uri) {
 
-        //val mainAct = context as MainActivity
-// если добавление нового фото
+        // если добавление нового фото
         if (croppingPosition == -1) {
+
+            val imageOrder = ImageOrder(resultUri, resultUri.toString())
+
+            mainAct.order.imageOrderList.add(imageOrder)
 
             imageUriList.add(resultUri)
 
-            var imageOrder = ImageOrder(resultUri, resultUri.toString())
 
-            mainAct.order.imageOrderList.add(imageOrder)
+
         }
 // если редактирование ранее добавленного
         else {
@@ -425,10 +426,21 @@ class PhotosFragment : Fragment() {
             croppingPosition                                        = -1
         }
 
-        adapter             = PhotoListAdapter(this.requireActivity(), imageUriList)
+        adapter             = PhotoListAdapter(requireActivity(), imageUriList)
         listView.adapter    = adapter
 
+
+        val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
+        photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
+        val stringsArray                        = fillPhotosList()
+        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(stringsArray)
+
+
+                //adapter.notifyDataSetChanged()
+
         Utility.setListViewHeightBasedOnChildren(listView)
+
+
 
     }
 
@@ -496,5 +508,23 @@ class PhotosFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+        @JvmStatic
+        var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
+
+        @JvmStatic
+        fun getSpinnerFormatAdapter(context: Context):ArrayAdapter<String>{
+
+            val arrNames : Array<String> = Array(availableImageFormats.size - 1) { index ->
+                availableImageFormats[index]!!.name
+            }
+
+            val adapter : ArrayAdapter<String> = ArrayAdapter<String>(context
+                    , R.layout.support_simple_spinner_dropdown_item
+                    ,  arrNames)
+
+            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+
+            return adapter
+        }
     }
 }
