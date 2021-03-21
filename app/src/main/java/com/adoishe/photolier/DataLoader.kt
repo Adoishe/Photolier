@@ -242,12 +242,12 @@ class DataLoader () {
 
             for (i: Int in 0 until resArray.length()) {
 
-                val item = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
-                val height = item.getInt("height")
-                val width = item.getInt("width")
-                val hash = item.getInt("hash")
-                val uid = item.getString("uid")
-                val name = item.getString("name")
+                val item        = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
+                val height      = item.getInt("height")
+                val width       = item.getInt("width")
+                val hash        = item.getInt("hash")
+                val uid         = item.getString("uid")
+                val name        = item.getString("name")
                 val imageFormat = ImageFormat(width, height, uid, name, hash)
 
                 ImageFormat.imageFormats.add(imageFormat)
@@ -316,9 +316,10 @@ class DataLoader () {
 
                         e.printStackTrace()
 
-                        res = sendResult + "\n" + e.toString()
+                        res         = sendResult + "\n" + e.toString()
 
-                        var jObject = JSONObject()
+                        val jObject = JSONObject()
+
                         jObject.put("res", res)
 
                         return jObject
@@ -327,7 +328,7 @@ class DataLoader () {
                     when (resultJSSONObj.getBoolean("succ")) {
                         true -> {
 
-                            var resArray = resultJSSONObj.getJSONArray("resArray")
+                            val resArray = resultJSSONObj.getJSONArray("resArray")
 
                             when (sourceName) {
                                 "Справочник.Форматы" -> {

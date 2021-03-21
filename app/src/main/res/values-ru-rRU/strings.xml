@@ -25,4 +25,5 @@
     <string name="photosInPack">"  фото в папке"</string>
     <string name="packsInOrder">"  папок в заказе"</string>
     <string name="netTrouble">Проблемы со связью. Попробуйте позже</string>
+    <string name="delete">delete</string>
 </resources>

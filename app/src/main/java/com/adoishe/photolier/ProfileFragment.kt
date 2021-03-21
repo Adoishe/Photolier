@@ -47,7 +47,7 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        var profile = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
+        val profile = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
 
         profile.layoutManager = LinearLayoutManager(requireContext())
         profile.adapter = CustomRecyclerAdapter(fillList())
@@ -69,9 +69,9 @@ class ProfileFragment : Fragment() {
 
         val data = mutableListOf<ContentValues>()
 
-        var displayName = ContentValues()
-        var email = ContentValues()
-        var uidCV = ContentValues()
+        val displayName = ContentValues()
+        val email = ContentValues()
+        val uidCV = ContentValues()
 
         displayName.put("Key", resources.getString(R.string.display_name))
         displayName.put("Value", auth.currentUser?.displayName.toString())

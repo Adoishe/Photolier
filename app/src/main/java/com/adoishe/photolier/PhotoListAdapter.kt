@@ -40,6 +40,9 @@ class PhotoListAdapter(private val context: Activity, private val imageIdList: M
         val imageView               = rowView.findViewById<ImageView>(R.id.imageItem)
         val spinnerFormat           = rowView.findViewById<Spinner>(R.id.spinnerFormat)
         val adapter                 = PhotosFragment.getSpinnerFormatAdapter(context)
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         spinnerFormat.adapter       = adapter
 
         spinnerFormat.post {

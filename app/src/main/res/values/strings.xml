@@ -115,5 +115,6 @@
     <string name="photosInPack">"  photos in pack"</string>
     <string name="packsInOrder">"  packs in order"</string>
     <string name="netTrouble">We\'ve got a link problem. Try later</string>
+    <string name="delete">delete</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

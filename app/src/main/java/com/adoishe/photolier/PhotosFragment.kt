@@ -87,7 +87,7 @@ class PhotosFragment : Fragment() {
         packsInOrder.text = orderContent
 
     }
-
+/*
     private fun getSpinnerListener() : AdapterView.OnItemSelectedListener{
         return object : AdapterView.OnItemSelectedListener {
 
@@ -119,6 +119,8 @@ class PhotosFragment : Fragment() {
         toast.show()
     }
 
+ */
+
 
 
     fun afterTabSelected(tab: TabLayout.Tab){
@@ -140,13 +142,14 @@ class PhotosFragment : Fragment() {
 
         val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
         val spinnerAdapter      = getSpinnerFormatAdapter(requireContext())
+
         spinnerFormat.adapter   = spinnerAdapter
 
         spinnerFormat.post {
-            spinnerFormat.onItemSelectedListener =  getSpinnerListener()
+            spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, 0)
         }
 
-        fillSpinner(0)
+        fillSpinner(0, mainAct, -1)
     }
 
     override fun onCreateView(
@@ -167,20 +170,17 @@ class PhotosFragment : Fragment() {
             )  + ' ' + mainAct.auth.currentUser!!.displayName as CharSequence
         }
 
-
-
         val loadButton      = root.findViewById<Button>(R.id.buttonLoadPicture)
         val cropButton      = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton      = root.findViewById<Button>(R.id.buttonSendPictures)
         val addOrderButton  = root.findViewById<Button>(R.id.buttonAddOrder)
-        //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
-
-        val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
         listView                = root.findViewById(R.id.list)
         val tabLayout           = root.findViewById<TabLayout>(R.id.tabLayout)
 
 
+        //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
 
+        val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
 
         tabLayout.tabGravity    = TabLayout.GRAVITY_FILL
 
@@ -344,24 +344,26 @@ class PhotosFragment : Fragment() {
 
             mainAct.log.add("getFormatsByMaterialThread = $res")
 
-            for (j in 0 until resJarray.length()){
+            val resArray : ArrayList<String> = ArrayList(resJarray.length())
 
-                val availableImageFormat = ImageFormat.imageFormats.find { imageFormat ->
-                    imageFormat.uid == resJarray.getString(j)
-                }
+            for (j in 0 until resJarray.length())
+                resArray.add( resJarray.getString(j))
 
-                when (availableImageFormat) {
-                    null ->{}
-                    else ->{
-                        availableImageFormats.add(availableImageFormat)
+            ImageFormat.imageFormats.forEach{imageFormat ->
+
+                when (resArray.indexOf(imageFormat.uid)){
+                    -1 ->{
+                    }
+                    else -> {
+                        availableImageFormats.add(imageFormat)
                     }
                 }
             }
-            progressBar.visibility = ProgressBar.INVISIBLE
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
         when (MaterialPhoto.materialsPhoto.size){
@@ -380,6 +382,8 @@ class PhotosFragment : Fragment() {
 
                 getFormatsByMaterialThread.start()
                 getFormatsByMaterialThread.join()
+
+                progressBar.visibility = ProgressBar.INVISIBLE
             }
         }
 
@@ -387,7 +391,10 @@ class PhotosFragment : Fragment() {
         val tab0        = tabLayout.getTabAt(0)
 
         tab0?.select()
-        tab0?.let { afterTabSelected(it) }
+
+        tab0?.let {
+            afterTabSelected(it)
+        }
 
         setQtyText()
     }
@@ -409,13 +416,11 @@ class PhotosFragment : Fragment() {
         // если добавление нового фото
         if (croppingPosition == -1) {
 
-            val imageOrder = ImageOrder(resultUri, resultUri.toString())
+            val imageOrder          = ImageOrder(resultUri, resultUri.toString())
+            imageOrder.imageFormat  = (requireContext() as MainActivity).order.imageFormat
 
             mainAct.order.imageOrderList.add(imageOrder)
-
             imageUriList.add(resultUri)
-
-
 
         }
 // если редактирование ранее добавленного
@@ -426,21 +431,13 @@ class PhotosFragment : Fragment() {
             croppingPosition                                        = -1
         }
 
-        adapter             = PhotoListAdapter(requireActivity(), imageUriList)
-        listView.adapter    = adapter
-
-
+        listView.adapter                    = PhotoListAdapter(requireActivity(), imageUriList)
         val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
         photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
-        val stringsArray                        = fillPhotosList()
-        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(stringsArray)
-
-
-                //adapter.notifyDataSetChanged()
+        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList)
+        //adapter.notifyDataSetChanged()
 
         Utility.setListViewHeightBasedOnChildren(listView)
-
-
 
     }
 
@@ -514,7 +511,7 @@ class PhotosFragment : Fragment() {
         @JvmStatic
         fun getSpinnerFormatAdapter(context: Context):ArrayAdapter<String>{
 
-            val arrNames : Array<String> = Array(availableImageFormats.size - 1) { index ->
+            val arrNames : Array<String> = Array(availableImageFormats.size) { index ->
                 availableImageFormats[index]!!.name
             }
 
@@ -526,5 +523,58 @@ class PhotosFragment : Fragment() {
 
             return adapter
         }
+
+        @JvmStatic
+         fun getSpinnerListener(mainAct : MainActivity, imageListPosition : Int) : AdapterView.OnItemSelectedListener{
+            return object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    itemSelected: View?,
+                    selectedItemPosition: Int,
+                    selectedId: Long
+                ) {
+
+                    fillSpinner(selectedItemPosition, mainAct, imageListPosition)
+
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
+
+        @JvmStatic
+        fun fillSpinner(selectedItemPosition : Int, mainAct : MainActivity,  imageListPosition : Int) {
+
+            when (imageListPosition) {
+                // переключение табов
+                -1 ->{
+                    mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                }
+                //  без фото
+                0 ->{
+                    when (mainAct.order.imageOrderList.size){
+                        0->{
+                            mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                        }
+                        else -> {
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
+                        }
+                    }
+                }
+                // с фото
+                else ->{
+                    mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
+                }
+            }
+
+            val toast = Toast.makeText( mainAct
+                ,"Ваш выбор: " + mainAct.order.imageFormat!!.name + " для фото " + imageListPosition.toString()
+                , Toast.LENGTH_SHORT)
+            toast.show()
+        }
+
     }
 }
