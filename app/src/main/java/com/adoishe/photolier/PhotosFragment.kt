@@ -194,7 +194,7 @@ class PhotosFragment : Fragment() {
             tabLayout.addTab(matTab)
         }
 
-        mainAct.order.materialPhoto =  MaterialPhoto.materialsPhoto[0]
+
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
             {
@@ -366,6 +366,8 @@ class PhotosFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
+
+
         when (MaterialPhoto.materialsPhoto.size){
             0->{
 
@@ -376,6 +378,7 @@ class PhotosFragment : Fragment() {
             }
             else -> {
 
+                mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
                 val progressBar                 = mainAct.findViewById<ProgressBar>(R.id.progressBar)
                 progressBar.visibility          = ProgressBar.VISIBLE
                 val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid , progressBar)
@@ -384,19 +387,21 @@ class PhotosFragment : Fragment() {
                 getFormatsByMaterialThread.join()
 
                 progressBar.visibility = ProgressBar.INVISIBLE
+
+                val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
+                val tab0        = tabLayout.getTabAt(0)
+
+                tab0?.select()
+
+                tab0?.let {
+                    afterTabSelected(it)
+                }
+
+                setQtyText()
             }
         }
 
-        val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
-        val tab0        = tabLayout.getTabAt(0)
 
-        tab0?.select()
-
-        tab0?.let {
-            afterTabSelected(it)
-        }
-
-        setQtyText()
     }
 
     private fun fillPhotosList(): List<String> {

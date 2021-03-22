@@ -58,8 +58,9 @@ class RootFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
+        super.onViewCreated(view, savedInstanceState)
+/*
         val progressBar = (requireContext() as MainActivity). findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility = ProgressBar.VISIBLE
 
@@ -69,6 +70,8 @@ class RootFragment : Fragment() {
         //  log.add("MaterialPhoto = ")
 
         progressBar.visibility = ProgressBar.INVISIBLE
+
+ */
 
     }
 

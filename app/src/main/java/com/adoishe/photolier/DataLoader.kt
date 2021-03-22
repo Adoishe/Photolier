@@ -1,6 +1,7 @@
 package com.adoishe.photolier
 
 import android.content.Context
+import android.view.View
 import android.widget.ProgressBar
 import com.google.gson.Gson
 import org.json.JSONArray
@@ -279,26 +280,27 @@ class DataLoader () {
         fun sync(context: Context, sourceName: String): JSONObject {
 
             val hashArrayList: MutableList<Int> = ArrayList()
-            val progressBar             = (context as MainActivity)?.findViewById(R.id.progressBar) as ProgressBar
-            progressBar.visibility  = ProgressBar.VISIBLE
+            val progressBar             = (context as MainActivity).findViewById<ProgressBar>(R.id.progressBar)
+            progressBar.visibility  = View.VISIBLE //rogressBar.VISIBLE
 
             hashArrayList.add(1)
             hashArrayList.add(2)
             hashArrayList.add(3)
 
-            val dl = DataLoader()
-            val sendResult = dl.syncFormats(hashArrayList, context, sourceName)
-            var resultJSSONObj = JSONObject()
-            var succ: Boolean = (sendResult != "")
+            val dl              = DataLoader()
+            val sendResult      = dl.syncFormats(hashArrayList, context, sourceName)
+            var resultJSSONObj  = JSONObject()
+            var succ: Boolean   = (sendResult != "")
 
-            progressBar.visibility  = ProgressBar.INVISIBLE
+            progressBar.visibility  = View.INVISIBLE
 
-            var c : Collection<String>
+            val c : Collection<String>
 
             c = ArrayList()
 
             c.add("java.io.IOException: unexpected end of stream on com.android.okhttp.Address")
-
+            c.add("java.lang.NullPointerException: null cannot be cast to non-null type org.ksoap2.SoapFault")
+            c.add("java.lang.NullPointerException")
 
             when (sendResult.findAnyOf(c,ignoreCase = true)?.first){
                 0 -> {
@@ -317,10 +319,10 @@ class DataLoader () {
                         e.printStackTrace()
 
                         res         = sendResult + "\n" + e.toString()
-
                         val jObject = JSONObject()
 
                         jObject.put("res", res)
+                        (context as MainActivity).log.add(res)
 
                         return jObject
                     }
@@ -345,7 +347,13 @@ class DataLoader () {
                                 }
                             }
                         }
+                        false->{
+                            (context as MainActivity).log.add(sendResult)
+                        }
                     }
+                }
+                false->{
+                    (context as MainActivity).log.add(sendResult)
                 }
             }
 

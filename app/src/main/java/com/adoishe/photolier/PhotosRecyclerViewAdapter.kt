@@ -22,6 +22,8 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
         var imageView       : ImageView = ImageView(itemView.context)
         var spinnerFormat   : Spinner?  = null
         var qty             : EditText? = null
+        var plus            : Button?   = null
+        var minus           : Button?   = null
 
         init {
             largeTextView   = itemView.findViewById(R.id.textViewLarge)
@@ -29,7 +31,8 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
             imageView       = itemView.findViewById(R.id.imageView)
             spinnerFormat   = itemView.findViewById(R.id.spinnerFormat)
             qty             = itemView.findViewById(R.id.qty)
-            
+            plus            = itemView.findViewById(R.id.qtyPlus)
+            minus           = itemView.findViewById(R.id.qtyMinus)
 
         }
     }
@@ -63,12 +66,8 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
         return PhotosViewHolder(itemView)
     }
 
-
-
-
-
     override fun onBindViewHolder(holder: PhotosViewHolder, position: Int) {
-
+//------------image
         holder.largeTextView?.text = values[position].toString()
         holder.smallTextView?.text = "кот"
 
@@ -79,7 +78,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
             //  .override(600     , 800)
             // .fitCenter()
             .into(holder.imageView)
-        
+  //-----------------------------spinner
         val spinnerAdapter              = PhotosFragment.getSpinnerFormatAdapter(holder.itemView.context)
         holder.spinnerFormat?.adapter   = spinnerAdapter
         
@@ -88,7 +87,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
         }
 
         PhotosFragment.fillSpinner(0, holder.itemView.context as MainActivity , position )
-
+//------------------------------------- qty
         holder.qty!!.addTextChangedListener(object : TextWatcher
             {
                 override fun afterTextChanged(s: Editable) {
@@ -114,5 +113,31 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>) : RecyclerView.Ad
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             }
         )
+        //------------------------qty change
+
+        val qtyChangeListener = View.OnClickListener {
+
+            var qty = holder.qty!!.text.toString().toInt()
+
+            when (it.id){
+                R.id.qtyPlus->{
+
+                    qty = qty++
+
+                }
+                R.id.qtyMinus->{
+
+                    qty = qty--
+
+                }
+            }
+
+            holder.qty!!.setText( qty.toString())
+
+        }
+
+        holder.plus?.setOnClickListener(qtyChangeListener)
+        holder.minus?.setOnClickListener(qtyChangeListener)
+
     }
 }

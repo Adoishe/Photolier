@@ -6,22 +6,20 @@ package com.adoishe.photolier
 
 
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import org.json.JSONArray
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -56,36 +54,39 @@ class MainActivity : AppCompatActivity() {
     private     val CAMERA_REQUEST                          = 101
                 var order               : Order             = Order(this)
                 val providers                               = arrayListOf(
-                                                            //   AuthUI.IdpConfig.EmailBuilder().build(),
-                                                            //   AuthUI.IdpConfig.PhoneBuilder().build(),
-                                                            AuthUI.IdpConfig.GoogleBuilder().build()
-                                                            //    AuthUI.IdpConfig.FacebookBuilder().build(),
-                                                            //    AuthUI.IdpConfig.TwitterBuilder().build()
-                                                            )
+                    //   AuthUI.IdpConfig.EmailBuilder().build(),
+                    //   AuthUI.IdpConfig.PhoneBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                    //    AuthUI.IdpConfig.FacebookBuilder().build(),
+                    //    AuthUI.IdpConfig.TwitterBuilder().build()
+                )
 
 
                 var imageUriList        : MutableList<Uri>      = ArrayList()
                 var log                 : MutableList<String>   = ArrayList()
 
-
+                val REG                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
+    private     var PATTERN: Pattern            = Pattern.compile(REG)
+    fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
 
 
     private fun authenticate(){
 
         startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                        .setAvailableProviders(providers)
-                        //     .setTosUrl("link to app terms and service")
-                        //    .setPrivacyPolicyUrl("link to app privacy policy")
-                        .build(),
-                RC_SIGN_IN)
+            AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setIsSmartLockEnabled(!BuildConfig.DEBUG)
+                .setAvailableProviders(providers)
+                //     .setTosUrl("link to app terms and service")
+                //    .setPrivacyPolicyUrl("link to app privacy policy")
+                .build(),
+            RC_SIGN_IN
+        )
     }
 
     override fun onStart() {
         super.onStart()
-
+/*
         var progressBar = findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility  = ProgressBar.VISIBLE
 
@@ -100,7 +101,55 @@ class MainActivity : AppCompatActivity() {
             // authenticate()
         }
 
+        ImageFormat.sync(this )
+        //    log.add("ImageFormat = ")
+        MaterialPhoto.sync(this )
+        //  log.add("MaterialPhoto = ")
+
+
+
         progressBar.visibility  = ProgressBar.INVISIBLE
+
+
+ */
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+
+        Toast.makeText(this, "Focus", Toast.LENGTH_LONG).show()
+
+        if (hasFocus) {
+
+
+            when (auth.currentUser) {
+                null -> authenticate()
+            }
+
+            /*
+            val progressBar         = findViewById<ProgressBar>(R.id.progressBar)
+            progressBar.visibility  = ProgressBar.VISIBLE
+
+             */
+
+            ImageFormat.sync(this)
+            //    log.add("ImageFormat = ")
+            MaterialPhoto.sync(this)
+            //  log.add("MaterialPhoto = ")
+
+
+            //progressBar.visibility  = ProgressBar.INVISIBLE
+
+
+        }
+    }
+
+    override fun onResume() {
+
+        super.onResume()
+
+        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
+
 
     }
 
@@ -126,7 +175,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_dial -> {
 
 
-
                     findNavController(R.id.fragment).navigate(R.id.photosFragment)
                 }
                 R.id.action_mail -> {
@@ -142,6 +190,56 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == RC_SIGN_IN){
+            /*
+                this checks if the activity result we are getting is for the sign in
+                as we can have more than activity to be started in our Activity.
+             */
+
+          //  println("8089845216".isPhoneNumber())
+
+            val response = IdpResponse.fromResultIntent(data)
+            if(resultCode == Activity.RESULT_OK){
+                /*
+                    Checks if the User sign in was successful
+                 */
+    //                startActivity(Next Activity)
+                //showSnackbar(R.string.signed_in)
+                if(auth.currentUser != null){ //If user is signed in
+                    title = resources.getString(R.string.app_name) + ' ' + auth.currentUser!!.displayName as CharSequence
+    //                startActivity(Next Activity)
+                }
+
+
+                //finish()
+                //return
+            }
+            else {
+                if(response == null){
+                    //If no response from the Server
+                  //  showSnackbar(R.string.sign_in_cancelled)
+                    return
+                }
+                /*
+                if(response. == ErrorCodes.NO_NETWORK){
+                    //If there was a network problem the user's phone
+                    showSnackbar(R.string.no_internet_connection)
+                    return
+                }
+                if(response.errorCode == ErrorCodes.UNKNOWN_ERROR){
+                    //If the error cause was unknown
+                    showSnackbar(R.string.unknown_error)
+                    return
+                }
+                */
+            }
+    }
+   // showSnackbar(R.string.unknown_sign_in_response) //if the sign in response was unknown
+}
 
 //        imageView = findViewById(R.id.imageView)
 
@@ -154,88 +252,28 @@ class MainActivity : AppCompatActivity() {
 
  */
 
-       /* val cameraIntent    = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val dir             = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-        val date            = Date()
-        output              = File(dir, "CheckImage $date.jpeg")
+    /* val cameraIntent    = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+     val dir             = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+     val date            = Date()
+     output              = File(dir, "CheckImage $date.jpeg")
 
-        startActivityForResult(cameraIntent, 101)
-
-
+     startActivityForResult(cameraIntent, 101)
 
 
-        var loadButton = findViewById<Button>(R.id.buttonLoadPicture)
-
-        loadButton.setOnClickListener{
-
-          //  val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-            //startActivityForResult(gallery, pickImage)
-
-            CropImage.activity(imageUri).start(this);
-
-        }
-
-        */
 
 
-     val REG = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
+     var loadButton = findViewById<Button>(R.id.buttonLoadPicture)
 
-    private var PATTERN: Pattern = Pattern.compile(REG)
+     loadButton.setOnClickListener{
 
-    fun CharSequence.isPhoneNumber() : Boolean = PATTERN.matcher(this).find()
+       //  val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+         //startActivityForResult(gallery, pickImage)
 
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         CropImage.activity(imageUri).start(this);
 
-    super.onActivityResult(requestCode, resultCode, data)
+     }
 
-    if(requestCode == RC_SIGN_IN){
-        /*
-            this checks if the activity result we are getting is for the sign in
-            as we can have more than activity to be started in our Activity.
-         */
-
-      //  println("8089845216".isPhoneNumber())
-
-        val response = IdpResponse.fromResultIntent(data)
-        if(resultCode == Activity.RESULT_OK){
-            /*
-                Checks if the User sign in was successful
-             */
-//                startActivity(Next Activity)
-            //showSnackbar(R.string.signed_in)
-            if(auth.currentUser != null){ //If user is signed in
-                title = resources.getString(R.string.app_name) + ' ' + auth.currentUser!!.displayName as CharSequence
-//                startActivity(Next Activity)
-            }
-
-
-            //finish()
-            //return
-        }
-        else {
-            if(response == null){
-                //If no response from the Server
-              //  showSnackbar(R.string.sign_in_cancelled)
-                return
-            }
-            /*
-            if(response. == ErrorCodes.NO_NETWORK){
-                //If there was a network problem the user's phone
-                showSnackbar(R.string.no_internet_connection)
-                return
-            }
-            if(response.errorCode == ErrorCodes.UNKNOWN_ERROR){
-                //If the error cause was unknown
-                showSnackbar(R.string.unknown_error)
-                return
-            }
-            */
-        }
-    }
-   // showSnackbar(R.string.unknown_sign_in_response) //if the sign in response was unknown
-}
-
-
+     */
 
 
 /*        super.onActivityResult(requestCode, resultCode, data)
