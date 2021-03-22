@@ -36,13 +36,13 @@ class PhotosFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private             var param1          : String?           = null
     private             var param2          : String?           = null
-    private             var imageUriList    : MutableList<Uri>  = ArrayList()
+                        var imageUriList    : MutableList<Uri>  = ArrayList()
     private             var imageUri        : Uri?              = null
     private lateinit    var listView        : ListView
     //private lateinit    var recyclerView     : RecyclerView
 
     private lateinit    var adapter                 : PhotoListAdapter
-    private             var croppingPosition        : Int = -1
+                        var croppingPosition        : Int = -1
     lateinit            var mainAct                 : MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -416,6 +416,18 @@ class PhotosFragment : Fragment() {
         return data
     }
 
+    fun updateList(){
+
+        listView.adapter                    = PhotoListAdapter(requireActivity(), imageUriList)
+        val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
+        photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
+        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList, this)
+        //adapter.notifyDataSetChanged()
+
+        Utility.setListViewHeightBasedOnChildren(listView)
+
+    }
+
     private fun insertUriToListView(resultUri: Uri) {
 
         // если добавление нового фото
@@ -436,13 +448,7 @@ class PhotosFragment : Fragment() {
             croppingPosition                                        = -1
         }
 
-        listView.adapter                    = PhotoListAdapter(requireActivity(), imageUriList)
-        val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
-        photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
-        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList)
-        //adapter.notifyDataSetChanged()
-
-        Utility.setListViewHeightBasedOnChildren(listView)
+        updateList()
 
     }
 

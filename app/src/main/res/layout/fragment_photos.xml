@@ -37,6 +37,7 @@
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="@string/add_order"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -98,7 +99,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:spinnerMode="dialog"
-
+        android:visibility="gone"
         android:layout_weight="1"
         android:layout_gravity="center_horizontal|center_vertical"
         app:layout_constraintStart_toStartOf="parent"

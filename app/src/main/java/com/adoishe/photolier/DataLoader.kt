@@ -14,7 +14,6 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
 
-
 class DataLoader () {
 
     private var byteArrayList: MutableList<ByteArray> = ArrayList()
@@ -67,21 +66,18 @@ class DataLoader () {
 
                 res = e.toString()
             }
-
             DataLoader.res = res
         }
     }
 
     fun syncFormats(hashArrayList: MutableList<Int>, context: Context, sourceName: String): String {
 
-        var method = GET_FORMATS_METHOD_NAME
-        var action = GET_FORMATS_SOAP_ACTION
+        var method          = GET_FORMATS_METHOD_NAME
+        var action          = GET_FORMATS_SOAP_ACTION
+        val threadFormats   = threadFormats(context, hashArrayList, sourceName)
+        //val progressBar = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
 
-
-        val threadFormats = threadFormats(context, hashArrayList, sourceName)
-        val progressBar = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
-
-        progressBar.visibility = ProgressBar.VISIBLE
+        //progressBar.visibility = ProgressBar.VISIBLE
 
         threadFormats.start()
 
@@ -89,7 +85,7 @@ class DataLoader () {
 
             threadFormats.join()
 
-            progressBar.visibility = ProgressBar.INVISIBLE
+            //progressBar.visibility = ProgressBar.INVISIBLE
             DataLoader.syncSucc = true
 
             return DataLoader.res
@@ -136,9 +132,9 @@ class DataLoader () {
 
         try {
 
-            val headerList: MutableList<HeaderProperty> = ArrayList()
-            val basicAuthName: String                   = "web"
-            val basicAuthPass: String                   = "web"
+            val headerList      : MutableList<HeaderProperty>   = ArrayList()
+            val basicAuthName   : String                        = "web"
+            val basicAuthPass   : String                        = "web"
 
             if (basicAuthName != null && basicAuthPass != null) {
 
@@ -148,7 +144,6 @@ class DataLoader () {
             }
 
             headerList.add(HeaderProperty("Connection", "Close"))
-
 
             try {
 
@@ -162,7 +157,16 @@ class DataLoader () {
 
                 e.printStackTrace()
 
-                res = (envelope.bodyIn as SoapFault).faultstring + "\n" + e.toString()
+                res = e.toString()
+
+                when(envelope.bodyIn){
+                    null->{
+
+                    }
+                    else->{
+                        res = (envelope.bodyIn as SoapFault).faultstring + "\n" + e.toString()
+                    }
+                }
             }
 
             return res
@@ -230,14 +234,12 @@ class DataLoader () {
         fun fillFormats(resArray: JSONArray) {
 
             /*
-                                "Код": "000000018",
-                                "Наименование": "09 х 13",
-                                "ПометкаУдаления": false,
-                                "Высота": 9,
-                                "Ширина": 13,
-                                "uid": "7a3e31ea-77b7-11eb-b993-60a44c65164b"
-                                    constructor (width : Int, height : Int , uid : String)
-
+            "Код": "000000018",
+            "Наименование": "09 х 13",
+            "ПометкаУдаления": false,
+            "Высота": 9,
+            "Ширина": 13,
+            "uid": "7a3e31ea-77b7-11eb-b993-60a44c65164b"
      */
             ImageFormat.imageFormats = ArrayList()
 
@@ -252,7 +254,6 @@ class DataLoader () {
                 val imageFormat = ImageFormat(width, height, uid, name, hash)
 
                 ImageFormat.imageFormats.add(imageFormat)
-
             }
         }
 
@@ -263,39 +264,35 @@ class DataLoader () {
 
             for (i: Int in 0 until resArray.length()) {
 
-                val item = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
-
-                val uid = item.getString("uid")
-                val name = item.getString("name")
-                val hash = item.getInt("hash")
-                val materialPhoto = MaterialPhoto(uid, name, hash)
+                val item            = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
+                val uid             = item.getString("uid")
+                val name            = item.getString("name")
+                val hash            = item.getInt("hash")
+                val materialPhoto   = MaterialPhoto(uid, name, hash)
 
                 MaterialPhoto.materialsPhoto.add(materialPhoto)
 
             }
-
         }
 
         @JvmStatic
         fun sync(context: Context, sourceName: String): JSONObject {
 
             val hashArrayList: MutableList<Int> = ArrayList()
-            val progressBar             = (context as MainActivity).findViewById<ProgressBar>(R.id.progressBar)
-            progressBar.visibility  = View.VISIBLE //rogressBar.VISIBLE
 
             hashArrayList.add(1)
             hashArrayList.add(2)
             hashArrayList.add(3)
 
-            val dl              = DataLoader()
-            val sendResult      = dl.syncFormats(hashArrayList, context, sourceName)
-            var resultJSSONObj  = JSONObject()
-            var succ: Boolean   = (sendResult != "")
+            val progressBar                     = (context as MainActivity).findViewById<ProgressBar>(R.id.progressBar)
+            progressBar.visibility              = View.VISIBLE //rogressBar.VISIBLE
+            val dl                              = DataLoader()
+            val sendResult                      = dl.syncFormats(hashArrayList, context, sourceName)
+            var resultJSSONObj                  = JSONObject()
+            var succ: Boolean                   = (sendResult != "")
+            progressBar.visibility              = View.INVISIBLE
 
-            progressBar.visibility  = View.INVISIBLE
-
-            val c : Collection<String>
-
+            val c   : Collection<String>
             c = ArrayList()
 
             c.add("java.io.IOException: unexpected end of stream on com.android.okhttp.Address")
@@ -356,7 +353,6 @@ class DataLoader () {
                     (context as MainActivity).log.add(sendResult)
                 }
             }
-
             return resultJSSONObj
         }
 
@@ -366,8 +362,3 @@ class DataLoader () {
         var syncSucc = false
     }
 }
-
-
-
-
-

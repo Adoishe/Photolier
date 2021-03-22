@@ -1,13 +1,10 @@
 package com.adoishe.photolier
 
 import android.app.Activity
-import android.content.ContentValues
-import android.graphics.Color
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
 
 class PhotoListAdapter(private val context: Activity, private val imageIdList: MutableList<Uri>) : BaseAdapter() {
 
