@@ -121,8 +121,6 @@ class PhotosFragment : Fragment() {
 
  */
 
-
-
     fun afterTabSelected(tab: TabLayout.Tab){
 
         val currentMaterialPhoto =  MaterialPhoto.materialsPhoto.find {
@@ -160,8 +158,7 @@ class PhotosFragment : Fragment() {
 
         // Inflate the layout for this fragment
         val root    = inflater.inflate(R.layout.fragment_photos, container, false)
-        //val mainAct = context as MainActivity
-        mainAct   = context as MainActivity
+        mainAct     = context as MainActivity
 
         if(mainAct.auth.currentUser != null){
             //If user is signed in
@@ -174,13 +171,12 @@ class PhotosFragment : Fragment() {
         val cropButton      = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton      = root.findViewById<Button>(R.id.buttonSendPictures)
         val addOrderButton  = root.findViewById<Button>(R.id.buttonAddOrder)
-        listView                = root.findViewById(R.id.list)
-        val tabLayout           = root.findViewById<TabLayout>(R.id.tabLayout)
+            listView        = root.findViewById(R.id.list)
+        val tabLayout       = root.findViewById<TabLayout>(R.id.tabLayout)
 
 
         //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
-
-        val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
+        //val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
 
         tabLayout.tabGravity    = TabLayout.GRAVITY_FILL
 
@@ -193,8 +189,6 @@ class PhotosFragment : Fragment() {
 
             tabLayout.addTab(matTab)
         }
-
-
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
             {
@@ -332,7 +326,6 @@ class PhotosFragment : Fragment() {
         return root
     }
 
-
     private fun getFormatsByMaterialThread(materialUid :String , progressBar: ProgressBar): Thread{
 
         return Thread{
@@ -366,8 +359,6 @@ class PhotosFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-
-
         when (MaterialPhoto.materialsPhoto.size){
             0->{
 
@@ -400,8 +391,6 @@ class PhotosFragment : Fragment() {
                 setQtyText()
             }
         }
-
-
     }
 
     private fun fillPhotosList(): List<String> {
@@ -412,7 +401,6 @@ class PhotosFragment : Fragment() {
 
             data.add("$uri element")
         }
-
         return data
     }
 
@@ -422,15 +410,13 @@ class PhotosFragment : Fragment() {
         val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
         photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
         photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList, this)
-        //adapter.notifyDataSetChanged()
 
         Utility.setListViewHeightBasedOnChildren(listView)
-
     }
 
     private fun insertUriToListView(resultUri: Uri) {
 
-        // если добавление нового фото
+// если добавление нового фото
         if (croppingPosition == -1) {
 
             val imageOrder          = ImageOrder(resultUri, resultUri.toString())
@@ -438,18 +424,14 @@ class PhotosFragment : Fragment() {
 
             mainAct.order.imageOrderList.add(imageOrder)
             imageUriList.add(resultUri)
-
         }
 // если редактирование ранее добавленного
         else {
-
             imageUriList[croppingPosition]                          = resultUri
             mainAct.order.imageOrderList[croppingPosition].imageUri = resultUri
             croppingPosition                                        = -1
         }
-
         updateList()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -568,16 +550,19 @@ class PhotosFragment : Fragment() {
                 0 ->{
                     when (mainAct.order.imageOrderList.size){
                         0->{
-                            mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageFormat           = availableImageFormats[selectedItemPosition]
+
                         }
                         else -> {
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                         }
                     }
                 }
                 // с фото
                 else ->{
                     mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
+                    mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                 }
             }
 

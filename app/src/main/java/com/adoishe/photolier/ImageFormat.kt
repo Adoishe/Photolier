@@ -16,6 +16,7 @@ import org.json.JSONObject
     var width : Int = 0
     var height : Int = 0
     var hash : Int = 0
+    var index : Int = 0
     var uid     : String = ""
     var name     : String = ""
 
@@ -40,7 +41,7 @@ import org.json.JSONObject
 
 
 
-        val mDatabase       = FirebaseDatabase.getInstance("https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/").reference
+        val mDatabase           = FirebaseDatabase.getInstance("https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/").reference
         val imageFormatsFire    = mDatabase.child("imageFormats")
         val imageFormatFire     = imageFormatsFire.child(uid)
 
@@ -52,7 +53,6 @@ import org.json.JSONObject
         imageFormatFire.child("hash").setValue(hash)
 
         imageFormatsFire.push()
-
     }
 
     companion object{
