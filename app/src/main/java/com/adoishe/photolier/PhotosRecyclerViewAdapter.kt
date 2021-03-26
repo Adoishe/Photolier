@@ -27,6 +27,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
         var minus           : Button?   = null
         var crop            : Button?   = null
         var delete          : Button?   = null
+        var material        : TextView?  = null
 
         init {
             largeTextView   = itemView.findViewById(R.id.textViewLarge)
@@ -38,6 +39,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
             minus           = itemView.findViewById(R.id.qtyMinus)
             crop            = itemView.findViewById(R.id.editPhoto)
             delete          = itemView.findViewById(R.id.deletePhoto)
+            material         = itemView.findViewById(R.id.material)
         }
     }
 
@@ -164,6 +166,9 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
           fragment.updateList()
 
       }
+//----------------material
+
+    holder.material!!.text = (holder.itemView.context as MainActivity).order.imageOrderList[position].materialPhoto!!.name
 
     }//onBindViewHolder
 }

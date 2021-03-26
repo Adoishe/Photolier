@@ -12,6 +12,7 @@ class ImageOrder(imageUri: Uri, name: String) {
                 var paper       : ContentValues     = ContentValues()
                 var imageFormat : ImageFormat?      = null
                 var qty         : Int               = 0
+                var materialPhoto   : MaterialPhoto?             = null
 
     init {
         this.name       = imageUri.lastPathSegment

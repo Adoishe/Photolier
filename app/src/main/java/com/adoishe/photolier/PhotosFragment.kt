@@ -150,6 +150,17 @@ class PhotosFragment : Fragment() {
         fillSpinner(0, mainAct, -1)
     }
 
+    private fun addPackToOrder(){
+
+        Order.ordersArray.add(mainAct.order)
+
+        Order.updateIndices()
+
+        blankOrderData()
+
+        setQtyText()
+    }
+
     override fun onCreateView(
         inflater            : LayoutInflater
     ,   container           : ViewGroup?
@@ -236,6 +247,10 @@ class PhotosFragment : Fragment() {
                 .setCancelable(false)
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
 
+                    when(Order.ordersArray.size){
+                        0->addPackToOrder()
+                    }
+
                     Order.sendAll()
 
                 }
@@ -251,13 +266,7 @@ class PhotosFragment : Fragment() {
 
         addOrderButton.setOnClickListener {
 
-            Order.ordersArray.add(mainAct.order)
-
-            Order.updateIndices()
-
-            blankOrderData()
-
-            setQtyText()
+            addPackToOrder()
 
         }
 
@@ -389,6 +398,18 @@ class PhotosFragment : Fragment() {
                 }
 
                 setQtyText()
+
+                when (availableImageFormats.size){
+                    0->{
+                        var warning = view.findViewById<TextView>(R.id.textViewResult)
+
+                        warning.text = mainAct.log[mainAct.log.size]
+                    }
+                }
+
+
+
+
             }
         }
     }
@@ -411,7 +432,7 @@ class PhotosFragment : Fragment() {
         photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
         photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList, this)
 
-        Utility.setListViewHeightBasedOnChildren(listView)
+        //Utility.setListViewHeightBasedOnChildren(listView)
     }
 
     private fun insertUriToListView(resultUri: Uri) {
@@ -554,8 +575,12 @@ class PhotosFragment : Fragment() {
 
                         }
                         else -> {
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
+                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
+
+                            //--- MATERIAL
+                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].materialPhoto = mainAct.order.materialPhoto
+
                         }
                     }
                 }

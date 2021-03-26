@@ -85,8 +85,10 @@ class Order(var context: Activity) {
             val cv          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            cv.put("name", it.name)
-            cv.put("byteArray", Base64.encode(byteArray))
+            cv.put("name"       , it.name)
+            cv.put("material"   , it.materialPhoto!!.uid)
+            cv.put("format"     , it.imageFormat!!.uid)
+            cv.put("byteArray"  , Base64.encode(byteArray))
 
             val result = JSONObject()
 
@@ -126,16 +128,16 @@ class Order(var context: Activity) {
         val result  = JSONObject()
         val mainAct = context as MainActivity
 
-        json.put("orderUid", this.uuid)
-        json.put("imageFormat", this.imageFormat?.uid)
-        json.put("materialPhoto", this.materialPhoto?.uid)
-        json.put("session", this.session)
-        json.put("displayName", mainAct.auth.currentUser?.displayName.toString())
-        json.put("email", mainAct.auth.currentUser?.email.toString())
-        json.put("phoneNumber", mainAct.auth.currentUser?.phoneNumber.toString())
-        json.put("uid", mainAct.auth.currentUser?.uid.toString())
-        json.put("indexInPacket", this.indexInPacket)
-        json.put("countOfPacket", this.countOfPacket)
+        json.put("orderUid"         , this.uuid)
+        json.put("imageFormat"      , this.imageFormat?.uid)
+        json.put("materialPhoto"    , this.materialPhoto?.uid)
+        json.put("session"          , this.session)
+        json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
+        json.put("email"            , mainAct.auth.currentUser?.email.toString())
+        json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
+        json.put("uid"              , mainAct.auth.currentUser?.uid.toString())
+        json.put("indexInPacket"    , this.indexInPacket)
+        json.put("countOfPacket"    , this.countOfPacket)
 
         result.put("mValues", json)
 
@@ -192,10 +194,10 @@ class Order(var context: Activity) {
 
                     val bundle = Bundle()
 
-                    bundle.putBoolean("sendorder", true)
-                    bundle.putString("orderName", name)
-                    bundle.putString("orderStatus", orderStatus)
-                    bundle.putString("orderUuid", uuid)
+                    bundle.putBoolean("sendorder"   , true)
+                    bundle.putString("orderName"    , name)
+                    bundle.putString("orderStatus"  , orderStatus)
+                    bundle.putString("orderUuid"    , uuid)
 
                     mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 

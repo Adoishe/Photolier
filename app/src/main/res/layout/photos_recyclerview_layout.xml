@@ -17,12 +17,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
         <Spinner
             android:id="@+id/spinnerFormat"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:layout_gravity="center_horizontal|center_vertical" />
+
+            <TextView
+                android:id="@+id/material"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal|center_vertical" >
+
+
+            </TextView>
+
+       </LinearLayout>
+
 
         <Button
             android:layout_width="200dp"
