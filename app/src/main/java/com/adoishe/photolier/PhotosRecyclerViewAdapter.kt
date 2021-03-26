@@ -125,7 +125,8 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
 
         PhotosFragment.fillSpinner(0, holder.itemView.context as MainActivity , position )
 //------------------------------------- qty
-        holder.qty!!.setText("1")
+
+        holder.qty!!.setText((holder.itemView.context as MainActivity).order.imageOrderList[position].qty.toString())
         holder.qty!!.addTextChangedListener(getQtyTextWatcher(holder, position) )
 //------------------------qty change
 

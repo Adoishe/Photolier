@@ -88,6 +88,7 @@ class Order(var context: Activity) {
             cv.put("name"       , it.name)
             cv.put("material"   , it.materialPhoto!!.uid)
             cv.put("format"     , it.imageFormat!!.uid)
+            cv.put("qty"        , it.qty)
             cv.put("byteArray"  , Base64.encode(byteArray))
 
             val result = JSONObject()
@@ -189,7 +190,7 @@ class Order(var context: Activity) {
 
             progressBar.visibility  = ProgressBar.INVISIBLE
 
-            when (this.indexInPacket == this.countOfPacket -1){
+            when (this.indexInPacket == this.countOfPacket ){
                 true -> {
 
                     val bundle = Bundle()
@@ -199,7 +200,7 @@ class Order(var context: Activity) {
                     bundle.putString("orderStatus"  , orderStatus)
                     bundle.putString("orderUuid"    , uuid)
 
-                    mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+                    //mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                 }
             }
@@ -215,19 +216,11 @@ class Order(var context: Activity) {
             }
             else ->{
 
-                val progressBar         = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
-                progressBar.visibility  = ProgressBar.VISIBLE
-
-
-
-
-
-                val sendThread = getSendThread(progressBar)
+                val progressBar             = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
+                    progressBar.visibility  = ProgressBar.VISIBLE
+                val sendThread              = getSendThread(progressBar)
 
                 sendThread.start()
-                //sendThread.join()
-
-                //progressBar.visibility  = ProgressBar.INVISIBLE
 
             }//else ->{
         }//when (imageOrderList.size)
@@ -240,25 +233,13 @@ class Order(var context: Activity) {
 
             updateIndices()
 
-            //val pb = ProgressBar(ordersArray[0].context,
-              //      null,
-                //    android.R.attr.progressBarStyleHorizontal)
-
-            //pb.max = ordersArray.size
-
-            //pb.incrementProgressBy(1)
-
-            ///pb.progress = 0
-
             ordersArray.forEach {
 
                 it.send()
 
-                //pb.progress += 1
-
             }
-
-            //pb.visibility = ProgressBar.INVISIBLE
+            // очистка после отправки
+            ordersArray = ArrayList()
 
         }
         @JvmStatic

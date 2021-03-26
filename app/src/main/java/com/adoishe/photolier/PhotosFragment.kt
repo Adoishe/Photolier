@@ -283,54 +283,7 @@ class PhotosFragment : Fragment() {
 
             croppingPosition = i
 
-            //imageUriList.removeAt(i)
-                    // Utility.setListViewHeightBasedOnChildren(listView)
-            //adapter.notifyDataSetChanged()
-
         }
-
-
-/*
-        recyclerView.addOnItemTouchListener(
-                RecyclerItemClickListener(requireContext(), recyclerView, object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View?, position: Int) {
-
-                        val uri = recyclerView.getChildAt(position) as Uri
-
-
-                        CropImage.activity(uri)
-                                .setAllowRotation(true)
-                                .setAspectRatio(3, 4)
-                                .setCropMenuCropButtonTitle(resources.getString(R.string.crop))
-                                .setActivityTitle(resources.getString(R.string.crop))
-                                .start(requireActivity(), requireParentFragment())
-
-                        croppingPosition = position;
-
-                        //imageUriList.removeAt(i)
-
-                        adapter.notifyDataSetChanged()
-
-
-
-                    }
-
-                    override fun onLongItemClick(view: View?, position: Int) {
-                        TODO("Not yet implemented")
-                    }
-
-                    /*  fun onLongItemClick(view: View?, position: Int) {
-                          // do whatever
-                      }
-
-                     */
-                })
-        )
-
- */
-
-        //var log = root.findViewById<TextView>(R.id.textViewResult)
-        //log.text = mainAct.log.toString()
 
         return root
     }
@@ -403,13 +356,9 @@ class PhotosFragment : Fragment() {
                     0->{
                         var warning = view.findViewById<TextView>(R.id.textViewResult)
 
-                        warning.text = mainAct.log[mainAct.log.size]
+                        warning.text = mainAct.log[mainAct.log.size-1]
                     }
                 }
-
-
-
-
             }
         }
     }
@@ -590,11 +539,13 @@ class PhotosFragment : Fragment() {
                     mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                 }
             }
-
+/*
             val toast = Toast.makeText( mainAct
                 ,"Ваш выбор: " + mainAct.order.imageFormat!!.name + " для фото " + imageListPosition.toString()
                 , Toast.LENGTH_SHORT)
             toast.show()
+
+ */
         }
 
     }
