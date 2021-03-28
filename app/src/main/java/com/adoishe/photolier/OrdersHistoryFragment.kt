@@ -42,7 +42,7 @@ class OrdersHistoryFragment : Fragment() {
         }
     }
 
-    fun getOrders(view: View) : Thread{
+    private fun getOrders(view: View) : Thread{
 
          return Thread {
 
@@ -68,20 +68,23 @@ class OrdersHistoryFragment : Fragment() {
 
                     for (i in 0 until arrayCV.length()) {
 
-                        var order1c         = Order(requireActivity())
+                        val order1c         = Order(requireActivity())
                         val orderItem       = arrayCV.getJSONObject(i)
                         order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
-                        var uriJSONArray    = orderItem.getJSONObject("mValues").getJSONArray("imageUriList")
-                        var orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
-                        var imageUriList    : MutableList<Uri>  = ArrayList()
-
+                        order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
+                        //val uriJSONArray    = orderItem.getJSONObject("mValues").getJSONArray("imageUriList")
+                        val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
+                        val imageUriList    : MutableList<Uri>  = ArrayList()
+                        /*
                         for (j in 0 until uriJSONArray.length()){
 
-                            var uri1c = Uri.parse( uriJSONArray.getString(j))
+                            val uri1c = Uri.parse( uriJSONArray.getString(j))
 
                             imageUriList.add(uri1c)
 
                         }
+
+                         */
 
                         order1c.imageUriList = imageUriList
                         order1c.orderStatus = orderStatus
@@ -207,8 +210,8 @@ class OrdersHistoryFragment : Fragment() {
          */
 
 
-            var textView = generateTextView(
-                                    order.name
+            val textView = generateTextView(order.text
+                                    /*order.name
                                             + "\n "
                                             + order.imageUriList.size
                                             + " "
@@ -216,6 +219,8 @@ class OrdersHistoryFragment : Fragment() {
                                             + " "
                                             + order.orderStatus
                                             // , orders.indexOf(order)
+
+                                     */
                                             , cardView
                                             )
 
@@ -224,7 +229,7 @@ class OrdersHistoryFragment : Fragment() {
 
             cardView.setOnClickListener{
 
-                var order = orders[it.id]
+                val order = orders[it.id]
                 val bundle = Bundle()
 
                 bundle.putString("orderUuid", order.getUuid())

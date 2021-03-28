@@ -144,10 +144,10 @@ class PhotosFragment : Fragment() {
         spinnerFormat.adapter   = spinnerAdapter
 
         spinnerFormat.post {
-            spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, 0)
+            spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, -1)
         }
 
-        //fillSpinner(-1, mainAct, -1)
+        fillSpinner(0, mainAct, -1)
     }
 
     private fun addPackToOrder(){
@@ -518,13 +518,14 @@ class PhotosFragment : Fragment() {
                 -1 ->{
 
                     mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                    mainAct.order.imageFormat!!.index = selectedItemPosition
                 }
                 //  без фото
                 0 ->{
                     when (mainAct.order.imageOrderList.size){
                         0->{
                             mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
-
+                            mainAct.order.imageFormat!!.index = selectedItemPosition
                         }
                         else -> {
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
@@ -533,14 +534,14 @@ class PhotosFragment : Fragment() {
                             mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
                             mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //--- MATERIAL
-                         mainAct.order.imageOrderList[imageListPosition].materialPhoto = mainAct.order.materialPhoto
+                            mainAct.order.imageOrderList[imageListPosition].materialPhoto = mainAct.order.materialPhoto
 
                         }
                     }
                 }
                 // с фото
                 else ->{
-                    mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
+                    mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
                     mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                     //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = imageListPosition
                 }

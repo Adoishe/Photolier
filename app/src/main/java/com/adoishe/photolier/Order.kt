@@ -15,6 +15,7 @@ class Order(var context: Activity) {
     private     var uuid            : String                    = UUID.randomUUID().toString()
                 var session         : String                    = ""
                 var name            : String                    = ""
+                var text            : String                    = ""
                 var imageFormat     : ImageFormat?              = null
                 var materialPhoto   : MaterialPhoto?             = null
                 var imageUriList    : MutableList<Uri>          = ArrayList()
@@ -200,6 +201,8 @@ class Order(var context: Activity) {
                     bundle.putString("orderStatus"  , orderStatus)
                     bundle.putString("orderUuid"    , uuid)
 
+
+
                     //mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                 }
@@ -221,6 +224,23 @@ class Order(var context: Activity) {
                 val sendThread              = getSendThread(progressBar)
 
                 sendThread.start()
+                sendThread.join()
+
+                when (this.indexInPacket == this.countOfPacket ) {
+                    true -> {
+
+                        val bundle = Bundle()
+
+                        bundle.putBoolean("sendorder", true)
+                        bundle.putString("orderName", name)
+                        bundle.putString("orderStatus", orderStatus)
+                        bundle.putString("orderUuid", uuid)
+
+                        (context as MainActivity).findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+
+                    }
+                }
+
 
             }//else ->{
         }//when (imageOrderList.size)
@@ -236,6 +256,14 @@ class Order(var context: Activity) {
             ordersArray.forEach {
 
                 it.send()
+
+
+              //  when (this.indexInPacket == this.countOfPacket ){
+                //    true -> {
+
+
+
+                  //  }
 
             }
             // очистка после отправки
