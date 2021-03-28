@@ -85,11 +85,11 @@ class Order(var context: Activity) {
             val cv          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
 
-            cv.put("name"       , it.name)
-            cv.put("material"   , it.materialPhoto!!.uid)
-            cv.put("format"     , it.imageFormat!!.uid)
-            cv.put("qty"        , it.qty)
-            cv.put("byteArray"  , Base64.encode(byteArray))
+            cv.put("name"           , it.name)
+            cv.put("materialPhoto"  , it.materialPhoto!!.uid)
+            cv.put("imageFormat"    , it.imageFormat!!.uid)
+            cv.put("qty"            , it.qty)
+            cv.put("byteArray"      , Base64.encode(byteArray))
 
             val result = JSONObject()
 
@@ -130,8 +130,8 @@ class Order(var context: Activity) {
         val mainAct = context as MainActivity
 
         json.put("orderUid"         , this.uuid)
-        json.put("imageFormat"      , this.imageFormat?.uid)
-        json.put("materialPhoto"    , this.materialPhoto?.uid)
+        //json.put("imageFormat"      , this.imageFormat?.uid)
+        //json.put("materialPhoto"    , this.materialPhoto?.uid)
         json.put("session"          , this.session)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())

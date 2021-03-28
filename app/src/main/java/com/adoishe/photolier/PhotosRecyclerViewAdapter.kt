@@ -117,13 +117,24 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
         val spinnerAdapter              = PhotosFragment.getSpinnerFormatAdapter(holder.itemView.context)
         holder.spinnerFormat?.adapter   = spinnerAdapter
 
-        holder.spinnerFormat!!.setSelection((holder.itemView.context as MainActivity).order.imageOrderList[position].imageFormat!!.index)
-        
+        when((holder.itemView.context as MainActivity).order.imageOrderList[position].imageFormat){
+            null->{
+                // если список фоток пустой
+                holder.spinnerFormat!!.setSelection(0)
+            }
+            else -> {
+                // список фоток не пустой
+                // выделяем тот формат, который выбран в элементе массив
+                holder.spinnerFormat!!.setSelection((holder.itemView.context as MainActivity).order.imageOrderList[position].imageFormat!!.index)
+            }
+        }
+
         holder.spinnerFormat?.post {
             holder.spinnerFormat?.onItemSelectedListener = PhotosFragment.getSpinnerListener(holder.itemView.context as MainActivity, holder.adapterPosition)
         }
 
-        PhotosFragment.fillSpinner(0, holder.itemView.context as MainActivity , position )
+        // заполняем  элементы нахера?
+        //PhotosFragment.fillSpinner(0, holder.itemView.context as MainActivity , position )
 //------------------------------------- qty
 
         holder.qty!!.setText((holder.itemView.context as MainActivity).order.imageOrderList[position].qty.toString())

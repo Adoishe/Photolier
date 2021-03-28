@@ -147,7 +147,7 @@ class PhotosFragment : Fragment() {
             spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, 0)
         }
 
-        fillSpinner(0, mainAct, -1)
+        //fillSpinner(-1, mainAct, -1)
     }
 
     private fun addPackToOrder(){
@@ -389,8 +389,9 @@ class PhotosFragment : Fragment() {
 // если добавление нового фото
         if (croppingPosition == -1) {
 
-            val imageOrder          = ImageOrder(resultUri, resultUri.toString())
-            imageOrder.imageFormat  = (requireContext() as MainActivity).order.imageFormat
+            val imageOrder                  = ImageOrder(resultUri, resultUri.toString())
+                imageOrder.imageFormat      = mainAct.order.imageFormat
+                imageOrder.materialPhoto    = mainAct.order.materialPhoto
 
             mainAct.order.imageOrderList.add(imageOrder)
             imageUriList.add(resultUri)
@@ -401,6 +402,7 @@ class PhotosFragment : Fragment() {
             mainAct.order.imageOrderList[croppingPosition].imageUri = resultUri
             croppingPosition                                        = -1
         }
+
         updateList()
     }
 
@@ -514,21 +516,24 @@ class PhotosFragment : Fragment() {
             when (imageListPosition) {
                 // переключение табов
                 -1 ->{
+
                     mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
                 }
                 //  без фото
                 0 ->{
                     when (mainAct.order.imageOrderList.size){
                         0->{
-                            mainAct.order.imageFormat           = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
 
                         }
                         else -> {
-                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
-                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
-
+                            //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
+                            //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
+                            //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //--- MATERIAL
-                            mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].materialPhoto = mainAct.order.materialPhoto
+                         mainAct.order.imageOrderList[imageListPosition].materialPhoto = mainAct.order.materialPhoto
 
                         }
                     }
@@ -537,6 +542,7 @@ class PhotosFragment : Fragment() {
                 else ->{
                     mainAct.order.imageOrderList[imageListPosition].imageFormat = availableImageFormats[selectedItemPosition]
                     mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
+                    //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = imageListPosition
                 }
             }
 /*
