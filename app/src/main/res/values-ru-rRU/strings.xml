@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Photolier</string>
     <string name="crop">Обрезать</string>
-    <string name="selectPic">Добавить фото  в папку</string>
+    <string name="selectPic">Добавить фото</string>
     <string name="photos">Фото</string>
     <string name="printPhotos">Печать фото</string>
     <string name="selectCrop">Выбрать и обрезать фото</string>
@@ -26,4 +26,5 @@
     <string name="packsInOrder">"  папок в заказе"</string>
     <string name="netTrouble">Проблемы со связью. Попробуйте позже</string>
     <string name="delete">delete</string>
+    <string name="sync">Обновление</string>
 </resources>

@@ -26,6 +26,8 @@ class Order(var context: Activity) {
                 var orderSendResult : String                    = ""
                 var indexInPacket    : Int                       = 0
                 var countOfPacket    : Int                       = 0
+                var status          : Int                       = Order.NEW
+
 
     init {
         this.name       = "blank"
@@ -179,6 +181,8 @@ class Order(var context: Activity) {
                 uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
 
+                status = SENT
+
                         //  progressBar.progress
                 }
             catch (e: Exception) {
@@ -186,11 +190,14 @@ class Order(var context: Activity) {
                 // тууут ошибка загрузки заказа
                 result = sendResult
 
+                status = SENDERROR
+
                 mainAct.log.add("result = $result")
                 }
 
-            progressBar.visibility  = ProgressBar.INVISIBLE
+            //progressBar.visibility  = ProgressBar.INVISIBLE
 
+            /*
             when (this.indexInPacket == this.countOfPacket ){
                 true -> {
 
@@ -207,6 +214,8 @@ class Order(var context: Activity) {
 
                 }
             }
+
+             */
         }
     }
 
@@ -225,6 +234,8 @@ class Order(var context: Activity) {
 
                 sendThread.start()
                 sendThread.join()
+
+                progressBar.visibility  = ProgressBar.INVISIBLE
 
                 when (this.indexInPacket == this.countOfPacket ) {
                     true -> {
@@ -266,8 +277,7 @@ class Order(var context: Activity) {
                   //  }
 
             }
-            // очистка после отправки
-            ordersArray = ArrayList()
+
 
         }
         @JvmStatic
@@ -283,6 +293,8 @@ class Order(var context: Activity) {
 
         @JvmStatic
         var ordersArray   : MutableList<Order>  = ArrayList()
-
+        val NEW : Int = 0 // 0 - new
+        val SENT : Int = 0 // 1 - sent
+        val SENDERROR : Int = 0 // 3 - senderror
     }
 }

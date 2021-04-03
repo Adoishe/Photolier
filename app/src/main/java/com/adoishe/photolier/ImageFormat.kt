@@ -88,5 +88,11 @@ import org.json.JSONObject
         var syncSucc = false
         var res = ""
         var imageFormats    : MutableList<ImageFormat>  = ArrayList()
+        val NONSYNC = 0
+        val SYNC = 1
+        val SYNCERR = 2
+        var status = NONSYNC
+        var syncerr = ""
+
     }
 }

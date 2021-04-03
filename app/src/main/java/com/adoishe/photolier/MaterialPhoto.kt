@@ -28,5 +28,13 @@ class MaterialPhoto {
         @JvmStatic
         var materialsPhoto : MutableList<MaterialPhoto>  = ArrayList()
 
+        val NONSYNC = 0
+        val SYNC = 1
+        val SYNCERR = 2
+        var status = NONSYNC
+        var syncerr = ""
+
+
+
     }
 }

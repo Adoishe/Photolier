@@ -3,6 +3,7 @@ package com.adoishe.photolier
 import android.content.Context
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
@@ -60,11 +61,46 @@ class DataLoader () {
                 //-----------------------------------------------------------------------------
                 res = sendSoapObject(request, action)
 
+                when (sourceName) {
+                    "Справочник.Форматы" -> {
+
+                        ImageFormat.status = ImageFormat.SYNC
+                    }
+                    "Справочник.Материалы" -> {
+
+                        MaterialPhoto.status = MaterialPhoto.SYNC
+
+                    }
+                    else -> {
+
+                    }
+                }
+
             } catch (e: Exception) {
 
                 e.printStackTrace()
 
                 res = e.toString()
+
+                when (sourceName) {
+                    "Справочник.Форматы" -> {
+
+                        ImageFormat.status = ImageFormat.SYNCERR
+                        ImageFormat.syncerr = res
+
+                    }
+                    "Справочник.Материалы" -> {
+
+                        MaterialPhoto.status = MaterialPhoto.SYNCERR
+                        MaterialPhoto.syncerr = res
+
+
+                    }
+                    else -> {
+
+                    }
+                }
+
             }
             DataLoader.res = res
         }
@@ -167,6 +203,25 @@ class DataLoader () {
                         res = (envelope.bodyIn as SoapFault).faultstring + "\n" + e.toString()
                     }
                 }
+
+                when (action){
+                    GET_FORMATS_SOAP_ACTION ->{
+                        ImageFormat.status = ImageFormat.SYNCERR
+                        ImageFormat.syncerr = res
+
+
+                    }
+                    GET_MATERIALS_SOAP_ACTION ->{
+
+                        MaterialPhoto.status = MaterialPhoto.SYNCERR
+                        MaterialPhoto.syncerr = res
+                    }
+                    else ->{
+
+                    }
+
+                }
+
             }
 
             return res
@@ -218,16 +273,13 @@ class DataLoader () {
         private const val GET_ORDERS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getOrders"
         private const val GET_ORDERS_METHOD_NAME = "getOrders"
 
-        private const val GET_FORMATS_SOAP_ACTION =
-            "http://www.w3.org/2001/XMLSchema#App:getFormaats"
+        private const val GET_FORMATS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getFormaats"
         private const val GET_FORMATS_METHOD_NAME = "getFormaats"
 
-        private const val GET_MATERIALS_SOAP_ACTION =
-            "http://www.w3.org/2001/XMLSchema#App:getFormaats"
+        private const val GET_MATERIALS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getFormaats"
         private const val GET_MATERIALS_METHOD_NAME = "getFormaats"
 
-        private const val GET_FORMATSBYMATERIAL_SOAP_ACTION =
-            "http://www.w3.org/2001/XMLSchema#App:getFormatsByMaterial"
+        private const val GET_FORMATSBYMATERIAL_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getFormatsByMaterial"
         private const val GET_FORMATSBYMATERIAL_METHOD_NAME = "getFormatsByMaterial"
 
         @JvmStatic
@@ -293,6 +345,7 @@ class DataLoader () {
             progressBar.visibility              = View.INVISIBLE
 
             val c   : Collection<String>
+
             c = ArrayList()
 
             c.add("java.io.IOException: unexpected end of stream on com.android.okhttp.Address")

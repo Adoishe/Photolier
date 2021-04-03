@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
 
@@ -179,13 +180,15 @@ class PhotosFragment : Fragment() {
         }
 
         val loadButton      = root.findViewById<Button>(R.id.buttonLoadPicture)
+
         val cropButton      = root.findViewById<Button>(R.id.buttonCropPicture)
         val sendButton      = root.findViewById<Button>(R.id.buttonSendPictures)
         val addOrderButton  = root.findViewById<Button>(R.id.buttonAddOrder)
             listView        = root.findViewById(R.id.list)
         val tabLayout       = root.findViewById<TabLayout>(R.id.tabLayout)
 
-
+        val selectButton      = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSelect)
+        val sendFButton      = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSend)
         //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         //val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
 
@@ -230,6 +233,19 @@ class PhotosFragment : Fragment() {
             )
         }
 
+        selectButton.setOnClickListener {
+
+            val intent  = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
+
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+
+            startActivityForResult(
+                Intent.createChooser(intent, resources.getString(R.string.selectPic)),
+                SELECT_PICTURES
+            )
+        }
+
         cropButton.setOnClickListener{
             CropImage.activity()
                 .setAllowRotation(true)
@@ -241,6 +257,30 @@ class PhotosFragment : Fragment() {
 
         sendButton.setOnClickListener{
 
+            val builder = AlertDialog.Builder(requireContext())
+
+            builder.setMessage(resources.getString(R.string.send_photos) + "?")
+                .setCancelable(false)
+                .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
+
+                    when(Order.ordersArray.size){
+                        0->addPackToOrder()
+                    }
+
+                    Order.sendAll()
+
+                }
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+
+            val alert = builder.create()
+
+            alert.show()
+        }
+
+        sendFButton.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
 
             builder.setMessage(resources.getString(R.string.send_photos) + "?")
@@ -293,11 +333,29 @@ class PhotosFragment : Fragment() {
         return Thread{
             //viewPager.currentItem = tab.position
             val dl                  = DataLoader()
-            val res                 = dl.getFormatsByMaterial(materialUid)
-            val resJarray           = JSONArray(res)
+            var res                 = dl.getFormatsByMaterial(materialUid)
+            var resJarray           = JSONArray()
+
+            try {
+
+                resJarray           = JSONArray(res)
+
+            } catch (e: Exception) {
+
+
+                e.printStackTrace()
+
+                res = e.toString()
+
+                mainAct.log.add("getFormatsByMaterialThread = $res")
+
+                //return
+            }
+
+
             availableImageFormats   = ArrayList()
 
-            mainAct.log.add("getFormatsByMaterialThread = $res")
+            //mainAct.log.add("getFormatsByMaterialThread = $res")
 
             val resArray : ArrayList<String> = ArrayList(resJarray.length())
 

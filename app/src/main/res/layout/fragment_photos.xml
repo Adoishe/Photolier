@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".PhotosFragment">
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floatSelect"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:contentDescription="eeeeee"
+        android:text="@string/selectPic"
+        app:icon="@drawable/ic_rotate_right_24"
+app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_anchorGravity="bottom|right|end"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floatSend"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:contentDescription="eeeeee"
+        android:text="@string/send_photos"
+        app:icon="@drawable/fui_ic_mail_white_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/floatSelect"
+        app:layout_anchorGravity="bottom|right|end"/>
 
     <Button
         android:id="@+id/buttonLoadPicture"
@@ -16,7 +40,8 @@
         android:text="@string/selectPic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/buttonCropPicture"
@@ -55,11 +80,12 @@
 
     <Button
         android:id="@+id/buttonSendPictures"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0"
         android:text="@string/send_photos"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@+id/buttonAddOrder"
         android:layout_weight="0"
+        android:visibility="gone"
         android:text="% packs in order"
         app:layout_constraintTop_toBottomOf="@+id/buttonAddOrder"
 
@@ -80,6 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:visibility="gone"
             android:text=""
             app:layout_constraintTop_toBottomOf="@+id/buttonSendPictures"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +124,7 @@
 
     <Spinner
         android:id="@+id/spinnerFormat"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:spinnerMode="dialog"
         android:visibility="visible"
@@ -148,5 +176,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photosScrollViewListView"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

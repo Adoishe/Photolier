@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -114,32 +115,19 @@ class MainActivity : AppCompatActivity() {
  */
     }
 
+
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
+
         super.onWindowFocusChanged(hasFocus)
 
-        Toast.makeText(this, "Focus", Toast.LENGTH_LONG).show()
-
         if (hasFocus) {
-
 
             when (auth.currentUser) {
                 null -> authenticate()
             }
 
-            /*
-            val progressBar         = findViewById<ProgressBar>(R.id.progressBar)
-            progressBar.visibility  = ProgressBar.VISIBLE
-
-             */
-
-            ImageFormat.sync(this)
-            //    log.add("ImageFormat = ")
-            MaterialPhoto.sync(this)
-            //  log.add("MaterialPhoto = ")
-
-
-            //progressBar.visibility  = ProgressBar.INVISIBLE
-
+            //sync()
 
         }
     }
@@ -156,11 +144,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
-
-
         val bottomNavigationView = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
+
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
 
@@ -174,10 +163,18 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.action_dial -> {
 
+                    when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC){
+                        true->findNavController(R.id.fragment).navigate(R.id.photosFragment)
+                        false-> Toast.makeText(this, resources.getString(R.string.netTrouble), Toast.LENGTH_LONG).show()
+                    }
 
-                    findNavController(R.id.fragment).navigate(R.id.photosFragment)
+
                 }
                 R.id.action_mail -> {
+
+                    val prg         = findViewById<ProgressBar>(R.id.progressBar)
+                    //prg!!.bringToFront()
+                    prg!!.visibility  = View.VISIBLE
 
                     findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
 

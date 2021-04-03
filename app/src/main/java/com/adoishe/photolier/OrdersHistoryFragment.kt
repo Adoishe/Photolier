@@ -1,19 +1,18 @@
 package com.adoishe.photolier
 
-import android.content.ContentValues
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.google.gson.GsonBuilder
 import org.json.JSONArray
 
 
@@ -33,6 +32,7 @@ class OrdersHistoryFragment : Fragment() {
     private var param2: String? = null
 
     var orders : MutableList<Order> = ArrayList()
+    private var prg: ProgressBar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,19 +46,24 @@ class OrdersHistoryFragment : Fragment() {
 
          return Thread {
 
+             val mainAct = (requireActivity() as MainActivity)
+
+            //prg.visibility = ProgressBar.VISIBLE
+
+
              orders = ArrayList()
 
-             (requireActivity() as MainActivity).log.add("gwt orders thread started")
+             mainAct.log.add("gwt orders thread started")
 
             var result : String
             val dl = DataLoader()
 
-             (requireActivity() as MainActivity).log.add("getOrders rquested")
-             (requireActivity() as MainActivity).log.add("uid = " + (context as MainActivity).auth.currentUser!!.uid)
+             mainAct.log.add("getOrders rquested")
+             mainAct.log.add("uid = " + (context as MainActivity).auth.currentUser!!.uid)
 
-            var sendResult = dl.getOrders((context as MainActivity).auth.currentUser!!.uid)
+            val sendResult = dl.getOrders((context as MainActivity).auth.currentUser!!.uid)
 
-             (requireActivity() as MainActivity).log.add(sendResult)
+             mainAct.log.add(sendResult)
 
             try {
 
@@ -95,24 +100,27 @@ class OrdersHistoryFragment : Fragment() {
 
                 result = orders.toString()
 
-                (requireActivity() as MainActivity).log.add(result)
+                mainAct.log.add(result)
 
             }
             catch (e: Exception) {
 
                 result = sendResult.toString()
 
-                (requireActivity() as MainActivity).log.add(result)
+                mainAct.log.add(result)
 
             }
 
-                    // createCardView(view)
+             //prg.visibility = ProgressBar.INVISIBLE
+             //progressBar.visibility  = ProgressBar.INVISIBLE
         }
     }
 
-    private fun generateTextView(string: String
-                                 //, orderIndex : Int
-                                 , view: View): TextView {
+    private fun generateTextView(
+        string: String
+        //, orderIndex : Int
+        , view: View
+    ): TextView {
 
         val textView            = TextView(requireContext())
         val params              = LinearLayout.LayoutParams(
@@ -210,8 +218,9 @@ class OrdersHistoryFragment : Fragment() {
          */
 
 
-            val textView = generateTextView(order.text
-                                    /*order.name
+            val textView = generateTextView(
+                order.text
+                /*order.name
                                             + "\n "
                                             + order.imageUriList.size
                                             + " "
@@ -220,9 +229,8 @@ class OrdersHistoryFragment : Fragment() {
                                             + order.orderStatus
                                             // , orders.indexOf(order)
 
-                                     */
-                                            , cardView
-                                            )
+                                     */, cardView
+            )
 
             cardView.addView(textView)
 
@@ -236,7 +244,10 @@ class OrdersHistoryFragment : Fragment() {
                 bundle.putString("orderName", order.name)
                 //bundle.putInt("arg2", 2)
 
-                view?.findNavController().navigate(R.id.action_ordersHistoryFragment_to_orderFragment , bundle)
+                view?.findNavController().navigate(
+                    R.id.action_ordersHistoryFragment_to_orderFragment,
+                    bundle
+                )
 
 
                 /*
@@ -267,23 +278,46 @@ class OrdersHistoryFragment : Fragment() {
 
     }
 
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val mainAct = (requireActivity() as MainActivity)
+
+         prg         = mainAct.findViewById<ProgressBar>(R.id.progressBar)
+/*        prg!!.bringToFront()
+        prg!!.visibility  = View.VISIBLE
+
+
+ */
+        val getOrdersThread = getOrders(view)
+
+
+
+
+        getOrdersThread.start()
+        getOrdersThread.join()
+        prg!!.visibility  = View.GONE
+        createCardView(view)
+
+
+
+
+        try {
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
 
-        val root            =  inflater.inflate(R.layout.fragment_orders_history, container, false)
-        val getOrdersThread = getOrders(root)
+        val root    =  inflater.inflate(R.layout.fragment_orders_history, container, false)
 
-        getOrdersThread.start()
-
-        try {
-            getOrdersThread.join()
-            createCardView(root)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
 
         return root
     }

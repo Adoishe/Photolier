@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 
 class RootFragment : Fragment() {
+
+    var  progressBar    : ProgressBar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,8 +30,6 @@ class RootFragment : Fragment() {
         val atuhButton                  = root.findViewById<Button>(R.id.auth)
         val syncButton                  = root.findViewById<Button>(R.id.sync)
 
-        //ImageFormat.sync(requireContext())
-        //MaterialPhoto.sync(requireContext())
 
         goToPhotoButton.setOnClickListener{
 
@@ -51,15 +52,53 @@ class RootFragment : Fragment() {
         }
         syncButton.setOnClickListener{
 
-            var jImageFormat = ImageFormat.sync(requireContext())
-            var jMaterialPhoto = MaterialPhoto.sync(requireContext())
+            sync()
         }
         return root
     }
 
+    fun sync(){
+
+
+        val mainAct = (context as MainActivity)
+
+        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+
+
+
+        ImageFormat.sync(mainAct)
+
+        MaterialPhoto.sync(mainAct)
+
+        //progressBar!!.visibility  = ProgressBar.INVISIBLE
+
+        when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC){
+            true -> Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+            false ->{
+
+                val mess = mainAct.log.joinToString("\n")
+
+                requireView().findViewById<EditText>(R.id.log).setText(mess)
+
+                Toast.makeText(context, mess, Toast.LENGTH_LONG).show()
+
+                mainAct.log.clear()
+
+            }
+        }
+
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+
+
+
         super.onViewCreated(view, savedInstanceState)
+
+
+        sync()
 /*
         val progressBar = (requireContext() as MainActivity). findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility = ProgressBar.VISIBLE
