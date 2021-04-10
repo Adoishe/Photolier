@@ -5,17 +5,24 @@ package com.adoishe.photolier
 //import com.theartofdev.edmodo.cropper.CropImage
 
 
+
+import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -25,6 +32,7 @@ import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
+import kotlin.system.exitProcess
 
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
@@ -62,12 +70,14 @@ class MainActivity : AppCompatActivity() {
                     //    AuthUI.IdpConfig.TwitterBuilder().build()
                 )
 
-
+     lateinit   var progressBar         : ProgressBar
                 var imageUriList        : MutableList<Uri>      = ArrayList()
                 var log                 : MutableList<String>   = ArrayList()
 
-                val REG                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
-    private     var PATTERN: Pattern            = Pattern.compile(REG)
+                val REG                                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
+    private     var PATTERN             : Pattern               = Pattern.compile(REG)
+
+
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
 
 
@@ -87,7 +97,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-/*
+
+    /*
         var progressBar = findViewById<ProgressBar>(R.id.progressBar)
         progressBar.visibility  = ProgressBar.VISIBLE
 
@@ -125,6 +136,7 @@ class MainActivity : AppCompatActivity() {
 
             when (auth.currentUser) {
                 null -> authenticate()
+                else -> setAppTitle()
             }
 
             //sync()
@@ -132,24 +144,94 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onResume() {
 
         super.onResume()
 
-        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
-
+        //Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
 
     }
 
+
+    private fun isPermissionsAllowed(): Boolean {
+        return ContextCompat.checkSelfPermission(this , Manifest.permission.MANAGE_DOCUMENTS) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun askForPermissions(): Boolean {
+        if (!isPermissionsAllowed()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this , Manifest.permission.MANAGE_DOCUMENTS)) {
+
+                showPermissionDeniedDialog()
+
+            } else {
+
+                /*
+                ActivityCompat.requestPermissions(this
+                                                    , arrayOf(Manifest.permission.MANAGE_DOCUMENTS)
+                                                    , OrdersHistoryFragment.REQUEST_CODE
+
+                 */
+
+                requestPermissions( arrayOf(Manifest.permission.MANAGE_DOCUMENTS)
+                    , OrdersHistoryFragment.REQUEST_CODE
+
+                )
+            }
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,permissions: Array<String>,grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            OrdersHistoryFragment.REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission is granted, you can perform your operation here
+                    Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // permission is denied, you can ask for permission again, if you want
+                    Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show()
+                    //  askForPermissions()
+                }
+                return
+            }
+        }
+    }
+
+    private fun showPermissionDeniedDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Permission Denied")
+            .setMessage("Permission is denied, Please allow permissions from App Settings.")
+            .setPositiveButton("App Settings"
+            ) { dialogInterface, i ->
+                // send to app settings if permission is denied permanently
+                val intent = Intent()
+                val uri = Uri.fromParts("package", packageName, null)
+
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                intent.data = uri
+
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel",null)
+            .show()
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        setTheme(R.style.Theme_Photolier)
 
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
 
-        val bottomNavigationView = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-
+        val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
+        progressBar                 = findViewById(R.id.progressBar)
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
 
@@ -163,27 +245,81 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.action_dial -> {
 
-                    when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC){
-                        true->findNavController(R.id.fragment).navigate(R.id.photosFragment)
-                        false-> Toast.makeText(this, resources.getString(R.string.netTrouble), Toast.LENGTH_LONG).show()
+                    when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC) {
+                        true -> findNavController(R.id.fragment).navigate(R.id.photosFragment)
+                        false -> Toast.makeText(
+                            this,
+                            resources.getString(R.string.netTrouble),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-
-
                 }
                 R.id.action_mail -> {
 
-                    val prg         = findViewById<ProgressBar>(R.id.progressBar)
-                    //prg!!.bringToFront()
-                    prg!!.visibility  = View.VISIBLE
+                    //if (askForPermissions()) {
 
-                    findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
+                        progressBar.visibility = ProgressBar.VISIBLE
 
+                        findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
+
+                    //}
                 }
             }
 
             false
         }
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+
+
+
+       // onBackPressed()
+       // return true
+
+       // if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+       //     drawer_layout.closeDrawer(GravityCompat.START)
+
+        //} else
+       // {
+
+
+
+
+
+        val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment)
+
+        if(findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment ) {
+                AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Exit Alert")
+                    .setMessage("Do You Want To Exit Photolier App?")
+                    .setPositiveButton(android.R.string.ok) { dialog, whichButton ->
+                        //findNavController(R.id.fragment).navigateUp()finishAffinity()
+                        //finishAffinity()
+                        moveTaskToBack(true);
+                        exitProcess(-1)
+
+                    }
+                    .setNegativeButton(android.R.string.cancel) { dialog, whichButton ->
+
+                    }
+                    .show()
+            }
+            else{
+                findNavController(R.id.fragment).navigateUp()
+            }
+
+
+
+        return true
+    }
+
+   // }
+
+    private fun setAppTitle(){
+
+        title = resources.getString(R.string.app_name) + ' ' + resources.getString(R.string.ffor) + ' ' + auth.currentUser!!.displayName as CharSequence
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -199,6 +335,7 @@ class MainActivity : AppCompatActivity() {
           //  println("8089845216".isPhoneNumber())
 
             val response = IdpResponse.fromResultIntent(data)
+
             if(resultCode == Activity.RESULT_OK){
                 /*
                     Checks if the User sign in was successful
@@ -206,7 +343,8 @@ class MainActivity : AppCompatActivity() {
     //                startActivity(Next Activity)
                 //showSnackbar(R.string.signed_in)
                 if(auth.currentUser != null){ //If user is signed in
-                    title = resources.getString(R.string.app_name) + ' ' + auth.currentUser!!.displayName as CharSequence
+
+                    setAppTitle()
     //                startActivity(Next Activity)
                 }
 

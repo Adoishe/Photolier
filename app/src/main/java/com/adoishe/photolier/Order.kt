@@ -17,7 +17,7 @@ class Order(var context: Activity) {
                 var name            : String                    = ""
                 var text            : String                    = ""
                 var imageFormat     : ImageFormat?              = null
-                var materialPhoto   : MaterialPhoto?             = null
+                var materialPhoto   : MaterialPhoto?            = null
                 var imageUriList    : MutableList<Uri>          = ArrayList()
     private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                 var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
@@ -93,6 +93,7 @@ class Order(var context: Activity) {
             cv.put("imageFormat"    , it.imageFormat!!.uid)
             cv.put("qty"            , it.qty)
             cv.put("byteArray"      , Base64.encode(byteArray))
+            cv.put("imageUri"       , it.imageUri)
 
             val result = JSONObject()
 
@@ -148,7 +149,7 @@ class Order(var context: Activity) {
         return result
     }
 
-    private fun getSendThread(progressBar: ProgressBar) : Thread {
+    private fun getSendThread() : Thread {
         return Thread {
 
             val mainAct = context as MainActivity
@@ -228,9 +229,10 @@ class Order(var context: Activity) {
             }
             else ->{
 
-                val progressBar             = (context as MainActivity).findViewById(R.id.progressBar) as ProgressBar
+                val progressBar             = (context as MainActivity).progressBar
                     progressBar.visibility  = ProgressBar.VISIBLE
-                val sendThread              = getSendThread(progressBar)
+
+                val sendThread              = getSendThread()
 
                 sendThread.start()
                 sendThread.join()
@@ -242,17 +244,15 @@ class Order(var context: Activity) {
 
                         val bundle = Bundle()
 
-                        bundle.putBoolean("sendorder", true)
-                        bundle.putString("orderName", name)
-                        bundle.putString("orderStatus", orderStatus)
-                        bundle.putString("orderUuid", uuid)
+                        bundle.putBoolean("sendorder"   , true)
+                        bundle.putString("orderName"    , name)
+                        bundle.putString("orderStatus"  , orderStatus)
+                        bundle.putString("orderUuid"    , uuid)
 
                         (context as MainActivity).findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                     }
                 }
-
-
             }//else ->{
         }//when (imageOrderList.size)
     }//fun send (

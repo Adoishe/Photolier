@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.adoishe.photolier"
-        minSdkVersion 28
+        minSdkVersion 30
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -60,7 +60,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     //api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
@@ -69,18 +69,18 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.4.0')
    // implementation 'com.google.firebase:firebase-database-ktx:19.6.0'
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-core:18.0.2'
+    implementation 'com.google.firebase:firebase-core:18.0.3'
     implementation 'com.google.firebase:firebase-database:19.7.0'
 
     implementation 'com.firebaseui:firebase-ui-auth:7.1.1'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.google.android.material:material:1.4.0-alpha01'
+    implementation 'com.google.android.material:material:1.4.0-alpha02'
 //    implementation 'com.github.bumptech.glide:glide:4.6.1'
     dependencies {
         implementation ("com.github.bumptech.glide:glide:4.11.0") {
             exclude group: "com.android.support"
         }
-        implementation "com.android.support:support-fragment:28"
+        implementation "com.android.support:support-fragment:30"
     }
 
 
@@ -96,12 +96,12 @@ dependencies {
         implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.1'
     }
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
 
     // Dynamic Feature Module Support
-    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.4"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
 
     // Testing Navigation
-    androidTestImplementation "androidx.navigation:navigation-testing:2.3.4"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.3.5"
 }

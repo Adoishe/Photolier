@@ -131,9 +131,9 @@ class PhotosFragment : Fragment() {
         mainAct.order.materialPhoto     = currentMaterialPhoto
 
         when (availableImageFormats.size ) {
-            0-> {
+            0 -> {
 
-              //  mainAct.log.add("ImageFormat.imageFormats = " + ImageFormat.imageFormats.size )
+                //  mainAct.log.add("ImageFormat.imageFormats = " + ImageFormat.imageFormats.size )
 
                 return
             }
@@ -163,9 +163,7 @@ class PhotosFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater            : LayoutInflater
-    ,   container           : ViewGroup?
-    ,   savedInstanceState  : Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         // Inflate the layout for this fragment
@@ -175,7 +173,7 @@ class PhotosFragment : Fragment() {
         if(mainAct.auth.currentUser != null){
             //If user is signed in
             this.requireActivity().title  = resources.getString(R.string.app_name)  + ' '  + resources.getString(
-                    R.string.ffor
+                R.string.ffor
             )  + ' ' + mainAct.auth.currentUser!!.displayName as CharSequence
         }
 
@@ -204,33 +202,35 @@ class PhotosFragment : Fragment() {
             tabLayout.addTab(matTab)
         }
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
-            {
-                override fun onTabSelected(tab: TabLayout.Tab ) {
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
 
-                    afterTabSelected(tab)
+                afterTabSelected(tab)
 
-                }
-                override fun onTabUnselected(tab: TabLayout.Tab) {
-
-                }
-                override fun onTabReselected(tab: TabLayout.Tab) {
-                    //afterTabselected(tab)
-                }
             }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                //afterTabselected(tab)
+            }
+        }
         )
 
         loadButton.setOnClickListener{
 
-            val intent  = Intent(Intent.ACTION_GET_CONTENT)
+           //val intent  = Intent(Intent.ACTION_GET_CONTENT)
+            val intent  = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
            startActivityForResult(
-                    Intent.createChooser(intent, resources.getString(R.string.selectPic)),
-                    SELECT_PICTURES
-            )
+               Intent.createChooser(intent, resources.getString(R.string.selectPic)),
+               SELECT_PICTURES
+           )
         }
 
         selectButton.setOnClickListener {
@@ -239,6 +239,12 @@ class PhotosFragment : Fragment() {
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+
+            intent.setFlags(
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            )
 
             startActivityForResult(
                 Intent.createChooser(intent, resources.getString(R.string.selectPic)),
@@ -264,7 +270,7 @@ class PhotosFragment : Fragment() {
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
 
                     when(Order.ordersArray.size){
-                        0->addPackToOrder()
+                        0 -> addPackToOrder()
                     }
 
                     Order.sendAll()
@@ -288,7 +294,7 @@ class PhotosFragment : Fragment() {
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
 
                     when(Order.ordersArray.size){
-                        0->addPackToOrder()
+                        0 -> addPackToOrder()
                     }
 
                     Order.sendAll()
@@ -328,7 +334,7 @@ class PhotosFragment : Fragment() {
         return root
     }
 
-    private fun getFormatsByMaterialThread(materialUid :String , progressBar: ProgressBar): Thread{
+    private fun getFormatsByMaterialThread(materialUid: String): Thread{
 
         return Thread{
             //viewPager.currentItem = tab.position
@@ -352,7 +358,6 @@ class PhotosFragment : Fragment() {
                 //return
             }
 
-
             availableImageFormats   = ArrayList()
 
             //mainAct.log.add("getFormatsByMaterialThread = $res")
@@ -360,12 +365,12 @@ class PhotosFragment : Fragment() {
             val resArray : ArrayList<String> = ArrayList(resJarray.length())
 
             for (j in 0 until resJarray.length())
-                resArray.add( resJarray.getString(j))
+                resArray.add(resJarray.getString(j))
 
-            ImageFormat.imageFormats.forEach{imageFormat ->
+            ImageFormat.imageFormats.forEach{ imageFormat ->
 
                 when (resArray.indexOf(imageFormat.uid)){
-                    -1 ->{
+                    -1 -> {
                     }
                     else -> {
                         availableImageFormats.add(imageFormat)
@@ -380,7 +385,7 @@ class PhotosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         when (MaterialPhoto.materialsPhoto.size){
-            0->{
+            0 -> {
 
                 val messsage = resources.getString(R.string.netTrouble)
 
@@ -390,14 +395,14 @@ class PhotosFragment : Fragment() {
             else -> {
 
                 mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
-                val progressBar                 = mainAct.findViewById<ProgressBar>(R.id.progressBar)
-                progressBar.visibility          = ProgressBar.VISIBLE
-                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid , progressBar)
+
+                mainAct.progressBar.visibility          = ProgressBar.VISIBLE
+                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
 
                 getFormatsByMaterialThread.start()
                 getFormatsByMaterialThread.join()
 
-                progressBar.visibility = ProgressBar.INVISIBLE
+                mainAct.progressBar.visibility = ProgressBar.INVISIBLE
 
                 val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
                 val tab0        = tabLayout.getTabAt(0)
@@ -411,10 +416,10 @@ class PhotosFragment : Fragment() {
                 setQtyText()
 
                 when (availableImageFormats.size){
-                    0->{
+                    0 -> {
                         var warning = view.findViewById<TextView>(R.id.textViewResult)
 
-                        warning.text = mainAct.log[mainAct.log.size-1]
+                        warning.text = mainAct.log[mainAct.log.size - 1]
                     }
                 }
             }
@@ -443,6 +448,8 @@ class PhotosFragment : Fragment() {
     }
 
     private fun insertUriToListView(resultUri: Uri) {
+
+      //  requireActivity().contentResolver.takePersistableUriPermission(resultUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
 // если добавление нового фото
         if (croppingPosition == -1) {
@@ -474,6 +481,9 @@ class PhotosFragment : Fragment() {
 
             if (resultCode == AppCompatActivity.RESULT_OK) {
 
+     //           requireActivity().contentResolver.takePersistableUriPermission(result!!.uri,
+       //             Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                 insertUriToListView(result!!.uri)
 
                 setQtyText()
@@ -488,6 +498,9 @@ class PhotosFragment : Fragment() {
                     if(data!!.clipData == null) {
                         if (data.data != null) {
 //----------------------------------------------------------------------------
+ //                           requireActivity().contentResolver.takePersistableUriPermission(data.data!!,
+   //                             Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                             insertUriToListView(data.data!!)
                             setQtyText()
 //----------------------------------------------------------------------------
@@ -497,10 +510,18 @@ class PhotosFragment : Fragment() {
 // если было выбрано много фото
                         val count = data.clipData!!.itemCount
 
-                        for( i in 0 until count)
+                        for( ind in 0 until count) {
 //----------------------------------------------------------------------------
-                            insertUriToListView(data.clipData!!.getItemAt(i).uri)
+                            var uri = data.clipData!!.getItemAt(ind).uri
+
+     //                       requireActivity().contentResolver.takePersistableUriPermission(
+       //                         uri,
+         //                       Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            //)
+
+                            insertUriToListView(uri)
 //----------------------------------------------------------------------------
+                        }
                         setQtyText()
 
                         //String imagePath = data.getData().getPath();
@@ -538,9 +559,9 @@ class PhotosFragment : Fragment() {
                 availableImageFormats[index]!!.name
             }
 
-            val adapter : ArrayAdapter<String> = ArrayAdapter<String>(context
-                    , R.layout.support_simple_spinner_dropdown_item
-                    ,  arrNames)
+            val adapter : ArrayAdapter<String> = ArrayAdapter<String>(
+                context, R.layout.support_simple_spinner_dropdown_item, arrNames
+            )
 
             adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
 
@@ -548,7 +569,7 @@ class PhotosFragment : Fragment() {
         }
 
         @JvmStatic
-         fun getSpinnerListener(mainAct : MainActivity, imageListPosition : Int) : AdapterView.OnItemSelectedListener{
+         fun getSpinnerListener(mainAct: MainActivity, imageListPosition: Int) : AdapterView.OnItemSelectedListener{
             return object : AdapterView.OnItemSelectedListener {
 
                 override fun onItemSelected(
@@ -569,19 +590,19 @@ class PhotosFragment : Fragment() {
         }
 
         @JvmStatic
-        fun fillSpinner(selectedItemPosition : Int, mainAct : MainActivity,  imageListPosition : Int) {
+        fun fillSpinner(selectedItemPosition: Int, mainAct: MainActivity, imageListPosition: Int) {
 
             when (imageListPosition) {
                 // переключение табов
-                -1 ->{
+                -1 -> {
 
                     mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
                     mainAct.order.imageFormat!!.index = selectedItemPosition
                 }
                 //  без фото
-                0 ->{
-                    when (mainAct.order.imageOrderList.size){
-                        0->{
+                0 -> {
+                    when (mainAct.order.imageOrderList.size) {
+                        0 -> {
                             mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
                             mainAct.order.imageFormat!!.index = selectedItemPosition
                         }
@@ -589,10 +610,13 @@ class PhotosFragment : Fragment() {
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
                             //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat =
+                                availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index =
+                                selectedItemPosition
                             //--- MATERIAL
-                            mainAct.order.imageOrderList[imageListPosition].materialPhoto = mainAct.order.materialPhoto
+                            mainAct.order.imageOrderList[imageListPosition].materialPhoto =
+                                mainAct.order.materialPhoto
 
                         }
                     }

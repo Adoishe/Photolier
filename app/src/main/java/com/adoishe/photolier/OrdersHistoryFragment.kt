@@ -1,5 +1,7 @@
 package com.adoishe.photolier
 
+import android.content.ContentResolver
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +16,8 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import org.json.JSONArray
+import org.json.JSONObject
+import java.io.InputStream
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -58,10 +62,10 @@ class OrdersHistoryFragment : Fragment() {
             var result : String
             val dl = DataLoader()
 
-             mainAct.log.add("getOrders rquested")
-             mainAct.log.add("uid = " + (context as MainActivity).auth.currentUser!!.uid)
+             mainAct.log.add("getOrders requested")
+             mainAct.log.add("uid = " + mainAct.auth.currentUser!!.uid)
 
-            val sendResult = dl.getOrders((context as MainActivity).auth.currentUser!!.uid)
+            val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid)
 
              mainAct.log.add(sendResult)
 
@@ -77,19 +81,23 @@ class OrdersHistoryFragment : Fragment() {
                         val orderItem       = arrayCV.getJSONObject(i)
                         order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
                         order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
-                        //val uriJSONArray    = orderItem.getJSONObject("mValues").getJSONArray("imageUriList")
+                        val uriJSONArray    = JSONArray(
+                            orderItem.getJSONObject("mValues").get("imageUriList").toString()
+                        )
                         val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
                         val imageUriList    : MutableList<Uri>  = ArrayList()
-                        /*
+
                         for (j in 0 until uriJSONArray.length()){
 
-                            val uri1c = Uri.parse( uriJSONArray.getString(j))
+                            val uri1c = Uri.parse(
+                                JSONObject(uriJSONArray.getString(j)).get("imageUri").toString()
+                            )
 
                             imageUriList.add(uri1c)
 
                         }
 
-                         */
+
 
                         order1c.imageUriList = imageUriList
                         order1c.orderStatus = orderStatus
@@ -100,7 +108,7 @@ class OrdersHistoryFragment : Fragment() {
 
                 result = orders.toString()
 
-                mainAct.log.add(result)
+               //mainAct.log.add(result)
 
             }
             catch (e: Exception) {
@@ -135,6 +143,10 @@ class OrdersHistoryFragment : Fragment() {
         return textView
     }
 
+
+
+
+
     private fun generateImageView(uri: Uri): ImageView {
 
         val imageView = ImageView(requireContext())
@@ -144,7 +156,12 @@ class OrdersHistoryFragment : Fragment() {
         )
         imageView.layoutParams = params
 
-        imageView.setImageURI(uri)//setImageResource(R.drawable.hungrycat)
+       //val inStream : InputStream? = requireActivity().contentResolver.openInputStream(uri)
+        //val bitmap = BitmapFactory.decodeStream(inStream)
+
+        //imageView.setImageBitmap(bitmap)
+        imageView.setImageURI(uri)
+        //imageView.setImageResource(R.drawable.ic_launcher_foreground)
 
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
 /*
@@ -154,7 +171,9 @@ class OrdersHistoryFragment : Fragment() {
             .apply(RequestOptions().override(30, 40))
             .into(imageView)
 
+
  */
+
 
         return imageView
     }
@@ -167,8 +186,9 @@ class OrdersHistoryFragment : Fragment() {
             // Initialize a new CardView instance
         orders.forEach { order ->
 
+
             val cardView    = CardView(requireContext())
-            var orderIndex  = orders.indexOf(order)
+            val orderIndex  = orders.indexOf(order)
             cardView.id     = orderIndex
 
             // Initialize a new LayoutParams instance, CardView width and height
@@ -176,15 +196,6 @@ class OrdersHistoryFragment : Fragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT, // CardView width
                 LinearLayout.LayoutParams.WRAP_CONTENT // CardView height
             )
-/*
-            if (orderIndex == 0){
-
-                layoutParams.topToTop = ConstraintSet.PARENT_ID
-
-            }else{
-                layoutParams.topToBottom = orderIndex
-            }
- */
 
             // Set margins for card view
             layoutParams.setMargins(20, 20, 20, 20)
@@ -201,54 +212,39 @@ class OrdersHistoryFragment : Fragment() {
             // Set card view maximum elevation
             cardView.maxCardElevation = 12F
             // Set a click listener for card view
-        /*
-            cardView.setOnClickListener{
-
-                var order = orders[it.id]
-
-                val bundle = Bundle()
-                bundle.putString("orderUuid", order.getUuid())
-                bundle.putString("orderName", order.name)
-                //bundle.putInt("arg2", 2)
-
-                view.findNavController().navigate(R.id.action_ordersHistoryFragment_to_orderFragment , bundle)
-
-            }
-
-         */
-
 
             val textView = generateTextView(
-                order.text
-                /*order.name
-                                            + "\n "
-                                            + order.imageUriList.size
-                                            + " "
-                                            + resources.getString(R.string.photos)
-                                            + " "
-                                            + order.orderStatus
-                                            // , orders.indexOf(order)
-
-                                     */, cardView
+                order.name + "\n" + order.orderStatus
+                , cardView
             )
 
             cardView.addView(textView)
 
+            order.imageUriList.forEach {
+
+                //cardView.addView(generateImageView(it))
+
+            }
+
+
+
+//            cardView.addView(generateImageView(order.imageUriList[0]))
+
 
             cardView.setOnClickListener{
 
-                val order = orders[it.id]
+                val order1c = orders[it.id]
                 val bundle = Bundle()
 
-                bundle.putString("orderUuid", order.getUuid())
-                bundle.putString("orderName", order.name)
-                //bundle.putInt("arg2", 2)
+                bundle.putString("orderUuid", order1c.getUuid())
+                bundle.putString("orderName", order1c.name)
+                bundle.putString("orderText", order1c.text)
+                bundle.putBoolean("ordersHistory", true)
 
-                view?.findNavController().navigate(
+                view.findNavController().navigate(
                     R.id.action_ordersHistoryFragment_to_orderFragment,
                     bundle
                 )
-
 
                 /*
                             Toast.makeText(
@@ -262,51 +258,23 @@ class OrdersHistoryFragment : Fragment() {
 
             // Finally, add the CardView in root layout
             historyLayout?.addView(cardView)
-            //cardView.addView(generateTextView(order.name))
-
-                /*
-                order.imageUriList.forEach {
-
-                    cardView.addView(generateImageView(it))
-
-                }
-
-                 */
-
-
         }
-
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mainAct = (requireActivity() as MainActivity)
-
-         prg         = mainAct.findViewById<ProgressBar>(R.id.progressBar)
-/*        prg!!.bringToFront()
-        prg!!.visibility  = View.VISIBLE
-
-
- */
+        val mainAct         = (requireActivity() as MainActivity)
         val getOrdersThread = getOrders(view)
-
-
-
 
         getOrdersThread.start()
         getOrdersThread.join()
-        prg!!.visibility  = View.GONE
+
+        mainAct.progressBar.visibility  = View.GONE
+
+
         createCardView(view)
 
-
-
-
-        try {
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
 
     }
 
@@ -332,6 +300,10 @@ class OrdersHistoryFragment : Fragment() {
          * @return A new instance of fragment OrdersHistoryFragment.
          */
         // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        val REQUEST_CODE = 333
+
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             OrdersHistoryFragment().apply {

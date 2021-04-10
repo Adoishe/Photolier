@@ -100,7 +100,6 @@ class DataLoader () {
 
                     }
                 }
-
             }
             DataLoader.res = res
         }
@@ -219,9 +218,7 @@ class DataLoader () {
                     else ->{
 
                     }
-
                 }
-
             }
 
             return res
@@ -239,7 +236,7 @@ class DataLoader () {
     fun getOrders(jsonString: String): String {
 
         val request = SoapObject(NAMESPACE, GET_ORDERS_METHOD_NAME)
-        var res = ""
+        var res     = ""
 
         request.addProperty("userUUid", jsonString)
 
@@ -267,7 +264,7 @@ class DataLoader () {
         // private const val URL = "https://seawolf.auxi.ru/photolier/ws/App/wsApp.1cws?wsdl"
         private const val URL = "https://seawolf.auxi.ru/photolier/ws/App/wsApp.1cws"
 
-        private const val SEND_ORDER_ACTION = "http://www.w3.org/2001/XMLSchema#App:ID"
+        private const val SEND_ORDER_ACTION       = "http://www.w3.org/2001/XMLSchema#App:ID"
         private const val SEND_ORDER_METHOD_NAME = "ID"
 
         private const val GET_ORDERS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getOrders"

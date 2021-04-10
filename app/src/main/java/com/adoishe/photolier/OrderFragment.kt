@@ -25,6 +25,7 @@ class OrderFragment : Fragment() {
     private var param1      : String? = null
     private var param2      : String? = null
             var sendorder   : Boolean? = null
+            var ordersHistory   : Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +35,7 @@ class OrderFragment : Fragment() {
         }
     }
 
-    fun fill(v : View ){
+    private fun fillBySend(v : View ){
 
         val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
         val orderUuid           = arguments?.getString("orderUuid")
@@ -42,22 +43,37 @@ class OrderFragment : Fragment() {
         val orderStatus         = arguments?.getString("orderStatus")
             textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
     }
+    private fun fillByHistory(v : View ){
+
+        val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
+        val orderText           = arguments?.getString("orderText")
+            textViewResult.text = orderText
+    }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+                inflater              : LayoutInflater
+            ,   container             : ViewGroup?
+            ,   savedInstanceState    : Bundle?
     ): View? {
 
         val root        = inflater.inflate(R.layout.fragment_order, container, false)
             sendorder   = arguments?.getBoolean("sendorder")
+            ordersHistory   = arguments?.getBoolean("ordersHistory")
 
         when {
             sendorder!! -> {
-                fill(root)
+
+                fillBySend(root)
 
                 val main        = (requireActivity() as MainActivity)
                     main.order  = Order(main)
             }
+            ordersHistory!! -> {
+
+                fillByHistory(root)
+
+            }
+
         }
         return root
     }

@@ -15,8 +15,6 @@ import androidx.navigation.findNavController
 
 class RootFragment : Fragment() {
 
-    var  progressBar    : ProgressBar? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,21 +57,25 @@ class RootFragment : Fragment() {
 
     fun sync(){
 
-
         val mainAct = (context as MainActivity)
 
+        mainAct.progressBar.visibility = ProgressBar.VISIBLE
+
         Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
-
-
 
         ImageFormat.sync(mainAct)
 
         MaterialPhoto.sync(mainAct)
 
-        //progressBar!!.visibility  = ProgressBar.INVISIBLE
+        mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
 
         when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC){
-            true -> Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+            true ->{
+                //Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+                //(context as MainActivity).setTheme(R.style.Theme_Photolier)
+            }
+
+
             false ->{
 
                 val mess = mainAct.log.joinToString("\n")
@@ -83,34 +85,16 @@ class RootFragment : Fragment() {
                 Toast.makeText(context, mess, Toast.LENGTH_LONG).show()
 
                 mainAct.log.clear()
-
             }
         }
-
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-
-
-
         super.onViewCreated(view, savedInstanceState)
 
-
         sync()
-/*
-        val progressBar = (requireContext() as MainActivity). findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.visibility = ProgressBar.VISIBLE
 
-        ImageFormat.sync(requireContext() )
-        //    log.add("ImageFormat = ")
-        MaterialPhoto.sync(requireContext() )
-        //  log.add("MaterialPhoto = ")
-
-        progressBar.visibility = ProgressBar.INVISIBLE
-
- */
 
     }
 
