@@ -167,7 +167,20 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
                 .setActivityTitle((holder.itemView.context as MainActivity).resources.getString(R.string.crop))
                 .start(holder.itemView.context as MainActivity, fragment)
         }
+// imageview
+        holder.imageView!!.setOnClickListener {
 
+            val uri = (holder.itemView.context as MainActivity).order.imageOrderList[position].imageUri
+
+            fragment.croppingPosition = position
+
+            CropImage.activity(uri)
+                .setAllowRotation(true)
+                .setAspectRatio(3, 4)
+                .setCropMenuCropButtonTitle((holder.itemView.context as MainActivity).resources.getString(R.string.crop))
+                .setActivityTitle((holder.itemView.context as MainActivity).resources.getString(R.string.crop))
+                .start(holder.itemView.context as MainActivity, fragment)
+        }
 //------------ delete
       holder.delete!!.setOnClickListener {
 

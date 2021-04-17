@@ -274,22 +274,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
 
 
-
-       // onBackPressed()
-       // return true
-
-       // if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-       //     drawer_layout.closeDrawer(GravityCompat.START)
-
-        //} else
-       // {
-
-
-
-
-
-        val currentFragment =supportFragmentManager.findFragmentById(R.id.fragment)
-
         if(findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment ) {
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle("Exit Alert")

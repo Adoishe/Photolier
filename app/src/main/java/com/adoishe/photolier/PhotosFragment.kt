@@ -139,10 +139,10 @@ class PhotosFragment : Fragment() {
             }
         }
 
-        val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
-        val spinnerAdapter      = getSpinnerFormatAdapter(requireContext())
-
-        spinnerFormat.adapter   = spinnerAdapter
+        val spinnerFormat           = requireView().findViewById<Spinner>(R.id.spinnerFormat)
+        val spinnerAdapter          = getSpinnerFormatAdapter(requireContext())
+        spinnerFormat.visibility    = View.VISIBLE
+        spinnerFormat.adapter       = spinnerAdapter
 
         spinnerFormat.post {
             spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, -1)
@@ -222,6 +222,11 @@ class PhotosFragment : Fragment() {
         loadButton.setOnClickListener{
 
            //val intent  = Intent(Intent.ACTION_GET_CONTENT)
+
+            val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
+
+            spinnerFormat.visibility = View.GONE
+
             val intent  = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
 
@@ -234,6 +239,10 @@ class PhotosFragment : Fragment() {
         }
 
         selectButton.setOnClickListener {
+
+            val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
+
+            spinnerFormat.visibility = View.GONE
 
             val intent  = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
@@ -424,6 +433,16 @@ class PhotosFragment : Fragment() {
                 }
             }
         }
+
+        mainAct.order.imageOrderList.forEach {
+
+            imageUriList.add(it.imageUri!!)
+
+
+        }
+
+
+        updateList()
     }
 
     private fun fillPhotosList(): List<String> {

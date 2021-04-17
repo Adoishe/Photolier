@@ -117,5 +117,6 @@
     <string name="netTrouble">We\'ve got a link problem. Try later</string>
     <string name="delete">delete</string>
     <string name="sync">Synchonizarion</string>
+    <string name="x" translatable="false">X</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
