@@ -272,9 +272,7 @@ class OrdersHistoryFragment : Fragment() {
 
         mainAct.progressBar.visibility  = View.GONE
 
-
         createCardView(view)
-
 
     }
 

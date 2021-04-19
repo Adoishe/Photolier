@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -27,7 +24,14 @@ class RootFragment : Fragment() {
         val logView                     = root.findViewById<EditText>(R.id.log)
         val atuhButton                  = root.findViewById<Button>(R.id.auth)
         val syncButton                  = root.findViewById<Button>(R.id.sync)
+        val photosPrint                 = root.findViewById<TextView>(R.id.printPhotos)
+        val widePrint                   = root.findViewById<TextView>(R.id.printWide)
 
+
+        photosPrint.setOnClickListener {
+
+            (context as MainActivity).showPhotos()
+        }
 
         goToPhotoButton.setOnClickListener{
 

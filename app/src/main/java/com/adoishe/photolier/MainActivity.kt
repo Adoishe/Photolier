@@ -21,8 +21,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -219,6 +221,29 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+     fun showPhotos(){
+
+         val bottomNavigationView   = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
+         /*
+         val photosBottomItem       = bottomNavigationView.findViewById<View>(R.id.action_dial) as MenuView.ItemView
+
+         photosBottomItem.setChecked(true)
+         photosBottomItem.setEnabled(true)
+
+          */
+
+         bottomNavigationView.menu.getItem(1).isChecked = true
+
+        when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC) {
+            true    -> findNavController(R.id.fragment).navigate(R.id.photosFragment)
+            false   -> Toast.makeText(
+                this,
+                resources.getString(R.string.netTrouble),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -245,14 +270,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.action_dial -> {
 
-                    when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC) {
-                        true -> findNavController(R.id.fragment).navigate(R.id.photosFragment)
-                        false -> Toast.makeText(
-                            this,
-                            resources.getString(R.string.netTrouble),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    showPhotos()
+
                 }
                 R.id.action_mail -> {
 
@@ -273,7 +292,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
 
-
         if(findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment ) {
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle("Exit Alert")
@@ -293,9 +311,6 @@ class MainActivity : AppCompatActivity() {
             else{
                 findNavController(R.id.fragment).navigateUp()
             }
-
-
-
         return true
     }
 
