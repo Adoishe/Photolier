@@ -24,8 +24,8 @@ class Order(var context: Activity) {
                 var result                                      = String()
                 var orderStatus     : String                    = ""
                 var orderSendResult : String                    = ""
-                var indexInPacket    : Int                       = 0
-                var countOfPacket    : Int                       = 0
+                var indexInPacket   : Int                       = 0
+                var countOfPacket   : Int                       = 0
                 var status          : Int                       = Order.NEW
 
 

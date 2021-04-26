@@ -90,6 +90,12 @@
                     android:textSize="50sp"
                     android:background="@drawable/customborder"/>
 
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:background="?android:attr/listDivider" />
+
                 <TextView
                     android:id="@+id/printWide"
                     android:layout_width="match_parent"
