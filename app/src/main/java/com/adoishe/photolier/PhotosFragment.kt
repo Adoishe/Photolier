@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImage
@@ -163,7 +164,7 @@ class PhotosFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         // Inflate the layout for this fragment
@@ -173,7 +174,7 @@ class PhotosFragment : Fragment() {
         if(mainAct.auth.currentUser != null){
             //If user is signed in
             this.requireActivity().title  = resources.getString(R.string.app_name)  + ' '  + resources.getString(
-                R.string.ffor
+                    R.string.ffor
             )  + ' ' + mainAct.auth.currentUser!!.displayName as CharSequence
         }
 
@@ -233,8 +234,8 @@ class PhotosFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
            startActivityForResult(
-               Intent.createChooser(intent, resources.getString(R.string.selectPic)),
-               SELECT_PICTURES
+                   Intent.createChooser(intent, resources.getString(R.string.selectPic)),
+                   SELECT_PICTURES
            )
         }
 
@@ -250,14 +251,14 @@ class PhotosFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
             intent.setFlags(
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
             )
 
             startActivityForResult(
-                Intent.createChooser(intent, resources.getString(R.string.selectPic)),
-                SELECT_PICTURES
+                    Intent.createChooser(intent, resources.getString(R.string.selectPic)),
+                    SELECT_PICTURES
             )
         }
 
@@ -458,12 +459,18 @@ class PhotosFragment : Fragment() {
 
     fun updateList(){
 
-        listView.adapter                    = PhotoListAdapter(requireActivity(), imageUriList)
-        val photosRecyclerView              = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
-        photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
-        photosRecyclerView.adapter          = PhotosRecyclerViewAdapter(imageUriList, this)
+        //listView.adapter                    = PhotoListAdapter(requireActivity(), imageUriList)
 
-        //Utility.setListViewHeightBasedOnChildren(listView)
+        val photosRecyclerView                  = requireView().findViewById<RecyclerView>(R.id.photosRecyclerView)
+            photosRecyclerView.layoutManager    = LinearLayoutManager(requireContext())
+        val adapter                             = PhotosRecyclerViewAdapter(imageUriList, this)
+            photosRecyclerView.adapter          = adapter
+
+        val callback: ItemTouchHelper.Callback  = SwipeHelperCallback(adapter)
+        val touchHelper                         = ItemTouchHelper(callback)
+
+        touchHelper.attachToRecyclerView(photosRecyclerView)
+
     }
 
     private fun insertUriToListView(resultUri: Uri) {
@@ -579,10 +586,12 @@ class PhotosFragment : Fragment() {
             }
 
             val adapter : ArrayAdapter<String> = ArrayAdapter<String>(
-                context, R.layout.support_simple_spinner_dropdown_item, arrNames
+                    //   context, R.layout.support_simple_spinner_dropdown_item, arrNames
+                    context, R.layout.spinner_formats, R.id.nameFormat, arrNames
             )
 
-            adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+           // adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+            adapter.setDropDownViewResource(R.layout.spinner_formats)
 
             return adapter
         }
@@ -592,10 +601,10 @@ class PhotosFragment : Fragment() {
             return object : AdapterView.OnItemSelectedListener {
 
                 override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    itemSelected: View?,
-                    selectedItemPosition: Int,
-                    selectedId: Long
+                        parent: AdapterView<*>?,
+                        itemSelected: View?,
+                        selectedItemPosition: Int,
+                        selectedId: Long
                 ) {
 
                     fillSpinner(selectedItemPosition, mainAct, imageListPosition)
@@ -630,12 +639,12 @@ class PhotosFragment : Fragment() {
                             //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
                             mainAct.order.imageOrderList[imageListPosition].imageFormat =
-                                availableImageFormats[selectedItemPosition]
+                                    availableImageFormats[selectedItemPosition]
                             mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index =
-                                selectedItemPosition
+                                    selectedItemPosition
                             //--- MATERIAL
                             mainAct.order.imageOrderList[imageListPosition].materialPhoto =
-                                mainAct.order.materialPhoto
+                                    mainAct.order.materialPhoto
 
                         }
                     }

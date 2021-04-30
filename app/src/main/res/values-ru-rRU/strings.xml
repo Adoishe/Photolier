@@ -22,10 +22,10 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="add_order">Добавить папку в заказ</string>
-    <string name="photosInPack">"  фото в папке"</string>
-    <string name="packsInOrder">"  папок в заказе"</string>
+    <string name="photosInPack">фото в папке</string>
+    <string name="packsInOrder">папок в заказе</string>
     <string name="netTrouble">Проблемы со связью. Попробуйте позже</string>
     <string name="delete">delete</string>
     <string name="sync">Обновление</string>
-    <string name="prinWide">Широкоформатная печать</string>
+    <string name="prinWide">Интерьерная  печать</string>
 </resources>

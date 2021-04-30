@@ -52,8 +52,8 @@ class OrderFragment : Fragment() {
 
 // регистрационная информация (Идентификатор магазина, пароль #1)
 // registration info (Merchant ID, password #1)
-        val mrh_login = "demo"
-        val mrh_pass1 = "Password_1"
+        val mrh_login = "MP.Photolier"
+        val mrh_pass1 = "K4b53A0hjvZE1CtzDKwJ"
 
 // номер заказа
         val inv_id = 12345
@@ -97,18 +97,25 @@ class OrderFragment : Fragment() {
 // generate signature
         //val crc  = md5("$mrh_login:$out_summ:$inv_id:$OutSumCurrency:$mrh_pass1:Shp_item=$shp_item");
         //val crc  = md5("$mrh_login:$out_summ:$inv_id:$inv_desc:$mrh_pass1:$shp_item:$isTest:Shp_item=$shp_item")
-        val crc  =  md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1")
+        val crc  =  md5("$mrh_login:$inv_id:$out_summ:$mrh_pass1")
 
 
 
         //val htmlCode = "<html><form action='https://auth.robokassa.ru/Merchant/Index.aspx' method=POST><input type=hidden name=MerchantLogin value=$mrh_login><input type=hidden name=OutSum value=$out_summ><input type=hidden name=InvId value=$inv_id><input type=hidden name=Description value='$inv_desc'><input type=hidden name=SignatureValue value=$crc><input type=hidden name=Shp_item value='$shp_item'><input type=hidden name=IncCurrLabel value=$in_curr><input type=hidden name=Culture value=$culture><input type=hidden name=Email value=$Email><input type=hidden name=ExpirationDate value=$ExpirationDate><input type=hidden name=OutSumCurrency value=$OutSumCurrency><input type=submit value='Оплатить'></form></html>"
         //val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormMS.js"
-        val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormL.js"
+       // val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormL.js"
+        val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js"
        // val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js"
 
-        val htmlCode =
+        val htmlCode = "<script type='text/javascript' src='https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js?MerchantLogin=MP.Photolier&InvoiceID=0&Culture=ru&Encoding=utf-8&OutSum=100&SignatureValue=54e25cb6e54f17e9cce01969771374cd'></script>"
         //"<html><script language=JavaScript src='$roboForm?MerchantLogin=$mrh_login&OutSum=$out_summ&InvoiceID=$inv_id&Description=$inv_desc&SignatureValue=$crc&Shp_item=$shp_item&IsTest=$isTest'></script></html>"
-                "<html><script language=JavaScript src='https://auth.robokassa.ru/Merchant/PaymentForm/FormMS.js?MerchantLogin=$mrh_login&OutSum=$out_summ&InvoiceID=$inv_id&Description=$inv_desc&SignatureValue=$crc'></script></html>"
+        //"<html><script language=JavaScript src='https://auth.robokassa.ru/Merchant/PaymentForm/FormMS.js?MerchantLogin=$mrh_login&OutSum=$out_summ&InvoiceID=$inv_id&Description=$inv_desc&SignatureValue=$crc'></script></html>"
+
+// ГЕНЕРАЦИЯ САЙТА
+        //"<script type='text/javascript' src='https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js?MerchantLogin=MP.Photolier&InvoiceID=0&Culture=ru&Encoding=utf-8&OutSum=100&SignatureValue=54e25cb6e54f17e9cce01969771374cd'></script>"
+
+// КАНДИДАТ ЕТСТ
+ //       "<html><script language=JavaScript src='https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js?MerchantLogin=$mrh_login&InvoiceID=$inv_id&Culture=ru&Encoding=utf-8&Description=$inv_desc&OutSum=$out_summ&SignatureValue=$crc&IsTest=$isTest"
 
 
        // val htmlText = "<html><body>$htmlCode</body></html>"

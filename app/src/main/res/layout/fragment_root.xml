@@ -70,6 +70,8 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -79,21 +81,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                >
 
                 <TextView
                     android:id="@+id/printPhotos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/printPhotos"
+android:textColor="@color/white"
 
+                    android:textAlignment="center"
                     android:textSize="50sp"
-                    android:background="@drawable/customborder"/>
+                    android:background="@drawable/customborderfilled"/>
 
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
+
                     android:background="?android:attr/listDivider" />
 
                 <TextView
@@ -101,8 +107,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/prinWide"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
                     android:textSize="50sp"
-                    android:background="@drawable/customborder"/>
+                    android:background="@drawable/customborderfilled"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

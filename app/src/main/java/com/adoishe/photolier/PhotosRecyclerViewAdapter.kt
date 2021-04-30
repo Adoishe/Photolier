@@ -11,8 +11,9 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.canhub.cropper.CropImage
+import kotlin.math.abs
 
-class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragment: PhotosFragment) : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() {
+class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragment: PhotosFragment) : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() ,  ItemTouchHelperAdapter{
 
     override fun getItemCount() = values.size
 
@@ -72,20 +73,47 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
         return PhotosViewHolder(itemView)
     }
 
+    fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
     private fun getQtyTextWatcher  (holder: PhotosViewHolder, position: Int) : TextWatcher {
 
         return object : TextWatcher
         {
             override fun afterTextChanged(s: Editable) {
 
-
+/*
                 val toast = Toast.makeText(holder.itemView.context
                     ,s.toString()
                     , Toast.LENGTH_SHORT)
 
                 toast.show()
 
-                (holder.itemView.context as MainActivity).order.imageOrderList[position].qty = s.toString().toInt()
+ */
+
+                val qtyString = s.toString()
+
+                var qtyInt = 1
+
+                if (qtyString.isEmpty()){
+
+
+
+                }
+
+                else{
+
+                    qtyInt = abs(qtyString.toInt())
+
+                    (holder.itemView.context as MainActivity).order.imageOrderList[position].qty = qtyInt
+
+                    if (qtyInt < 1)
+                        qtyInt = 1
+
+                }
+
+                if(qtyString != qtyInt.toString())
+                    holder.qty!!.setText(qtyInt.toString())
+
 
             }
 
@@ -194,4 +222,19 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
     holder.material!!.text = (holder.itemView.context as MainActivity).order.imageOrderList[position].materialPhoto!!.name
 
     }//onBindViewHolder
+
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        return false
+    }
+
+    override fun onItemDismiss(position: Int) {
+
+        (fragment.context as MainActivity).order.imageOrderList.removeAt(position)
+        fragment.imageUriList.removeAt(position)
+        fragment.updateList()
+        //        .removeAt(position);
+        //notifyItemRemoved(position);
+        //onSwiped()
+    }
 }
