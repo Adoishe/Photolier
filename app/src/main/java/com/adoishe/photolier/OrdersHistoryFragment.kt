@@ -15,6 +15,8 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
@@ -85,22 +87,24 @@ class OrdersHistoryFragment : Fragment() {
                             orderItem.getJSONObject("mValues").get("imageUriList").toString()
                         )
                         val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
-                        val imageUriList    : MutableList<Uri>  = ArrayList()
+                        val imageUriList    : MutableList<Uri>      = ArrayList()
+                        val imageBase64List : MutableList<String>   = ArrayList()
 
                         for (j in 0 until uriJSONArray.length()){
 
                             val uri1c = Uri.parse(
                                 JSONObject(uriJSONArray.getString(j)).get("imageUri").toString()
                             )
+                            val base64String = ""//JSONObject(uriJSONArray.getString(j)).get("base64").toString()
 
                             imageUriList.add(uri1c)
+                            imageBase64List.add(base64String)
 
                         }
 
-
-
-                        order1c.imageUriList = imageUriList
-                        order1c.orderStatus = orderStatus
+                        order1c.imageUriList        = imageUriList
+                        order1c.imageBase64List     = imageBase64List
+                        order1c.orderStatus         = orderStatus
 
                         orders.add(order1c)
                     }
@@ -147,7 +151,7 @@ class OrdersHistoryFragment : Fragment() {
 
 
 
-    private fun generateImageView(uri: Uri): ImageView {
+    private fun generateImageView(base64: String): ImageView {
 
         val imageView = ImageView(requireContext())
         val params = LinearLayout.LayoutParams(
@@ -160,20 +164,16 @@ class OrdersHistoryFragment : Fragment() {
         //val bitmap = BitmapFactory.decodeStream(inStream)
 
         //imageView.setImageBitmap(bitmap)
-        imageView.setImageURI(uri)
+        //imageView.setImageURI(uri)
         //imageView.setImageResource(R.drawable.ic_launcher_foreground)
 
         imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-/*
+
         Glide
             .with(requireContext())
-            .load(uri)
+            .load(base64)
             .apply(RequestOptions().override(30, 40))
             .into(imageView)
-
-
- */
-
 
         return imageView
     }
@@ -220,9 +220,20 @@ class OrdersHistoryFragment : Fragment() {
 
             cardView.addView(textView)
 
-            order.imageUriList.forEach {
+            order.imageBase64List.forEach {
 
-                //cardView.addView(generateImageView(it))
+                when(it){
+
+                    ""      -> {
+
+                    }
+                    else    -> {
+                        cardView.addView(generateImageView(it))
+                    }
+                }
+
+
+
 
             }
 

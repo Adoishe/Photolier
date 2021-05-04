@@ -13,7 +13,9 @@ import com.bumptech.glide.Glide
 import com.canhub.cropper.CropImage
 import kotlin.math.abs
 
-class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragment: PhotosFragment) : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() ,  ItemTouchHelperAdapter{
+class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragment: PhotosFragment)
+    : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>()
+        ,  ItemTouchHelperAdapter{
 
     override fun getItemCount() = values.size
 
@@ -233,8 +235,6 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
         (fragment.context as MainActivity).order.imageOrderList.removeAt(position)
         fragment.imageUriList.removeAt(position)
         fragment.updateList()
-        //        .removeAt(position);
-        //notifyItemRemoved(position);
-        //onSwiped()
+
     }
 }

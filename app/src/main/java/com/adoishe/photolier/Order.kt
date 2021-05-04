@@ -19,6 +19,7 @@ class Order(var context: Activity) {
                 var imageFormat     : ImageFormat?              = null
                 var materialPhoto   : MaterialPhoto?            = null
                 var imageUriList    : MutableList<Uri>          = ArrayList()
+                var imageBase64List : MutableList<String>       = ArrayList()
     private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                 var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
                 var result                                      = String()
