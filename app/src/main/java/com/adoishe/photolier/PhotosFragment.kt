@@ -405,12 +405,12 @@ class PhotosFragment : Fragment() {
             else -> {
 
                 mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
+                mainAct.progressBar.visibility  = ProgressBar.VISIBLE
 
-                mainAct.progressBar.visibility          = ProgressBar.VISIBLE
                 val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
 
-                getFormatsByMaterialThread.start()
-                getFormatsByMaterialThread.join()
+                    getFormatsByMaterialThread.start()
+                    getFormatsByMaterialThread.join()
 
                 mainAct.progressBar.visibility = ProgressBar.INVISIBLE
 
@@ -439,9 +439,7 @@ class PhotosFragment : Fragment() {
 
             imageUriList.add(it.imageUri!!)
 
-
         }
-
 
         updateList()
     }

@@ -20,7 +20,7 @@ class Order(var context: Activity) {
                 var materialPhoto   : MaterialPhoto?            = null
                 var imageUriList    : MutableList<Uri>          = ArrayList()
                 var imageBase64List : MutableList<String>       = ArrayList()
-    private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
+    //private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
                 var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
                 var result                                      = String()
                 var orderStatus     : String                    = ""
@@ -45,7 +45,7 @@ class Order(var context: Activity) {
 
         this.uuid = uuid
     }
-
+/*
     private fun getByteArrayList() : MutableList<ByteArray>{
 
         imageOrderList.forEach(){
@@ -57,7 +57,7 @@ class Order(var context: Activity) {
 
         return byteArrayList
     }
-/*
+
     fun getCvArrayList() : MutableList<ContentValues>{
 
         val cvArrayList    : MutableList<ContentValues>  = ArrayList()
@@ -93,7 +93,9 @@ class Order(var context: Activity) {
             cv.put("materialPhoto"  , it.materialPhoto!!.uid)
             cv.put("imageFormat"    , it.imageFormat!!.uid)
             cv.put("qty"            , it.qty)
-            cv.put("byteArray"      , Base64.encode(byteArray))
+            //cv.put("byteArray"      , Base64.encode(byteArray))
+            cv.put("base64String"    , Base64.encode(byteArray))
+            cv.put("thumbB64String" , it.imageThumbBase64)
             cv.put("imageUri"       , it.imageUri)
 
             val result = JSONObject()
@@ -157,7 +159,7 @@ class Order(var context: Activity) {
 
             mainAct.log.add("send thread create")
 
-            byteArrayList               = getByteArrayList()
+            //byteArrayList               = getByteArrayList()
             val jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
             val outputJson              = jsonObject.toString()

@@ -52,12 +52,8 @@ class OrdersHistoryFragment : Fragment() {
 
          return Thread {
 
-             val mainAct = (requireActivity() as MainActivity)
-
-            //prg.visibility = ProgressBar.VISIBLE
-
-
-             orders = ArrayList()
+             val mainAct    = (requireActivity() as MainActivity)
+             orders         = ArrayList()
 
              mainAct.log.add("gwt orders thread started")
 
@@ -69,13 +65,13 @@ class OrdersHistoryFragment : Fragment() {
 
             val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid)
 
-             mainAct.log.add(sendResult)
+            mainAct.log.add(sendResult)
 
             try {
 
                 val arrayCV  = JSONArray(sendResult)
 
-                if (arrayCV.length() !=0){
+                if (arrayCV.length() != 0){
 
                     for (i in 0 until arrayCV.length()) {
 
@@ -93,17 +89,17 @@ class OrdersHistoryFragment : Fragment() {
                         for (j in 0 until uriJSONArray.length()){
 
                             val uri1c = Uri.parse(
-                                JSONObject(uriJSONArray.getString(j)).get("imageUri").toString()
-                            )
-                            val base64String = ""//JSONObject(uriJSONArray.getString(j)).get("base64").toString()
+                                                    JSONObject(uriJSONArray.getString(j)).get("imageUri").toString()
+                                                )
+                            //val base64String = ""//JSONObject(uriJSONArray.getString(j)).get("base64").toString()
 
                             imageUriList.add(uri1c)
-                            imageBase64List.add(base64String)
+                            //imageBase64List.add(base64String)
 
                         }
 
                         order1c.imageUriList        = imageUriList
-                        order1c.imageBase64List     = imageBase64List
+                        //rder1c.imageBase64List     = imageBase64List
                         order1c.orderStatus         = orderStatus
 
                         orders.add(order1c)

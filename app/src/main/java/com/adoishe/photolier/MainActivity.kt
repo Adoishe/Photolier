@@ -8,28 +8,31 @@ package com.adoishe.photolier
 
 import android.Manifest
 import android.app.Activity
-import android.content.DialogInterface
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Base64.encode
+import android.util.Base64.encodeToString
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.MenuView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.common.util.Base64Utils.encode
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 import java.util.regex.Pattern
@@ -82,6 +85,16 @@ class MainActivity : AppCompatActivity() {
 
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
 
+    public fun encodeImage(bm: Bitmap): String? {
+
+        val baos = ByteArrayOutputStream()
+
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+
+        val b = baos.toByteArray()
+
+        return Base64.getEncoder().encodeToString(b)
+    }
 
     private fun authenticate(){
 

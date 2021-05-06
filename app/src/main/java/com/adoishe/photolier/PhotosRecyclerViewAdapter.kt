@@ -1,5 +1,6 @@
 package com.adoishe.photolier
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,11 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.canhub.cropper.CropImage
 import kotlin.math.abs
+
 
 class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragment: PhotosFragment)
     : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>()
@@ -42,7 +45,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
             minus           = itemView.findViewById(R.id.qtyMinus)
             crop            = itemView.findViewById(R.id.editPhoto)
             delete          = itemView.findViewById(R.id.deletePhoto)
-            material         = itemView.findViewById(R.id.material)
+            material        = itemView.findViewById(R.id.material)
         }
     }
 
@@ -77,6 +80,28 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
 
     fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
+
+    private fun setThumbnail(context : MainActivity, position : Int) : Thread {
+        return Thread{
+
+
+            val bitmap = Glide
+                .with(context)
+                .asBitmap()
+                .load(values[position])
+                .apply(RequestOptions().override(50, 50))
+                //.thumbnail(0.05f) // 0.1f 10%
+                //  .override(600     , 800)
+                // .fitCenter()
+                .submit()
+                .get()
+
+            val base64String = (context.encodeImage(bitmap))
+
+            context.order.imageOrderList[position].imageThumbBase64 = base64String
+        }
+    }
+
     private fun getQtyTextWatcher  (holder: PhotosViewHolder, position: Int) : TextWatcher {
 
         return object : TextWatcher
@@ -98,8 +123,6 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
 
                 if (qtyString.isEmpty()){
 
-
-
                 }
 
                 else{
@@ -115,7 +138,6 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
 
                 if(qtyString != qtyInt.toString())
                     holder.qty!!.setText(qtyInt.toString())
-
 
             }
 
@@ -143,6 +165,13 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
             //  .override(600     , 800)
             // .fitCenter()
             .into(holder.imageView)
+
+        //-------------thumb
+
+        val setThumbnailThread = setThumbnail((holder.itemView.context as MainActivity) , position )
+
+        setThumbnailThread.start()
+
   //-----------------------------spinner
         val spinnerAdapter              = PhotosFragment.getSpinnerFormatAdapter(holder.itemView.context)
         holder.spinnerFormat?.adapter   = spinnerAdapter
