@@ -4,9 +4,9 @@ import android.content.ContentValues
 import android.net.Uri
 import org.kobjects.base64.Base64
 
-class ImageOrder(imageUri: Uri, name: String) {
+class ImageOrder(name: String) {
 
-    var imageUri            : Uri?              = imageUri
+    var imageUri            : Uri?              = null
     var imageThumbBase64    : String?           = ""
     var name                : String?           = null
     var binary              : ByteArray?        = null
@@ -17,10 +17,19 @@ class ImageOrder(imageUri: Uri, name: String) {
 
     init {
 
+        this.name = name
+
+      //  paper.put("uid"     , "")
+       // paper.put("name"    , "")
+    }
+
+    init {
+        this.name = name
+    }
+    constructor(imageUri: Uri, name: String) : this(name) {
+
         this.name       = imageUri.lastPathSegment
 
-        paper.put("uid"     , "")
-        paper.put("name"    , "")
     }
 
     fun get64String() : String{

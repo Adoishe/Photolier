@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="fill_horizontal"
-        android:contentDescription="TODO"
+        android:contentDescription="@string/photos"
         android:layout_weight="250"
         />
 
@@ -23,7 +23,7 @@
         android:orientation="horizontal"
         android:layout_weight="180"
 
-        android:background="@drawable/customborder"
+        android:background="@drawable/custom_border"
         >
 
 
@@ -85,7 +85,7 @@
                 android:background="@drawable/button_bg_round"
 
                 android:padding="1dp"
-                android:text="+"
+                android:text="@string/plus"
                 android:textColor="@color/white"
 
                 app:iconPadding="0dp" />
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:layout_weight="10"
-                android:autofillHints=""
+
                 android:ems="10"
                 android:inputType="numberDecimal"
                 android:textAlignment="center"
@@ -111,9 +111,9 @@
 
                 android:layout_weight="10"
 
-                android:background="@drawable/customborderfilled"
+                android:background="@drawable/custom_border_filled"
                 android:padding="1dp"
-                android:text="-"
+                android:text="@string/minus"
                 android:textColor="@color/white" />
 
 

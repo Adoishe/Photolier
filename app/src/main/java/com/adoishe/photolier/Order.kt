@@ -31,7 +31,7 @@ class Order(var context: Activity) {
 
 
     init {
-        this.name       = "blank"
+        this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
         this.session    = (context as MainActivity ).session
     }
 
@@ -46,6 +46,21 @@ class Order(var context: Activity) {
         this.uuid = uuid
     }
 /*
+    fun fillImagesThumbsByBase64List(imageBase64List : MutableList<String>){
+
+        this.imageBase64List = imageBase64List
+
+        imageBase64List.forEach{
+
+            val imageOrder = ImageOrder()
+
+            imageOrder.setThumb(it)
+
+            imageOrderList.add(imageOrder)
+        }
+
+    }
+
     private fun getByteArrayList() : MutableList<ByteArray>{
 
         imageOrderList.forEach(){
@@ -184,8 +199,7 @@ class Order(var context: Activity) {
                 orderStatus     = mValues.getString("orderStatus")
                 uuid            = mValues.getString("orderUuid")
                 orderSendResult = name
-
-                status = SENT
+                status          = SENT
 
                         //  progressBar.progress
                 }
@@ -193,7 +207,6 @@ class Order(var context: Activity) {
 
                 // тууут ошибка загрузки заказа
                 result = sendResult
-
                 status = SENDERROR
 
                 mainAct.log.add("result = $result")

@@ -1,6 +1,7 @@
 package com.adoishe.photolier
 
 import android.content.Context
+import android.os.ParcelUuid
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -245,6 +246,18 @@ class DataLoader () {
         return res
     }
 
+    fun getOrder(orderUuid : String): String {
+
+        val request = SoapObject(NAMESPACE, GET_ORDER_METHOD_NAME)
+        var res     = ""
+
+        request.addProperty("orderUuid", orderUuid)
+
+        res = sendSoapObject(request, GET_ORDER_SOAP_ACTION)
+
+        return res
+    }
+
     fun getFormatsByMaterial(materialUid : String) : String{
 
         val request = SoapObject(NAMESPACE, GET_FORMATSBYMATERIAL_METHOD_NAME)
@@ -269,6 +282,9 @@ class DataLoader () {
 
         private const val GET_ORDERS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getOrders"
         private const val GET_ORDERS_METHOD_NAME = "getOrders"
+
+        private const val GET_ORDER_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getOrder"
+        private const val GET_ORDER_METHOD_NAME = "getOrder"
 
         private const val GET_FORMATS_SOAP_ACTION = "http://www.w3.org/2001/XMLSchema#App:getFormaats"
         private const val GET_FORMATS_METHOD_NAME = "getFormaats"

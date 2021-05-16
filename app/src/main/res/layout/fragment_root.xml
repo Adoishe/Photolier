@@ -93,7 +93,7 @@ android:textColor="@color/white"
 
                     android:textAlignment="center"
                     android:textSize="50sp"
-                    android:background="@drawable/customborderfilled"/>
+                    android:background="@drawable/custom_border_filled"/>
 
                 <View
                     android:id="@+id/divider"
@@ -110,7 +110,7 @@ android:textColor="@color/white"
                     android:textColor="@color/white"
                     android:textAlignment="center"
                     android:textSize="50sp"
-                    android:background="@drawable/customborderfilled"/>
+                    android:background="@drawable/custom_border_filled"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -79,28 +79,31 @@ class OrdersHistoryFragment : Fragment() {
                         val orderItem       = arrayCV.getJSONObject(i)
                         order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
                         order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
+
+                        order1c.setUuid(orderItem.getJSONObject("mValues").getString("orderUuid"))
+
                         val uriJSONArray    = JSONArray(
-                            orderItem.getJSONObject("mValues").get("imageUriList").toString()
-                        )
+                                                            orderItem.getJSONObject("mValues").get("imageUriList").toString()
+                                                        )
                         val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
                         val imageUriList    : MutableList<Uri>      = ArrayList()
                         val imageBase64List : MutableList<String>   = ArrayList()
 
                         for (j in 0 until uriJSONArray.length()){
 
-                            val uri1c = Uri.parse(
-                                                    JSONObject(uriJSONArray.getString(j)).get("imageUri").toString()
-                                                )
-                            //val base64String = ""//JSONObject(uriJSONArray.getString(j)).get("base64").toString()
+                            val jsonObject      = JSONObject(uriJSONArray.getString(j))
+                            val uri1c           = Uri.parse( jsonObject.get("imageUri").toString())
+                            val thumbB64String  = jsonObject.get("thumbB64String").toString()
 
                             imageUriList.add(uri1c)
-                            //imageBase64List.add(base64String)
+                            imageBase64List.add(thumbB64String)
 
                         }
 
                         order1c.imageUriList        = imageUriList
-                        //rder1c.imageBase64List     = imageBase64List
+                        order1c.imageBase64List     = imageBase64List
                         order1c.orderStatus         = orderStatus
+
 
                         orders.add(order1c)
                     }
@@ -143,10 +146,7 @@ class OrdersHistoryFragment : Fragment() {
         return textView
     }
 
-
-
-
-
+/*
     private fun generateImageView(base64: String): ImageView {
 
         val imageView = ImageView(requireContext())
@@ -173,6 +173,8 @@ class OrdersHistoryFragment : Fragment() {
 
         return imageView
     }
+
+ */
 
     private fun createCardView(view: View){
 
@@ -224,7 +226,7 @@ class OrdersHistoryFragment : Fragment() {
 
                     }
                     else    -> {
-                        cardView.addView(generateImageView(it))
+                        cardView.addView((requireContext() as MainActivity ).generateImageView(it))
                     }
                 }
 
@@ -244,6 +246,7 @@ class OrdersHistoryFragment : Fragment() {
                 val bundle = Bundle()
 
                 bundle.putString("orderUuid", order1c.getUuid())
+                bundle.putInt("orderId", it.id)
                 bundle.putString("orderName", order1c.name)
                 bundle.putString("orderText", order1c.text)
                 bundle.putBoolean("ordersHistory", true)

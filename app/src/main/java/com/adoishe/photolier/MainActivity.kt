@@ -8,28 +8,25 @@ package com.adoishe.photolier
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Base64.encode
-import android.util.Base64.encodeToString
+import android.view.Gravity
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import com.bumptech.glide.Glide
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
-import com.google.android.gms.common.util.Base64Utils.encode
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import java.io.ByteArrayOutputStream
@@ -84,6 +81,61 @@ class MainActivity : AppCompatActivity() {
 
 
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
+
+    fun generateImageView(base64: String): ImageView {
+
+        val imageView = ImageView(this)
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        imageView.layoutParams = params
+
+
+        //val inStream : InputStream? = requireActivity().contentResolver.openInputStream(uri)
+        //val bitmap = BitmapFactory.decodeStream(inStream)
+
+        //imageView.setImageBitmap(bitmap)
+        //imageView.setImageURI(uri)
+        //imageView.setImageResource(R.drawable.ic_launcher_foreground)
+
+            imageView.scaleType             = ImageView.ScaleType.CENTER_CROP
+        val imageByteArray                   = Base64.getDecoder().decode(base64)
+        val bmp                              = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
+            imageView.layoutParams.height   = bmp.height
+            imageView.layoutParams.width    = bmp.width
+            imageView.requestLayout()
+
+        Glide
+            .with(this)
+            .load(imageByteArray)
+            //    .apply(RequestOptions().override(30, 40))
+            .into(imageView)
+
+        return imageView
+    }
+
+    fun generateTextView(string : String) :TextView {
+
+        val textView = TextView(this)
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+
+        params.gravity = Gravity.CENTER
+
+        textView.layoutParams = params
+
+        textView.text = string
+
+        textView.requestLayout()
+
+        return textView
+
+    }
+
 
     public fun encodeImage(bm: Bitmap): String? {
 

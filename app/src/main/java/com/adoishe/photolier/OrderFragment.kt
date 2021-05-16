@@ -1,15 +1,23 @@
 package com.adoishe.photolier
 
 
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import org.json.JSONArray
+import org.json.JSONObject
 import java.math.BigInteger
 import java.security.MessageDigest
+import android.widget.LinearLayout.LayoutParams
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,6 +36,7 @@ class OrderFragment : Fragment() {
     private var param2          : String? = null
             var sendorder       : Boolean? = null
             var ordersHistory   : Boolean? = null
+    private lateinit var order1c : Order  //       = Order(requireActivity())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +45,12 @@ class OrderFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+
     fun md5(input:String): String {
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
+
     fun fillWebView(v: View){
         val webView = v.findViewById<WebView>(R.id.payWebView)
         // Enable the WebView to access content through file: URLs
@@ -134,13 +145,159 @@ class OrderFragment : Fragment() {
         fillWebView(v)
 
     }
+
+    private fun getOrder(orderUuid : String) : Thread{
+
+        return Thread {
+
+            val mainAct    = (requireActivity() as MainActivity)
+            //orders         = ArrayList()
+
+            mainAct.log.add("get order thread started")
+
+            var result : String
+            val dl = DataLoader()
+
+            mainAct.log.add("getOrder requested")
+            mainAct.log.add("orderUuid = $orderUuid")
+
+            val sendResult = dl.getOrder(orderUuid)
+
+            mainAct.log.add(sendResult)
+
+            try {
+
+                //val orderItem  = JSONObject(sendResult)
+/*
+                if (arrayCV.length() != 0){
+
+                    for (i in 0 until arrayCV.length()) {
+*/
+
+                        order1c             = Order(requireActivity())
+                val     orderItem           = JSONObject(sendResult)
+                        order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
+                        order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
+                val     uriJSONArray        = JSONArray(
+                            orderItem.getJSONObject("mValues").get("imageUriList").toString()
+                        )
+                        val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
+
+                        val imageUriList    : MutableList<Uri>      = ArrayList()
+                        val imageBase64List : MutableList<String>   = ArrayList()
+
+                        for (j in 0 until uriJSONArray.length()){
+
+                            val jsonObject      = JSONObject(uriJSONArray.getString(j))
+                            val uri1c           = Uri.parse( jsonObject.get("imageUri").toString())
+                            val thumbB64String  = jsonObject.get("thumbB64String").toString()
+                            val formatString    = jsonObject.get("ФорматНаименование").toString()
+                            val materialString  = jsonObject.get("МатериалНаименование").toString()
+                            val qtyString       = jsonObject.get("Количество").toString()
+
+                            imageUriList.add(uri1c)
+                            imageBase64List.add(thumbB64String)
+
+                            val imageOrder              = ImageOrder("$formatString $materialString $qtyString")
+                            imageOrder.imageThumbBase64 = thumbB64String
+
+                            order1c.imageOrderList.add(imageOrder)
+
+                        }
+
+                        order1c.imageUriList    = imageUriList
+                        order1c.orderStatus     = orderStatus
+
+                        //order1c.fillImagesThumbsByBase64List(imageBase64List)
+
+                       // orders.add(order1c)
+                //    }
+               // }
+
+                result = order1c.name
+
+
+
+            }
+            catch (e: Exception) {
+
+                result = sendResult.toString()
+
+                mainAct.log.add(result)
+
+            }
+
+            //prg.visibility = ProgressBar.INVISIBLE
+            //progressBar.visibility  = ProgressBar.INVISIBLE
+        }
+    }
+
+
     private fun fillByHistory(v: View){
 
-        val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
-        val orderText           = arguments?.getString("orderText")
-            textViewResult.text = orderText
+        val textViewResult              = v.findViewById<TextView>(R.id.textViewResult)
+        val orderText                   = arguments?.getString("orderText")
+        val orderUuid                   = arguments?.getString("orderUuid")
+        val mainAct                     = (requireActivity() as MainActivity)
+        val getOrderThread              = getOrder(orderUuid!!)
+        mainAct.progressBar.visibility  = View.VISIBLE
+        textViewResult.text             = "$orderText \n $orderUuid"
+
+        getOrderThread.start()
+        getOrderThread.join()
+
+
+        order1c.imageOrderList.forEach {
+
+            val orderLinearLayout   = v.findViewById<LinearLayout>(R.id.orderLinear)
+            val thumbImageView      = ( requireContext() as MainActivity ).generateImageView(it.imageThumbBase64!!)
+            val thumbTextView       = ( requireContext() as MainActivity ).generateTextView(it.name!!)
+
+
+
+            orderLinearLayout.addView(thumbImageView)
+            orderLinearLayout.addView(thumbTextView)
+
+        }
+
+
+
+        mainAct.progressBar.visibility  = View.GONE
 
         fillWebView(v)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        when {
+            sendorder!! -> {
+
+                fillBySend(view)
+
+                val main        = (requireActivity() as MainActivity)
+                main.order  = Order(main)
+            }
+            ordersHistory!! -> {
+
+                fillByHistory(view)
+/*
+                order1c.imageBase64List.forEach { base64String ->
+
+
+
+                    val orderLinearLayout = view.findViewById<LinearLayout>(R.id.orderLinear)
+                    val thumbImageView = ( requireContext() as MainActivity ).generateImageView(base64String)
+
+                    orderLinearLayout.addView(thumbImageView)
+
+
+                }*/
+
+            }
+
+        }
+
     }
 
     override fun onCreateView(
@@ -150,7 +307,7 @@ class OrderFragment : Fragment() {
         val root            = inflater.inflate(R.layout.fragment_order, container, false)
             sendorder       = arguments?.getBoolean("sendorder")
             ordersHistory   = arguments?.getBoolean("ordersHistory")
-
+/*
         when {
             sendorder!! -> {
 
@@ -166,6 +323,8 @@ class OrderFragment : Fragment() {
             }
 
         }
+
+ */
         return root
     }
 

@@ -112,12 +112,14 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="add_order">Add pack to order</string>
-    <string name="photosInPack">" photos in pack"</string>
+    <string name="photosInPack">photos in pack</string>
     <string name="packsInOrder">" packs in order"</string>
     <string name="netTrouble">We\'ve got a link problem. Try later</string>
     <string name="delete">delete</string>
     <string name="sync">Synchonizarion</string>
     <string name="x" translatable="false">X</string>
     <string name="prinWide">Wide size print</string>
+    <string name="plus" translatable="false">+</string>
+    <string name="minus" translatable="false">-</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

@@ -1,7 +1,9 @@
 package com.adoishe.photolier
 
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -10,8 +12,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import com.canhub.cropper.CropImage
 import kotlin.math.abs
 
@@ -84,19 +84,46 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
     private fun setThumbnail(context : MainActivity, position : Int) : Thread {
         return Thread{
 
-
+            val rate        = 15
+            val source      = ImageDecoder.createSource(context.contentResolver,  values[position])
+            val bmOriginal  = ImageDecoder.decodeBitmap(source)
+            val width: Int  = bmOriginal.width
+            val height: Int = bmOriginal.height
+            val halfWidth   = width     / rate
+            val halfHeight  = height    / rate
+            val bmHalf      = Bitmap.createScaledBitmap(
+                                                            bmOriginal, halfWidth,
+                                                            halfHeight, false
+                                                        )
+/*
             val bitmap = Glide
                 .with(context)
                 .asBitmap()
                 .load(values[position])
-                .apply(RequestOptions().override(50, 50))
+               // .apply(RequestOptions().override(50, 50))
                 //.thumbnail(0.05f) // 0.1f 10%
-                //  .override(600     , 800)
+                 //.override(50     , 50)
+                .apply(RequestOptions().override(50).downsample(DownsampleStrategy.CENTER_INSIDE).skipMemoryCache(true).diskCacheStrategy(
+                    DiskCacheStrategy.NONE))
                 // .fitCenter()
                 .submit()
                 .get()
 
-            val base64String = (context.encodeImage(bitmap))
+
+            var bitmap = Glide.with(application)
+                .asBitmap()
+                .load(file)
+                // .apply(RequestOptions().override(size))
+                // .apply(RequestOptions().override(size).downsample(DownsampleStrategy.AT_MOST))
+                .apply(RequestOptions().override(size).downsample(DownsampleStrategy.CENTER_INSIDE).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE))
+                .submit().get()
+
+            val out = FileOutputStream(outputFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
+            out.flush()
+            out.close()
+ */
+            val base64String = (context.encodeImage(bmHalf))
 
             context.order.imageOrderList[position].imageThumbBase64 = base64String
         }
