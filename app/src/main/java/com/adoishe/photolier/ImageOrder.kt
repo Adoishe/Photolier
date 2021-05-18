@@ -29,6 +29,7 @@ class ImageOrder(name: String) {
     constructor(imageUri: Uri, name: String) : this(name) {
 
         this.name       = imageUri.lastPathSegment
+        this.imageUri   = imageUri
 
     }
 

@@ -28,11 +28,12 @@ class Order(var context: Activity) {
                 var indexInPacket   : Int                       = 0
                 var countOfPacket   : Int                       = 0
                 var status          : Int                       = Order.NEW
+    private     val mainAct                                     = context as MainActivity
 
 
     init {
         this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
-        this.session    = (context as MainActivity ).session
+        this.session    = mainAct.session
     }
 
     fun getUuid(): String {
@@ -96,10 +97,9 @@ class Order(var context: Activity) {
 
     private fun getJSONArrayList() : JSONArray{
 
-      //  var cvArrayList    : MutableList<JSONObject>  = ArrayList()
         val cvArrayList    =  JSONArray()
 
-        imageOrderList.forEach(){
+        imageOrderList.forEach{
 
             val cv          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
@@ -149,7 +149,7 @@ class Order(var context: Activity) {
 
         val json    = JSONObject()
         val result  = JSONObject()
-        val mainAct = context as MainActivity
+
 
         json.put("orderUid"         , this.uuid)
         //json.put("imageFormat"      , this.imageFormat?.uid)
@@ -169,8 +169,6 @@ class Order(var context: Activity) {
 
     private fun getSendThread() : Thread {
         return Thread {
-
-            val mainAct = context as MainActivity
 
             mainAct.log.add("send thread create")
 
@@ -207,7 +205,7 @@ class Order(var context: Activity) {
 
                 // тууут ошибка загрузки заказа
                 result = sendResult
-                status = SENDERROR
+                status = SEND_ERROR
 
                 mainAct.log.add("result = $result")
                 }
@@ -241,11 +239,11 @@ class Order(var context: Activity) {
         when (imageOrderList.size){
             0 -> {
                 // nothing
-                (context as MainActivity).log.add("nothing to send ")
+                mainAct.log.add("nothing to send ")
             }
             else ->{
 
-                val progressBar             = (context as MainActivity).progressBar
+                val progressBar             = mainAct.progressBar
                     progressBar.visibility  = ProgressBar.VISIBLE
 
                 val sendThread              = getSendThread()
@@ -265,7 +263,7 @@ class Order(var context: Activity) {
                         bundle.putString("orderStatus"  , orderStatus)
                         bundle.putString("orderUuid"    , uuid)
 
-                        (context as MainActivity).findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+                        mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                     }
                 }
@@ -284,17 +282,10 @@ class Order(var context: Activity) {
 
                 it.send()
 
-
               //  when (this.indexInPacket == this.countOfPacket ){
                 //    true -> {
-
-
-
                   //  }
-
             }
-
-
         }
         @JvmStatic
         fun updateIndices(){
@@ -303,14 +294,13 @@ class Order(var context: Activity) {
 
                 currentOrder.indexInPacket = ordersArray.indexOf(currentOrder) + 1
                 currentOrder.countOfPacket = ordersArray.size
-
             }
         }
 
         @JvmStatic
-        var ordersArray   : MutableList<Order>  = ArrayList()
-        val NEW : Int = 0 // 0 - new
-        val SENT : Int = 0 // 1 - sent
-        val SENDERROR : Int = 0 // 3 - senderror
+                var ordersArray : MutableList<Order>    = ArrayList()
+        const   val NEW         : Int                   = 0 // 0 - new
+        const   val SENT        : Int                   = 1 // 1 - sent
+        const   val SEND_ERROR  : Int                   = 3 // 3 - send error
     }
 }

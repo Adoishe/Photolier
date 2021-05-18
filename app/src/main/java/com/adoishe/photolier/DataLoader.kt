@@ -316,6 +316,7 @@ class DataLoader () {
                 val hash        = item.getInt("hash")
                 val uid         = item.getString("uid")
                 val name        = item.getString("name")
+
                 val imageFormat = ImageFormat(width, height, uid, name, hash)
 
                 ImageFormat.imageFormats.add(imageFormat)

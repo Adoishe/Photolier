@@ -9,25 +9,28 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import org.json.JSONObject
+import java.math.BigDecimal
 
 
- class ImageFormat
+class ImageFormat
 {
-    var width : Int = 0
-    var height : Int = 0
-    var hash : Int = 0
-    var index : Int = 0
-    var uid     : String = ""
-    var name     : String = ""
+    var width   : Int = 0
+    var height  : Int = 0
+    var hash    : Int = 0
+    var index   : Int = 0
+    var price   = BigDecimal("0")
+
+    var uid     : String    = ""
+    var name    : String    = ""
 
 
     constructor (width: Int, height: Int, uid: String, name: String, hash: Int) {
 
         this.height = height
         this.width  = width
-        this.uid  = uid
-        this.name  = name
-        this.hash  = hash
+        this.uid    = uid
+        this.name   = name
+        this.hash   = hash
 
    }
 

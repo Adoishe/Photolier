@@ -101,7 +101,7 @@
     <string name="no_internet_connection">no_internet_connection</string>
     <string name="unknown_error">unknown_error</string>
     <string name="unknown_sign_in_response">unknown_sign_in_response</string>
-    <string name="ffor">for</string>
+    <string name="ffor">" for "</string>
     <string name="send_photos">Send order</string>
     <string name="get_orders">Sent orders</string>
     <string name="display_name">Name</string>

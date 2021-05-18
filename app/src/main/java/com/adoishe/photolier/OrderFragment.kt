@@ -51,7 +51,8 @@ class OrderFragment : Fragment() {
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
 
-    fun fillWebView(v: View){
+    fun fillWebView(v: View , uuid : String){
+
         val webView = v.findViewById<WebView>(R.id.payWebView)
         // Enable the WebView to access content through file: URLs
         webView.settings.apply {
@@ -68,6 +69,7 @@ class OrderFragment : Fragment() {
 
 // номер заказа
         val inv_id = 12345
+        val shp_auid = uuid
 
 // описание заказа
 // order description
@@ -108,7 +110,7 @@ class OrderFragment : Fragment() {
 // generate signature
         //val crc  = md5("$mrh_login:$out_summ:$inv_id:$OutSumCurrency:$mrh_pass1:Shp_item=$shp_item");
         //val crc  = md5("$mrh_login:$out_summ:$inv_id:$inv_desc:$mrh_pass1:$shp_item:$isTest:Shp_item=$shp_item")
-        val crc  =  md5("$mrh_login:$inv_id:$out_summ:$mrh_pass1")
+        val crc  =  md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1:shp_auid=$shp_auid")
 
 
 
@@ -118,7 +120,9 @@ class OrderFragment : Fragment() {
         val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js"
        // val roboForm = "https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js"
 
-        val htmlCode = "<script type='text/javascript' src='https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js?MerchantLogin=MP.Photolier&InvoiceID=0&Culture=ru&Encoding=utf-8&OutSum=100&SignatureValue=54e25cb6e54f17e9cce01969771374cd'></script>"
+        val htmlCode =
+            // "<script type='text/javascript' src='https://auth.robokassa.ru/Merchant/PaymentForm/FormSS.js?MerchantLogin=MP.Photolier&InvoiceID=0&Culture=ru&Encoding=utf-8&OutSum=100&SignatureValue=54e25cb6e54f17e9cce01969771374cd'></script>"
+            "<script type='text/javascript' src='$roboForm?MerchantLogin=$mrh_login&InvoiceID=$inv_id&Culture=ru&Encoding=utf-8&OutSum=$out_summ&SignatureValue=$crc&IsTest=$isTest&shp_auid=$shp_auid'></script>"
         //"<html><script language=JavaScript src='$roboForm?MerchantLogin=$mrh_login&OutSum=$out_summ&InvoiceID=$inv_id&Description=$inv_desc&SignatureValue=$crc&Shp_item=$shp_item&IsTest=$isTest'></script></html>"
         //"<html><script language=JavaScript src='https://auth.robokassa.ru/Merchant/PaymentForm/FormMS.js?MerchantLogin=$mrh_login&OutSum=$out_summ&InvoiceID=$inv_id&Description=$inv_desc&SignatureValue=$crc'></script></html>"
 
@@ -137,12 +141,12 @@ class OrderFragment : Fragment() {
     private fun fillBySend(v: View){
 
         val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
-        val orderUuid           = arguments?.getString("orderUuid")
+        val orderUuid           = arguments?.getString("orderUuid")!!
         val orderName           = arguments?.getString("orderName")
         val orderStatus         = arguments?.getString("orderStatus")
             textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
 
-        fillWebView(v)
+        fillWebView(v , orderUuid)
 
     }
 
@@ -151,11 +155,9 @@ class OrderFragment : Fragment() {
         return Thread {
 
             val mainAct    = (requireActivity() as MainActivity)
-            //orders         = ArrayList()
 
             mainAct.log.add("get order thread started")
 
-            var result : String
             val dl = DataLoader()
 
             mainAct.log.add("getOrder requested")
@@ -167,24 +169,17 @@ class OrderFragment : Fragment() {
 
             try {
 
-                //val orderItem  = JSONObject(sendResult)
-/*
-                if (arrayCV.length() != 0){
-
-                    for (i in 0 until arrayCV.length()) {
-*/
-
                         order1c             = Order(requireActivity())
                 val     orderItem           = JSONObject(sendResult)
                         order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
                         order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
-                val     uriJSONArray        = JSONArray(
-                            orderItem.getJSONObject("mValues").get("imageUriList").toString()
-                        )
-                        val orderStatus     = orderItem.getJSONObject("mValues").getString("orderStatus")
+                val     uriJSONArray        = JSONArray(orderItem.getJSONObject("mValues").get("imageUriList").toString())
+                val     orderStatus         = orderItem.getJSONObject("mValues").getString("orderStatus")
 
-                        val imageUriList    : MutableList<Uri>      = ArrayList()
-                        val imageBase64List : MutableList<String>   = ArrayList()
+                        order1c.setUuid(orderItem.getJSONObject("mValues").getString("orderUuid"))
+
+                val     imageUriList    : MutableList<Uri>      = ArrayList()
+
 
                         for (j in 0 until uriJSONArray.length()){
 
@@ -195,10 +190,11 @@ class OrderFragment : Fragment() {
                             val materialString  = jsonObject.get("МатериалНаименование").toString()
                             val qtyString       = jsonObject.get("Количество").toString()
 
-                            imageUriList.add(uri1c)
-                            imageBase64List.add(thumbB64String)
 
-                            val imageOrder              = ImageOrder("$formatString $materialString $qtyString")
+                            imageUriList.add(uri1c)
+
+
+                            val imageOrder              = ImageOrder("$formatString $materialString  $qtyString")
                             imageOrder.imageThumbBase64 = thumbB64String
 
                             order1c.imageOrderList.add(imageOrder)
@@ -208,30 +204,15 @@ class OrderFragment : Fragment() {
                         order1c.imageUriList    = imageUriList
                         order1c.orderStatus     = orderStatus
 
-                        //order1c.fillImagesThumbsByBase64List(imageBase64List)
-
-                       // orders.add(order1c)
-                //    }
-               // }
-
-                result = order1c.name
-
-
-
             }
             catch (e: Exception) {
 
-                result = sendResult.toString()
-
-                mainAct.log.add(result)
+                mainAct.log.add(sendResult)
 
             }
 
-            //prg.visibility = ProgressBar.INVISIBLE
-            //progressBar.visibility  = ProgressBar.INVISIBLE
         }
     }
-
 
     private fun fillByHistory(v: View){
 
@@ -246,28 +227,28 @@ class OrderFragment : Fragment() {
         getOrderThread.start()
         getOrderThread.join()
 
-
         order1c.imageOrderList.forEach {
 
             val orderLinearLayout   = v.findViewById<LinearLayout>(R.id.orderLinear)
-            val thumbImageView      = ( requireContext() as MainActivity ).generateImageView(it.imageThumbBase64!!)
-            val thumbTextView       = ( requireContext() as MainActivity ).generateTextView(it.name!!)
+            val content             = LinearLayout(mainAct)
+            val thumbImageView      = mainAct.generateImageView(it.imageThumbBase64!!)
+            val thumbTextView       = mainAct.generateTextView(it.name!!)
+            content.layoutParams    = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            content.orientation     = LinearLayout.HORIZONTAL
 
-
-
-            orderLinearLayout.addView(thumbImageView)
-            orderLinearLayout.addView(thumbTextView)
+            content.addView(thumbImageView)
+            content.addView(thumbTextView)
+            orderLinearLayout.addView(content)
 
         }
 
-
-
         mainAct.progressBar.visibility  = View.GONE
 
-        fillWebView(v)
+        fillWebView(v , order1c.getUuid())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
         when {
@@ -275,24 +256,12 @@ class OrderFragment : Fragment() {
 
                 fillBySend(view)
 
-                val main        = (requireActivity() as MainActivity)
+                val main    = (requireActivity() as MainActivity)
                 main.order  = Order(main)
             }
             ordersHistory!! -> {
 
                 fillByHistory(view)
-/*
-                order1c.imageBase64List.forEach { base64String ->
-
-
-
-                    val orderLinearLayout = view.findViewById<LinearLayout>(R.id.orderLinear)
-                    val thumbImageView = ( requireContext() as MainActivity ).generateImageView(base64String)
-
-                    orderLinearLayout.addView(thumbImageView)
-
-
-                }*/
 
             }
 
@@ -307,24 +276,7 @@ class OrderFragment : Fragment() {
         val root            = inflater.inflate(R.layout.fragment_order, container, false)
             sendorder       = arguments?.getBoolean("sendorder")
             ordersHistory   = arguments?.getBoolean("ordersHistory")
-/*
-        when {
-            sendorder!! -> {
 
-                fillBySend(root)
-
-                val main        = (requireActivity() as MainActivity)
-                    main.order  = Order(main)
-            }
-            ordersHistory!! -> {
-
-                fillByHistory(root)
-
-            }
-
-        }
-
- */
         return root
     }
 

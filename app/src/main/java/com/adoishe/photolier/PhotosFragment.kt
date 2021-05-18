@@ -20,6 +20,8 @@ import com.canhub.cropper.CropImage
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import org.json.JSONArray
+import org.json.JSONObject
+import java.math.BigDecimal
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -375,14 +377,16 @@ class PhotosFragment : Fragment() {
             val resArray : ArrayList<String> = ArrayList(resJarray.length())
 
             for (j in 0 until resJarray.length())
-                resArray.add(resJarray.getString(j))
+                //resArray.add(resJarray.getString(j))
+                resArray.add( (JSONArray(res)[0] as JSONObject).getString("uuid"))
 
             ImageFormat.imageFormats.forEach{ imageFormat ->
 
-                when (resArray.indexOf(imageFormat.uid)){
+                when (val uuidIndex = resArray.indexOf(imageFormat.uid)){
                     -1 -> {
                     }
                     else -> {
+                        imageFormat.price =  BigDecimal((JSONArray(res)[uuidIndex] as JSONObject).getString("price"))
                         availableImageFormats.add(imageFormat)
                     }
                 }
