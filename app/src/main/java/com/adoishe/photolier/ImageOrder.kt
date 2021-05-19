@@ -3,6 +3,7 @@ package com.adoishe.photolier
 import android.content.ContentValues
 import android.net.Uri
 import org.kobjects.base64.Base64
+import java.math.BigDecimal
 
 class ImageOrder(name: String) {
 
@@ -14,13 +15,14 @@ class ImageOrder(name: String) {
     var imageFormat         : ImageFormat?      = null
     var qty                 : Int               = 1
     var materialPhoto       : MaterialPhoto?    = null
+    var price               = BigDecimal("0")
 
     init {
 
         this.name = name
 
-      //  paper.put("uid"     , "")
-       // paper.put("name"    , "")
+        paper.put("uid"     , "")
+        paper.put("name"    , "")
     }
 
     init {

@@ -123,12 +123,9 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-
-        params.gravity = Gravity.CENTER
-
-        textView.layoutParams = params
-
-        textView.text = string
+        params.gravity          = Gravity.CENTER
+        textView.layoutParams   = params
+        textView.text           = string
 
         textView.requestLayout()
 

@@ -1,23 +1,21 @@
 package com.adoishe.photolier
 
 
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import org.json.JSONArray
 import org.json.JSONObject
 import java.math.BigInteger
 import java.security.MessageDigest
 import android.widget.LinearLayout.LayoutParams
+import java.math.BigDecimal
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -77,7 +75,24 @@ class OrderFragment : Fragment() {
 
 // сумма заказа
 // sum of order
-        val out_summ = "8.96"
+
+        val imageOrderList = order1c.imageOrderList.toList()
+
+
+
+       val out_summ = order1c.imageOrderList.sumOf {
+           (it as com.adoishe.photolier.ImageOrder ) .price
+        }.toString()
+
+
+        //toList().groupBy { it.imageUri }.mapValues { it.value.sumOf { it.value. } }
+
+        order1c.imageOrderList.forEach {
+            it.price
+        }
+
+
+        //val out_summ = "8.96"
 
         // тип товара
 // code of goods
@@ -189,13 +204,15 @@ class OrderFragment : Fragment() {
                             val formatString    = jsonObject.get("ФорматНаименование").toString()
                             val materialString  = jsonObject.get("МатериалНаименование").toString()
                             val qtyString       = jsonObject.get("Количество").toString()
+                            val priceString     = jsonObject.get("Цена").toString()
 
 
                             imageUriList.add(uri1c)
 
-
-                            val imageOrder              = ImageOrder("$formatString $materialString  $qtyString")
+                            val qty                     =  mainAct.resources.getString(R.string.qty)
+                            val imageOrder              = ImageOrder("$formatString $materialString $qty $qtyString ($priceString ₽)")
                             imageOrder.imageThumbBase64 = thumbB64String
+                            imageOrder.price            = BigDecimal(priceString)
 
                             order1c.imageOrderList.add(imageOrder)
 

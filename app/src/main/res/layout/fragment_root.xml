@@ -110,6 +110,7 @@ android:textColor="@color/white"
                     android:textColor="@color/white"
                     android:textAlignment="center"
                     android:textSize="50sp"
+                    android:visibility="gone"
                     android:background="@drawable/custom_border_filled"/>
 
             </LinearLayout>

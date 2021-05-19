@@ -378,8 +378,9 @@ class PhotosFragment : Fragment() {
 
             for (j in 0 until resJarray.length())
                 //resArray.add(resJarray.getString(j))
-                resArray.add( (JSONArray(res)[0] as JSONObject).getString("uuid"))
+                resArray.add( (JSONArray(res)[j] as JSONObject).getString("uuid"))
 
+            // заполенние доступных форматов и цен
             ImageFormat.imageFormats.forEach{ imageFormat ->
 
                 when (val uuidIndex = resArray.indexOf(imageFormat.uid)){
@@ -387,6 +388,9 @@ class PhotosFragment : Fragment() {
                     }
                     else -> {
                         imageFormat.price =  BigDecimal((JSONArray(res)[uuidIndex] as JSONObject).getString("price"))
+
+                        ///imageFormat.name = imageFormat.name + "(" + imageFormat.price + "₽)"
+
                         availableImageFormats.add(imageFormat)
                     }
                 }

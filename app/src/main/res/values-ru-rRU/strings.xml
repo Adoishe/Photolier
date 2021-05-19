@@ -28,4 +28,5 @@
     <string name="delete">delete</string>
     <string name="sync">Обновление</string>
     <string name="prinWide">Интерьерная  печать</string>
+    <string name="qty">Количество</string>
 </resources>

@@ -22,8 +22,10 @@ class ImageFormat
 
     var uid     : String    = ""
     var name    : String    = ""
-
-
+        get() { return field + "(" + price + "₽)"}
+        set(value) {
+             field = value
+        }
     constructor (width: Int, height: Int, uid: String, name: String, hash: Int) {
 
         this.height = height
@@ -33,6 +35,7 @@ class ImageFormat
         this.hash   = hash
 
    }
+
 
 
     fun save(){

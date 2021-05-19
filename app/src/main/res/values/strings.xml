@@ -121,5 +121,6 @@
     <string name="prinWide">Wide size print</string>
     <string name="plus" translatable="false">+</string>
     <string name="minus" translatable="false">-</string>
+    <string name="qty">Quantity</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

@@ -107,6 +107,7 @@ class Order(var context: Activity) {
             cv.put("name"           , it.name)
             cv.put("materialPhoto"  , it.materialPhoto!!.uid)
             cv.put("imageFormat"    , it.imageFormat!!.uid)
+            cv.put("price"          , it.imageFormat!!.price.toString())
             cv.put("qty"            , it.qty)
             //cv.put("byteArray"      , Base64.encode(byteArray))
             cv.put("base64String"    , Base64.encode(byteArray))
