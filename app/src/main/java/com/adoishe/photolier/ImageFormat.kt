@@ -16,6 +16,8 @@ class ImageFormat
 {
     var width   : Int = 0
     var height  : Int = 0
+    var widthPix   : Int = 0
+    var heightPix  : Int = 0
     var hash    : Int = 0
     var index   : Int = 0
     var price   = BigDecimal("0")
@@ -26,10 +28,13 @@ class ImageFormat
         set(value) {
              field = value
         }
-    constructor (width: Int, height: Int, uid: String, name: String, hash: Int) {
+
+    constructor (width: Int, height: Int, uid: String, name: String, hash: Int ,  widthPix : Int , heightPix : Int) {
 
         this.height = height
         this.width  = width
+        this.heightPix = heightPix
+        this.widthPix  = widthPix
         this.uid    = uid
         this.name   = name
         this.hash   = hash

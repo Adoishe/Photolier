@@ -1,6 +1,9 @@
 package com.adoishe.photolier
 
+import android.R.attr.bitmap
 import android.app.Activity
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ProgressBar
@@ -8,8 +11,10 @@ import androidx.navigation.findNavController
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kobjects.base64.Base64
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class Order(var context: Activity) {
     private     var uuid            : String                    = UUID.randomUUID().toString()
@@ -103,6 +108,22 @@ class Order(var context: Activity) {
 
             val cv          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+            val bitMap      = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
+            val bos         = ByteArrayOutputStream()
+
+            bitMap.compress(CompressFormat.JPEG, 100, bos)
+
+            val base64String = Base64.encode(bos.toByteArray())
+
+            val maxSize = maxOf( it.imageFormat!!.heightPix , it.imageFormat!!.widthPix)
+
+            when (maxSize >0 )
+                {
+
+                true -> mainAct.resizeBitmap(bitMap, maxSize )
+            }
+
+
 
             cv.put("name"           , it.name)
             cv.put("materialPhoto"  , it.materialPhoto!!.uid)
@@ -110,7 +131,7 @@ class Order(var context: Activity) {
             cv.put("price"          , it.imageFormat!!.price.toString())
             cv.put("qty"            , it.qty)
             //cv.put("byteArray"      , Base64.encode(byteArray))
-            cv.put("base64String"    , Base64.encode(byteArray))
+            cv.put("base64String"    , base64String)
             cv.put("thumbB64String" , it.imageThumbBase64)
             cv.put("imageUri"       , it.imageUri)
 

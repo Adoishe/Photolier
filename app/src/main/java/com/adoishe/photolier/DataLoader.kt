@@ -313,11 +313,13 @@ class DataLoader () {
                 val item        = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
                 val height      = item.getInt("height")
                 val width       = item.getInt("width")
+                val heightPix      = item.getInt("heightPix")
+                val widthPix       = item.getInt("widthPix")
                 val hash        = item.getInt("hash")
                 val uid         = item.getString("uid")
                 val name        = item.getString("name")
 
-                val imageFormat = ImageFormat(width, height, uid, name, hash)
+                val imageFormat = ImageFormat(width, height, uid, name, hash, widthPix , heightPix)
 
                 ImageFormat.imageFormats.add(imageFormat)
             }

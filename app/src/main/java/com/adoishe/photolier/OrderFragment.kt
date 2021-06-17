@@ -44,12 +44,12 @@ class OrderFragment : Fragment() {
         }
     }
 
-    fun md5(input:String): String {
+    private fun md5(input:String): String {
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
 
-    fun fillWebView(v: View , uuid : String){
+    private fun fillWebView(v: View, uuid : String){
 
         val webView = v.findViewById<WebView>(R.id.payWebView)
         // Enable the WebView to access content through file: URLs
@@ -96,27 +96,27 @@ class OrderFragment : Fragment() {
 
         // тип товара
 // code of goods
-        val shp_item = 1
+      //  val shp_item = 1
 
 // предлагаемая валюта платежа
 // default payment e-currency
-        val in_curr = "BANKOCEAN2R";
+      //  val in_curr = "BANKOCEAN2R";
 
 // язык
 // language
-        val culture = "ru"
+      //  val culture = "ru"
 // кодировка
 // encoding
-        val encoding = "utf-8"
+     //  val encoding = "utf-8"
 // Адрес электронной почты покупателя
 // E-mail
-        val Email = "test@test.ru";
+     //   val Email = "test@test.ru";
 // Срок действия счёта
 // Expiration Date
-        val ExpirationDate = "2029-01-16T12:00";
+    //    val ExpirationDate = "2029-01-16T12:00";
 // Валюта счёта
 // OutSum Currency
-        val OutSumCurrency = "USD"
+      //  val OutSumCurrency = "USD"
 
         //------------------
         val isTest = 1
@@ -150,7 +150,7 @@ class OrderFragment : Fragment() {
 
        // val htmlText = "<html><body>$htmlCode</body></html>"
 
-        webView.loadDataWithBaseURL(null, htmlCode, "text/html", "ru_RU", null);
+        webView.loadDataWithBaseURL(null, htmlCode, "text/html", "ru_RU", null)
     }
 
     private fun fillBySend(v: View){
@@ -160,6 +160,11 @@ class OrderFragment : Fragment() {
         val orderName           = arguments?.getString("orderName")
         val orderStatus         = arguments?.getString("orderStatus")
             textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
+
+        val getOrderThread              = getOrder(orderUuid!!)
+
+        getOrderThread.start()
+        getOrderThread.join()
 
         fillWebView(v , orderUuid)
 
