@@ -15,6 +15,7 @@ import org.json.JSONObject
 import java.math.BigInteger
 import java.security.MessageDigest
 import android.widget.LinearLayout.LayoutParams
+import android.widget.ProgressBar
 import java.math.BigDecimal
 
 
@@ -34,6 +35,7 @@ class OrderFragment : Fragment() {
     private var param2          : String? = null
             var sendorder       : Boolean? = null
             var ordersHistory   : Boolean? = null
+    lateinit var progressBar     : ProgressBar
     private lateinit var order1c : Order  //       = Order(requireActivity())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +44,8 @@ class OrderFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
     }
 
     private fun md5(input:String): String {
@@ -153,7 +157,9 @@ class OrderFragment : Fragment() {
         webView.loadDataWithBaseURL(null, htmlCode, "text/html", "ru_RU", null)
     }
 
-    private fun fillBySend(v: View){
+
+
+     fun fillBySend(v: View){
 
         val textViewResult      = v.findViewById<TextView>(R.id.textViewResult)
         val orderUuid           = arguments?.getString("orderUuid")!!
@@ -167,6 +173,9 @@ class OrderFragment : Fragment() {
         getOrderThread.join()
 
         fillWebView(v , orderUuid)
+
+
+         progressBar.visibility  = ProgressBar.GONE
 
     }
 
@@ -276,7 +285,9 @@ class OrderFragment : Fragment() {
         when {
             sendorder!! -> {
 
-                fillBySend(view)
+                Order.sendAll(this)
+
+                //fillBySend(view)
 
                 val main    = (requireActivity() as MainActivity)
                 main.order  = Order(main)
@@ -298,6 +309,7 @@ class OrderFragment : Fragment() {
         val root            = inflater.inflate(R.layout.fragment_order, container, false)
             sendorder       = arguments?.getBoolean("sendorder")
             ordersHistory   = arguments?.getBoolean("ordersHistory")
+            progressBar     = root.findViewById(R.id.progressBarSend)
 
         return root
     }

@@ -1,13 +1,20 @@
 package com.adoishe.photolier
 
-import android.R.attr.bitmap
+//import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
+
+
 import android.app.Activity
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.view.View
 import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.navigation.findNavController
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import org.kobjects.base64.Base64
@@ -32,7 +39,7 @@ class Order(var context: Activity) {
                 var orderSendResult : String                    = ""
                 var indexInPacket   : Int                       = 0
                 var countOfPacket   : Int                       = 0
-                var status          : Int                       = Order.NEW
+                var status          : Int                       = NEW
     private     val mainAct                                     = context as MainActivity
 
 
@@ -100,6 +107,50 @@ class Order(var context: Activity) {
 
  */
 
+    private fun getJSONArrayListSingle(it : ImageOrder) : JSONArray{
+
+        val cvArrayList    =  JSONArray()
+
+        //imageOrderList.forEach{
+
+            val cv          = JSONObject()
+            val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
+            val bitMap      = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
+            val bos         = ByteArrayOutputStream()
+
+            bitMap.compress(CompressFormat.JPEG, 100, bos)
+
+            val base64String = Base64.encode(bos.toByteArray())
+
+            val maxSize = maxOf( it.imageFormat!!.heightPix , it.imageFormat!!.widthPix)
+
+            when (maxSize >0 )
+            {
+
+                true -> mainAct.resizeBitmap(bitMap, maxSize )
+            }
+
+
+            cv.put("name"           , it.name)
+            cv.put("materialPhoto"  , it.materialPhoto!!.uid)
+            cv.put("imageFormat"    , it.imageFormat!!.uid)
+            cv.put("price"          , it.imageFormat!!.price.toString())
+            cv.put("qty"            , it.qty)
+            //cv.put("byteArray"      , Base64.encode(byteArray))
+            cv.put("base64String"    , base64String)
+            cv.put("thumbB64String" , it.imageThumbBase64)
+            cv.put("imageUri"       , it.imageUri)
+
+            val result = JSONObject()
+
+            result.put("mValues", cv)
+
+            cvArrayList.put(result)
+        //}
+
+        return cvArrayList
+    }
+
     private fun getJSONArrayList() : JSONArray{
 
         val cvArrayList    =  JSONArray()
@@ -122,7 +173,6 @@ class Order(var context: Activity) {
 
                 true -> mainAct.resizeBitmap(bitMap, maxSize )
             }
-
 
 
             cv.put("name"           , it.name)
@@ -189,39 +239,188 @@ class Order(var context: Activity) {
         return result
     }
 
-    private fun getSendThread() : Thread {
+
+
+
+    suspend fun sendPhoto(index :Int, imageOrder :ImageOrder, dl : DataLoader , outputJson : String):String {
+
+        imageOrder.isLastOne(imageOrderList.size-1 ==  index)
+
+        val cvArrayList             = getJSONArrayListSingle(imageOrder)
+        val jsoCvArrayList: String  = cvArrayList.toString()
+        val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+
+        return sendResult
+    }
+
+
+
+    private fun getSendThread(fragment: OrderFragment) : Thread {
         return Thread {
 
             mainAct.log.add("send thread create")
+
+
 
             //byteArrayList               = getByteArrayList()
             val jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
             val outputJson              = jsonObject.toString()
 
-            mainAct.log.add("json to send = $outputJson")
+            //mainAct.log.add("json to send = $outputJson")
+/*
+            mainAct.runOnUiThread(Runnable {
+                mainAct.progressBar.max = imageOrderList.size-1
+                mainAct.progressBar.min = 0
+                mainAct.progressBar.isIndeterminate = false
 
-            val cvArrayList             = getJSONArrayList()
-            val jsoCvArrayList: String  = cvArrayList.toString()
-            val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+                mainAct.progressBar.visibility =  ProgressBar.VISIBLE
+            })
 
-            mainAct.log.add("answer json = $sendResult")
+ */
+/*
+            val layout = findView
+            val progressBar = ProgressBar(mainAct null, android.R.attr.progressBarStyleLarge)
+            val params = RelativeLayout.LayoutParams(100, 100)
+            params.addRule(RelativeLayout.CENTER_IN_PARENT)
+            layout.addView(progressBar, params)
+
+ */
+
+           // val cvArrayList             = getJSONArrayList()
+            //val jsoCvArrayList: String  = cvArrayList.toString()
+            //val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+
+            var sendResult = ""
+
+
+
+
+            mainAct.runOnUiThread{
+                fragment.progressBar.visibility = View.VISIBLE
+                fragment.progressBar.isIndeterminate = false
+                fragment.progressBar.max = imageOrderList.size-1
+                fragment.progressBar.min = 0
+
+            }
+
+
+            imageOrderList.forEachIndexed  { index, imageOrder ->
+
+                imageOrder.isLastOne(imageOrderList.size-1 ==  index)
+
+
+                val uiInfo  = Runnable               {
+
+                        //
+                       // val toast = Toast(mainAct)
+
+                        // mainAct.progressBar.visibility = ProgressBar.VISIBLE
+                fragment.progressBar.progress = index
+
+
+                      //  toast.setText(index.toString())
+
+                      //  toast.show()
+/*
+                        synchronized(this)
+                        {
+                            this.noti;
+                        }
+
+ */
+
+                }
+
+             //   synchronized( uiInfo ) {
+                    mainAct.runOnUiThread(uiInfo) ;
+
+                    //uiInfo.wait() ; // unlocks myRunable while waiting
+              //  }
+
+
+
+
+
+               // mainAct.runOnUiThread(uiInfo )
+
+
+
+
+
+/*
+
+                val photosFragment = mainAct.supportFragmentManager.fragments[0].childFragmentManager.fragments[0] as PhotosFragment
+
+
+                photosFragment.imageUriList.removeAt(index)
+                photosFragment.updateList()
+
+ */
+
+                val cvArrayList             = getJSONArrayListSingle(imageOrder)
+                val jsoCvArrayList: String  = cvArrayList.toString()
+                    sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+
+
+
+
+/*
+                GlobalScope.launch(Dispatchers.Main) {
+                    //val deferred              = async(Dispatchers.Default) { sendPhoto(index, imageOrder, dl , outputJson ) }
+                    sendResult             = withContext(Dispatchers.Default) { sendPhoto(index, imageOrder, dl , outputJson ) }
+
+
+
+                    val toast = Toast(mainAct)
+
+                    mainAct.progressBar.visibility = ProgressBar.VISIBLE
+                    mainAct.progressBar.progress = index
+                    mainAct.progressBar.isIndeterminate = true
+
+                    toast.setText(index.toString())
+
+                    toast.show()
+
+                }
+                \
+ */
+
+
+            }
+                /*
+            mainAct.runOnUiThread(Runnable {
+                mainAct.progressBar.isIndeterminate = true
+                mainAct.progressBar.visibility = View.GONE
+            })
+
+                 */
+
+
+            //mainAct.log.add("answer json = $sendResult")
 
             try {
 
-                val resultJSSONObj  = JSONObject(sendResult)
-                val mValues         = resultJSSONObj.getJSONObject("mValues")
-                result              = resultJSSONObj.toString()
+                    val resultJSSONObj  = JSONObject(sendResult)
+                    val mValues         = resultJSSONObj.getJSONObject("mValues")
+                    result              = resultJSSONObj.toString()
 
-                mainAct.log.add("result = $result")
+                    mainAct.log.add("result = $result")
 
-                name            = mValues.getString("orderName")
-                orderStatus     = mValues.getString("orderStatus")
-                uuid            = mValues.getString("orderUuid")
-                orderSendResult = name
-                status          = SENT
+                    name            = mValues.getString("orderName")
+                    orderStatus     = mValues.getString("orderStatus")
+                    uuid            = mValues.getString("orderUuid")
+                    orderSendResult = name
+                    status          = SENT
 
+                    mainAct.runOnUiThread {
+                        fragment.arguments?.putString("orderName", name)
+                        fragment.arguments?.putString("orderStatus", orderStatus)
+                        fragment.arguments?.putString("orderUuid", uuid)
+
+                        fragment.fillBySend(fragment.requireView().rootView)
                         //  progressBar.progress
+                    }
                 }
             catch (e: Exception) {
 
@@ -232,7 +431,7 @@ class Order(var context: Activity) {
                 mainAct.log.add("result = $result")
                 }
 
-            //progressBar.visibility  = ProgressBar.INVISIBLE
+           // fragment.progressBar.visibility  = ProgressBar.GONE
 
             /*
             when (this.indexInPacket == this.countOfPacket ){
@@ -256,7 +455,7 @@ class Order(var context: Activity) {
         }
     }
 
-    fun send (){
+    fun send (fragment: OrderFragment){
 
         when (imageOrderList.size){
             0 -> {
@@ -265,30 +464,17 @@ class Order(var context: Activity) {
             }
             else ->{
 
-                val progressBar             = mainAct.progressBar
-                    progressBar.visibility  = ProgressBar.VISIBLE
+               // val progressBar             = mainAct.progressBar
+               //     progressBar.visibility  = ProgressBar.VISIBLE
 
-                val sendThread              = getSendThread()
+                val sendThread              = getSendThread(fragment)
 
                 sendThread.start()
-                sendThread.join()
+                //sendThread.join()
 
-                progressBar.visibility  = ProgressBar.INVISIBLE
+                //progressBar.visibility  = ProgressBar.INVISIBLE
 
-                when (this.indexInPacket == this.countOfPacket ) {
-                    true -> {
 
-                        val bundle = Bundle()
-
-                        bundle.putBoolean("sendorder"   , true)
-                        bundle.putString("orderName"    , name)
-                        bundle.putString("orderStatus"  , orderStatus)
-                        bundle.putString("orderUuid"    , uuid)
-
-                        mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
-
-                    }
-                }
             }//else ->{
         }//when (imageOrderList.size)
     }//fun send (
@@ -296,13 +482,13 @@ class Order(var context: Activity) {
     companion object {
 
         @JvmStatic
-        fun sendAll(){
+        fun sendAll(fragment: OrderFragment){
 
             updateIndices()
 
             ordersArray.forEach {
 
-                it.send()
+                it.send(fragment)
 
               //  when (this.indexInPacket == this.countOfPacket ){
                 //    true -> {

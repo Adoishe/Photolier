@@ -16,6 +16,7 @@ class ImageOrder(name: String) {
     var qty                 : Int               = 1
     var materialPhoto       : MaterialPhoto?    = null
     var price               = BigDecimal("0")
+    var lastOne             = false
 
     init {
 
@@ -33,6 +34,11 @@ class ImageOrder(name: String) {
         this.name       = imageUri.lastPathSegment
         this.imageUri   = imageUri
 
+    }
+
+    public fun isLastOne(lastOne : Boolean) : Unit {
+
+        this.lastOne = lastOne
     }
 
     fun get64String() : String{

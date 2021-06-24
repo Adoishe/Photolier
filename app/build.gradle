@@ -101,7 +101,7 @@ dependencies {
 
     // Dynamic Feature Module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.5"
-
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
     // Testing Navigation
     androidTestImplementation "androidx.navigation:navigation-testing:2.3.5"
 }

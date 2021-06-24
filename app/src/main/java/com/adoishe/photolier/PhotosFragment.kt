@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -160,7 +161,7 @@ class PhotosFragment : Fragment() {
 
         Order.updateIndices()
 
-        blankOrderData()
+        //blankOrderData()
 
         setQtyText()
     }
@@ -188,8 +189,8 @@ class PhotosFragment : Fragment() {
             listView        = root.findViewById(R.id.list)
         val tabLayout       = root.findViewById<TabLayout>(R.id.tabLayout)
 
-        val selectButton      = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSelect)
-        val sendFButton      = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSend)
+        val selectButton    = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSelect)
+        val sendFButton     = root.findViewById<ExtendedFloatingActionButton>(R.id.floatSend)
         //  val ordersButton = root.findViewById<Button>(R.id.buttonGetOrders)
         //val resultTextView      = root.findViewById<TextView>(R.id.textViewResult)
 
@@ -285,7 +286,9 @@ class PhotosFragment : Fragment() {
                         0 -> addPackToOrder()
                     }
 
-                    Order.sendAll()
+                  //  Order.sendAll()
+
+                   // blankOrderData()
 
                 }
                 .setNegativeButton(resources.getString(R.string.no)) { dialog, id ->
@@ -301,6 +304,10 @@ class PhotosFragment : Fragment() {
         sendFButton.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
 
+           // val progressBar             = mainAct.progressBar
+           // progressBar.visibility  = ProgressBar.VISIBLE
+            //progressBar.isIndeterminate = false
+
             builder.setMessage(resources.getString(R.string.send_photos) + "?")
                 .setCancelable(false)
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, id ->
@@ -309,7 +316,28 @@ class PhotosFragment : Fragment() {
                         0 -> addPackToOrder()
                     }
 
-                    Order.sendAll()
+                    dialog.dismiss()
+
+                    //Order.sendAll()
+
+                   // when (this.indexInPacket == this.countOfPacket ) {
+                   //     true -> {
+
+                            val bundle = Bundle()
+
+                            bundle.putBoolean("sendorder"   , true)
+                           // bundle.putString("orderName"    , name)
+                            //bundle.putString("orderStatus"  , orderStatus)
+                            //bundle.putString("orderUuid"    , uuid)
+
+                            mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
+
+                        //}
+                  //  }
+
+
+                //    progressBar.visibility  = ProgressBar.GONE
+                //    progressBar.isIndeterminate = true
 
                 }
                 .setNegativeButton(resources.getString(R.string.no)) { dialog, id ->
@@ -420,7 +448,7 @@ class PhotosFragment : Fragment() {
                     getFormatsByMaterialThread.start()
                     getFormatsByMaterialThread.join()
 
-                mainAct.progressBar.visibility = ProgressBar.INVISIBLE
+                mainAct.progressBar.visibility = ProgressBar.GONE
 
                 val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
                 val tab0        = tabLayout.getTabAt(0)

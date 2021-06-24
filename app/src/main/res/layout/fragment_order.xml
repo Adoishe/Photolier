@@ -26,6 +26,15 @@
             android:layout_height="wrap_content"
             android:text="" />
 
+        <ProgressBar
+            android:id="@+id/progressBarSend"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:scaleY="25"
+            android:tooltipText="dfdfdfdf"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </LinearLayout>

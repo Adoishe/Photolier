@@ -12,7 +12,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -47,6 +46,7 @@ fun showSnackbar(id : Int){
  */
 
 class MainActivity : AppCompatActivity() {
+
 
                 var dbSq                : DatabaseHelper    = DatabaseHelper(this);
                 val auth                                    = FirebaseAuth.getInstance()
@@ -336,6 +336,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        val count = supportFragmentManager.backStackEntryCount
+
+        if (count == 0) {
+            super.onBackPressed()
+            //additional code
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         setTheme(R.style.Theme_Photolier)
@@ -345,6 +356,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+
+
 
         val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
         progressBar                 = findViewById(R.id.progressBar)
@@ -383,7 +398,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
 
-        if(findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment ) {
+        var rootReached = false
+
+        try {
+           rootReached = (findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment)
+        }
+        catch (e: Exception) {
+            findNavController(R.id.fragment).navigateUp()
+            return true
+        }
+
+        if( rootReached) {
                 AlertDialog.Builder(this@MainActivity)
                     .setTitle("Exit Alert")
                     .setMessage("Do You Want To Exit Photolier App?")
@@ -400,7 +425,18 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
             else{
+
+
+            try {
                 findNavController(R.id.fragment).navigateUp()
+            }
+            catch (e: Exception) {
+                findNavController(R.id.fragment).navigate(R.id.rootFragment)
+                return true
+            }
+
+
+
             }
         return true
     }
