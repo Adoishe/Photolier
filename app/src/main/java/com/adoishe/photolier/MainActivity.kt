@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.firebase.ui.auth.AuthUI
@@ -400,11 +401,23 @@ class MainActivity : AppCompatActivity() {
 
         var rootReached = false
 
+        val hostFragment    = Navigation.findNavController(this,R.id.fragment)
+        val navHost         = this.supportFragmentManager.findFragmentById(R.id.fragment)
+        var currentFragment = navHost?.childFragmentManager?.fragments?.get(0)
+
+        if (currentFragment is OrderFragment) {
+
+            hostFragment.navigate(R.id.rootFragment)
+
+            return true
+        }
+
+
         try {
-           rootReached = (findNavController(R.id.fragment).currentDestination!!.id == R.id.rootFragment)
+           rootReached = (hostFragment.currentDestination!!.id == R.id.rootFragment)
         }
         catch (e: Exception) {
-            findNavController(R.id.fragment).navigateUp()
+            hostFragment.navigateUp()
             return true
         }
 
@@ -428,10 +441,10 @@ class MainActivity : AppCompatActivity() {
 
 
             try {
-                findNavController(R.id.fragment).navigateUp()
+                hostFragment.navigateUp()
             }
             catch (e: Exception) {
-                findNavController(R.id.fragment).navigate(R.id.rootFragment)
+                hostFragment.navigate(R.id.rootFragment)
                 return true
             }
 

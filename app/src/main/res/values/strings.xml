@@ -92,7 +92,7 @@
     <string name="crop">Crop</string>
     <string name="selectPic">"Select photo(s) "</string>
     <string name="photos">Photos</string>
-    <string name="printPhotos">Print photos</string>
+    <string name="printPhotos">New order</string>
     <string name="selectCrop">Select and crop photo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
