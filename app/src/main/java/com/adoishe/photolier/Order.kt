@@ -24,7 +24,7 @@ import kotlin.collections.ArrayList
 
 
 class Order(var context: Activity) {
-    private     var uuid            : String                    = UUID.randomUUID().toString()
+    private     var uuid            : String                    = "" //UUID.randomUUID().toString()
                 var session         : String                    = ""
                 var name            : String                    = ""
                 var text            : String                    = ""
@@ -46,6 +46,7 @@ class Order(var context: Activity) {
     init {
         this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
         this.session    = mainAct.session
+        this.uuid       =  UUID.randomUUID().toString()
     }
 
     fun getUuid(): String {
@@ -140,6 +141,8 @@ class Order(var context: Activity) {
             cv.put("base64String"    , base64String)
             cv.put("thumbB64String" , it.imageThumbBase64)
             cv.put("imageUri"       , it.imageUri)
+            cv.put("lastOne"       , it.lastOne)
+            cv.put("size"       , imageOrderList.size)
 
             val result = JSONObject()
 
@@ -227,6 +230,7 @@ class Order(var context: Activity) {
         //json.put("imageFormat"      , this.imageFormat?.uid)
         //json.put("materialPhoto"    , this.materialPhoto?.uid)
         json.put("session"          , this.session)
+        json.put("uuid"             , this.uuid)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
@@ -297,17 +301,18 @@ class Order(var context: Activity) {
 
 
             mainAct.runOnUiThread{
-                fragment.progressBar.visibility = View.VISIBLE
-                fragment.progressBar.isIndeterminate = false
-                fragment.progressBar.max = imageOrderList.size-1
-                fragment.progressBar.min = 0
+                fragment.progressBar.visibility         = View.VISIBLE
+                fragment.progressBar.isIndeterminate    = false
+                fragment.progressBar.max                = imageOrderList.size-1
+                fragment.progressBar.min                = 0
 
             }
 
 
+            val lastIndex = imageOrderList.size -1
             imageOrderList.forEachIndexed  { index, imageOrder ->
 
-                imageOrder.isLastOne(imageOrderList.size-1 ==  index)
+                imageOrder.isLastOne(lastIndex ==  index)
 
 
                 val uiInfo  = Runnable               {

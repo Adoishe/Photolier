@@ -167,6 +167,9 @@ class OrderFragment : Fragment() {
         val orderStatus         = arguments?.getString("orderStatus")
             textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
 
+         val main    = (requireActivity() as MainActivity)
+         main.order  = Order(main)
+
         val getOrderThread              = getOrder(orderUuid!!)
 
         getOrderThread.start()
@@ -289,8 +292,7 @@ class OrderFragment : Fragment() {
 
                 //fillBySend(view)
 
-                val main    = (requireActivity() as MainActivity)
-                main.order  = Order(main)
+
             }
             ordersHistory!! -> {
 
