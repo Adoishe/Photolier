@@ -34,7 +34,8 @@
             android:layout_marginTop="16dp"
             android:scaleY="25"
             android:tooltipText="dfdfdfdf"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
 
     </LinearLayout>

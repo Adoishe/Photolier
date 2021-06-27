@@ -141,8 +141,8 @@ class Order(var context: Activity) {
             cv.put("base64String"    , base64String)
             cv.put("thumbB64String" , it.imageThumbBase64)
             cv.put("imageUri"       , it.imageUri)
-            cv.put("lastOne"       , it.lastOne)
-            cv.put("size"       , imageOrderList.size)
+            cv.put("lastOne"        , it.lastOne)
+            cv.put("size"           , imageOrderList.size )
 
             val result = JSONObject()
 
@@ -230,7 +230,7 @@ class Order(var context: Activity) {
         //json.put("imageFormat"      , this.imageFormat?.uid)
         //json.put("materialPhoto"    , this.materialPhoto?.uid)
         json.put("session"          , this.session)
-        json.put("uuid"             , this.uuid)
+        //json.put("uuid"             , this.uuid)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())

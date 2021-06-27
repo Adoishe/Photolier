@@ -409,6 +409,10 @@ class MainActivity : AppCompatActivity() {
 
             hostFragment.navigate(R.id.rootFragment)
 
+            order  = Order(this)
+
+            Order.ordersArray = ArrayList()
+
             return true
         }
 
