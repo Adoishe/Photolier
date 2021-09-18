@@ -144,7 +144,26 @@ class MainActivity : AppCompatActivity() {
 
         return imageView
     }
+/*
+    private fun generateTextView(
+        string: String
+        //, orderIndex : Int
+        , view: View
+    ): TextView {
 
+        val textView            = TextView(requireContext())
+        val params              = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        textView.layoutParams   = params
+        textView.text           = string
+        //textView.id             = orderIndex
+
+
+        return textView
+    }
+  */
     fun generateTextView(string : String) :TextView {
 
         val textView = TextView(this)
@@ -162,7 +181,6 @@ class MainActivity : AppCompatActivity() {
         return textView
 
     }
-
 
     public fun encodeImage(bm: Bitmap): String? {
 

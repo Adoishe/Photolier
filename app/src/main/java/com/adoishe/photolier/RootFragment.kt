@@ -40,7 +40,8 @@ class RootFragment : Fragment() {
 
         ordersButton.setOnClickListener {
 
-            view?.findNavController()?.navigate(R.id.action_rootFragment_to_ordersHistoryFragment)
+            //view?.findNavController()?.navigate(R.id.action_rootFragment_to_ordersHistoryFragment)
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_getSizeFragment)
         }
 
         logView.setOnClickListener {
@@ -59,7 +60,7 @@ class RootFragment : Fragment() {
         return root
     }
 
-    fun sync(){
+    private fun sync(){
 
         val mainAct = (context as MainActivity)
 

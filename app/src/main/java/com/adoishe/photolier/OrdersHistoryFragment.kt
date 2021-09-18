@@ -36,6 +36,7 @@ class OrdersHistoryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    val mainAct    = (requireActivity() as MainActivity)
 
     var orders : MutableList<Order> = ArrayList()
     private var prg: ProgressBar? = null
@@ -52,7 +53,7 @@ class OrdersHistoryFragment : Fragment() {
 
          return Thread {
 
-             val mainAct    = (requireActivity() as MainActivity)
+             // val mainAct    = (requireActivity() as MainActivity)
              orders         = ArrayList()
 
              mainAct.log.add("gwt orders thread started")
@@ -127,24 +128,7 @@ class OrdersHistoryFragment : Fragment() {
         }
     }
 
-    private fun generateTextView(
-        string: String
-        //, orderIndex : Int
-        , view: View
-    ): TextView {
 
-        val textView            = TextView(requireContext())
-        val params              = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        textView.layoutParams   = params
-        textView.text           = string
-        //textView.id             = orderIndex
-
-
-        return textView
-    }
 
 /*
     private fun generateImageView(base64: String): ImageView {
@@ -211,9 +195,9 @@ class OrdersHistoryFragment : Fragment() {
             cardView.maxCardElevation = 12F
             // Set a click listener for card view
 
-            val textView = generateTextView(
+            val textView = mainAct.generateTextView(
                 order.name + "\n" + order.orderStatus
-                , cardView
+                    //, cardView
             )
 
             cardView.addView(textView)

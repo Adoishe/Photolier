@@ -229,7 +229,7 @@ class PhotosFragment : Fragment() {
 
             val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
 
-            spinnerFormat.visibility = View.GONE
+           // spinnerFormat.visibility = View.GONE
 
             val intent  = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
@@ -246,7 +246,7 @@ class PhotosFragment : Fragment() {
 
             val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
 
-            spinnerFormat.visibility = View.GONE
+            //spinnerFormat.visibility = View.GONE
 
             val intent  = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*" //allows any image file type. Change * to specific extension to limit it
