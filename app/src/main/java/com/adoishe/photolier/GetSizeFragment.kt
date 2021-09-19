@@ -1,6 +1,8 @@
 package com.adoishe.photolier
 
+import android.content.ContentValues
 import android.graphics.Color
+import android.media.Image
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.navigation.findNavController
@@ -24,15 +27,15 @@ private const val ARG_PARAM2 = "param2"
  */
 class GetSizeFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var id: Int? = null
+    private var uid: String? = null
     //val mainAct    = requireActivity() as MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            id = it.getInt("id")
+            uid = it.getString("uid")
         }
     }
 
@@ -44,6 +47,7 @@ class GetSizeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_get_size, container, false)
     }
 
+    /*
     private fun createCardView(view: View) {
 
         // Add an ImageView to the CardView
@@ -118,15 +122,35 @@ class GetSizeFragment : Fragment() {
         }
     }
 
+    */
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
-        val mainAct         = (requireActivity() as MainActivity)
+        val mainAct                                     = (requireActivity() as MainActivity)
+            mainAct.order.materialPhoto                 = MaterialPhoto.materialsPhoto[this.id as Int]
 
+        (mainAct.order.materialPhoto  as MaterialPhoto).indexInArray    = this.id as Int
 
-        mainAct.progressBar.visibility  = View.GONE
+        mainAct.progressBar.visibility  = ProgressBar.VISIBLE
 
-        createCardView(view)
+        val getFormatsByMaterialThread      = mainAct.getFormatsByMaterialThread(this.uid as String)
+
+        getFormatsByMaterialThread.start()
+        getFormatsByMaterialThread.join()
+
+        mainAct.progressBar.visibility                  = ProgressBar.GONE
+        mainAct.progressBar.visibility                  = View.GONE
+        val cvArrayList : MutableList<ContentValues>    = ArrayList()
+
+        mainAct.availableImageFormats.forEach { (it as ImageFormat)
+
+                cvArrayList.add( it.toCv() )
+
+        }
+
+        mainAct.createCardView(view, cvArrayList , R.id.action_getSizeFragment_to_photosFragment)
 
     }
 

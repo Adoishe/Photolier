@@ -1,17 +1,13 @@
 package com.adoishe.photolier
 
-
-
-//import com.theartofdev.edmodo.cropper.CropImage
-
-
-
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -20,6 +16,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
@@ -29,8 +26,11 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.math.BigDecimal
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 
                 val REG                                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
     private     var PATTERN             : Pattern               = Pattern.compile(REG)
+                var availableImageFormats   : MutableList<Any>  = ArrayList()
 
 
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
@@ -111,6 +112,61 @@ class MainActivity : AppCompatActivity() {
 
 
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
+
+
+     fun getFormatsByMaterialThread(materialUid: String): Thread{
+
+        return Thread{
+            //viewPager.currentItem = tab.position
+            val dl                  = DataLoader()
+            var res                 = dl.getFormatsByMaterial(materialUid)
+            var resJarray           = JSONArray()
+
+            try {
+
+                resJarray           = JSONArray(res)
+
+            } catch (e: Exception) {
+
+
+                e.printStackTrace()
+
+                res = e.toString()
+
+                log.add("getFormatsByMaterialThread = $res")
+
+                //return
+            }
+
+            availableImageFormats = ArrayList()
+
+            //mainAct.log.add("getFormatsByMaterialThread = $res")
+
+            val resArray : ArrayList<String> = ArrayList(resJarray.length())
+
+            for (j in 0 until resJarray.length())
+            //resArray.add(resJarray.getString(j))
+                resArray.add( (JSONArray(res)[j] as JSONObject).getString("uuid"))
+
+            // заполенние доступных форматов и цен
+            ImageFormat.imageFormats.forEach{ it ->
+
+                when (val uuidIndex = resArray.indexOf((it as  ImageFormat).uid)){
+                    -1 -> {
+                    }
+                    else -> {
+                        it.price =  BigDecimal((JSONArray(res)[uuidIndex] as JSONObject).getString("price"))
+
+                        ///imageFormat.name = imageFormat.name + "(" + imageFormat.price + "₽)"
+
+                        availableImageFormats.add(it)
+                    }
+                }
+            }
+        }
+    }
+
+
 
     fun generateImageView(base64: String): ImageView {
 
@@ -180,6 +236,104 @@ class MainActivity : AppCompatActivity() {
 
         return textView
 
+    }
+
+
+    fun cvToString (cv: ContentValues) : String {
+
+        val s                       = cv.valueSet()
+        val itr     : Iterator<*>   = s.iterator()
+        var result  : String        = ""
+
+        while (itr.hasNext()) {
+            val me = itr.next() as Map.Entry<*, *>
+            val key = me.key.toString()
+           // val value = me.value
+
+            when ( key ) {
+                "id" -> {}
+                "uid" -> {}
+                else -> result += me.value
+            }
+
+        }
+
+        return result
+    }
+
+    fun createCardView(view: View, listCV : MutableList<ContentValues> , action : Int) {
+
+        // Add an ImageView to the CardView
+        val cardView_targetLayout = view.findViewById<LinearLayout>(R.id.cardView_target_layout)
+
+        // Initialize a new CardView instance
+        listCV.forEach {
+
+            val cardView = CardView(this)
+
+            cardView.id = listCV.indexOf(it)
+
+            cardView.tag = it.getAsString("uid")
+
+            // Initialize a new LayoutParams instance, CardView width and height
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, // CardView width
+                LinearLayout.LayoutParams.WRAP_CONTENT // CardView height
+            )
+
+            // Set margins for card view
+            layoutParams.setMargins(20, 20, 20, 20)
+            // Set the card view layout params
+            cardView.layoutParams = layoutParams
+            // Set the card view corner radius
+            cardView.radius = 16F
+            // Set the card view content padding
+            cardView.setContentPadding(25, 25, 25, 25)
+            // Set the card view background color
+            cardView.setCardBackgroundColor(Color.LTGRAY)
+            // Set card view elevation
+            cardView.cardElevation = 8F
+            // Set card view maximum elevation
+            cardView.maxCardElevation = 12F
+            // Set a click listener for card view
+            //val mainAct    = requireActivity() as MainActivity
+
+
+
+            val textView = generateTextView( cvToString(it) )
+
+            //Toast.makeText(context, imageFormat.name + "\n" + imageFormat.price, Toast.LENGTH_SHORT).show()
+
+            cardView.addView(textView)
+
+
+//            cardView.addView(generateImageView(order.imageUriList[0]))
+            cardView.setOnClickListener {
+
+               // val imageFormat = ImageFormat.imageFormats[it.id]
+                val bundle = Bundle()
+
+
+                bundle.putInt("id"      , it.id)
+                bundle.putString("uid"  , it.tag as String?)
+
+
+                //bundle.putString("imageFormatName", imageFormat.name)
+                //bundle.putB("imageFormatPrice", imageFormat.price)
+                //bundle.putBoolean("ordersHistory", true)
+
+
+                view.findNavController().navigate(
+                    action,
+                    bundle
+                )
+
+
+
+            }
+            // Finally, add the CardView in root layout
+            cardView_targetLayout?.addView(cardView)
+        }
     }
 
     public fun encodeImage(bm: Bitmap): String? {

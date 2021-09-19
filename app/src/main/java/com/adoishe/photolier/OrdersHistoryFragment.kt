@@ -214,9 +214,6 @@ class OrdersHistoryFragment : Fragment() {
                     }
                 }
 
-
-
-
             }
 
 

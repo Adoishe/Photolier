@@ -41,7 +41,8 @@ class RootFragment : Fragment() {
         ordersButton.setOnClickListener {
 
             //view?.findNavController()?.navigate(R.id.action_rootFragment_to_ordersHistoryFragment)
-            view?.findNavController()?.navigate(R.id.action_rootFragment_to_getSizeFragment)
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_getMaterialFragment)
+
         }
 
         logView.setOnClickListener {

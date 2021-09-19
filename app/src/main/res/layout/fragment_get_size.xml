@@ -15,7 +15,7 @@ tools:context=".GetSizeFragment">
     android:fillViewport="true">
 
     <LinearLayout
-        android:id="@+id/imageFormat_layout"
+        android:id="@+id/cardView_target_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

@@ -1,5 +1,6 @@
 package com.adoishe.photolier
 
+import android.content.ContentValues
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,16 +14,18 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [getMaterialFragment.newInstance] factory method to
+ * Use the [GetMaterialFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class getMaterialFragment : Fragment() {
+class GetMaterialFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -37,6 +40,16 @@ class getMaterialFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_get_material, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        super.onViewCreated(view, savedInstanceState)
+
+        val mainAct                     = (requireActivity() as MainActivity)
+        mainAct.progressBar.visibility  = View.GONE
+
+        mainAct.createCardView(view , MaterialPhoto.toCvArrayList() , R.id.action_getMaterialFragment_to_getSizeFragment)
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -49,7 +62,7 @@ class getMaterialFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            getMaterialFragment().apply {
+            GetMaterialFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

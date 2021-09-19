@@ -20,11 +20,11 @@
             android:id="@+id/action_rootFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/action_rootFragment_to_getSizeFragment"
-            app:destination="@id/getSizeFragment" />
-        <action
             android:id="@+id/action_rootFragment_to_photosFragment"
             app:destination="@id/photosFragment" />
+        <action
+            android:id="@+id/action_rootFragment_to_getMaterialFragment"
+            app:destination="@id/getMaterialFragment" />
     </fragment>
     <fragment
         android:id="@+id/photosFragment"
@@ -71,16 +71,16 @@
         android:label="fragment_get_size"
         tools:layout="@layout/fragment_get_size" >
         <action
-            android:id="@+id/action_getSizeFragment_to_getMaterialFragment"
-            app:destination="@id/getMaterialFragment" />
+            android:id="@+id/action_getSizeFragment_to_photosFragment"
+            app:destination="@id/photosFragment" />
     </fragment>
     <fragment
         android:id="@+id/getMaterialFragment"
-        android:name="com.adoishe.photolier.getMaterialFragment"
+        android:name="com.adoishe.photolier.GetMaterialFragment"
         android:label="fragment_get_material"
         tools:layout="@layout/fragment_get_material" >
         <action
-            android:id="@+id/action_getMaterialFragment_to_photosFragment"
-            app:destination="@id/photosFragment" />
+            android:id="@+id/action_getMaterialFragment_to_getSizeFragment"
+            app:destination="@id/getSizeFragment" />
     </fragment>
 </navigation>

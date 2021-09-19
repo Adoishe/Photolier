@@ -13,10 +13,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [getPaperFragment.newInstance] factory method to
+ * Use the [GetPaperFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class getPaperFragment : Fragment() {
+class GetPaperFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -37,6 +37,8 @@ class getPaperFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_get_paper, container, false)
     }
 
+
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -49,7 +51,7 @@ class getPaperFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            getPaperFragment().apply {
+            GetPaperFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

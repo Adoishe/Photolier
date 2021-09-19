@@ -1,5 +1,6 @@
 package com.adoishe.photolier
 
+import android.content.ContentValues
 import android.content.Context
 import android.provider.ContactsContract
 import android.util.Log
@@ -23,6 +24,8 @@ class ImageFormat
     var price   = BigDecimal("0")
 
     var uid     : String    = ""
+        get() { return field }
+
     var name    : String    = ""
         get() { return field + "(" + price + "₽)"}
         set(value) {
@@ -41,7 +44,18 @@ class ImageFormat
 
    }
 
+    override fun toString() = name + "\n" + price
 
+    fun toCv(): ContentValues {
+
+        val cv = ContentValues()
+
+        cv.put("uid" , uid)
+        cv.put("name" , name)
+
+        return cv
+
+    }
 
     fun save(){
 
@@ -65,6 +79,8 @@ class ImageFormat
 
         imageFormatsFire.push()
     }
+
+
 
     companion object{
 
@@ -98,12 +114,28 @@ class ImageFormat
         @JvmStatic
         var syncSucc = false
         var res = ""
-        var imageFormats    : MutableList<ImageFormat>  = ArrayList()
+        var imageFormats    : MutableList<Any>  = ArrayList()
         val NONSYNC = 0
         val SYNC = 1
         val SYNCERR = 2
         var status = NONSYNC
         var syncerr = ""
+
+        @JvmStatic
+        fun toCvArrayList () : MutableList<ContentValues> {
+
+            val cvArrayList    : MutableList<ContentValues>  = ArrayList()
+
+            imageFormats.forEach { (it as ImageFormat)
+
+                cvArrayList.add( it.toCv() )
+
+            }
+
+            return cvArrayList
+
+        }
+
 
     }
 }

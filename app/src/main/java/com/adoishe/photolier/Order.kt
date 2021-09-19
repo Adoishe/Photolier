@@ -29,7 +29,8 @@ class Order(var context: Activity) {
                 var name            : String                    = ""
                 var text            : String                    = ""
                 var imageFormat     : ImageFormat?              = null
-                var materialPhoto   : MaterialPhoto?            = null
+               // var materialPhoto   : MaterialPhoto?            = null
+                var materialPhoto   : Any?            = null
                 var imageUriList    : MutableList<Uri>          = ArrayList()
                 var imageBase64List : MutableList<String>       = ArrayList()
     //private     var byteArrayList   : MutableList<ByteArray>    = ArrayList()
@@ -48,6 +49,9 @@ class Order(var context: Activity) {
         this.session    = mainAct.session
         this.uuid       =  UUID.randomUUID().toString()
     }
+
+
+    override fun toString() = name + "\n" + orderStatus
 
     fun getUuid(): String {
 

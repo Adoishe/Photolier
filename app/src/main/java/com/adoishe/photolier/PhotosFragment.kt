@@ -49,13 +49,14 @@ class PhotosFragment : Fragment() {
     private lateinit    var adapter                 : PhotoListAdapter
                         var croppingPosition        : Int = -1
     lateinit            var mainAct                 : MainActivity
+                        var selectedImageFormatPosition : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
+            selectedImageFormatPosition = it.getInt("id")
             param2 = it.getString(ARG_PARAM2)
         }
     }
@@ -81,7 +82,7 @@ class PhotosFragment : Fragment() {
 
         Order.ordersArray.forEach { order ->
 
-            orderContent = orderContent + order.indexInPacket + "/" + order.countOfPacket + " " + order.imageFormat?.name + "::" + order.materialPhoto?.name + "\n"
+            orderContent = orderContent + order.indexInPacket + "/" + order.countOfPacket + " " + order.imageFormat?.name + "::" + (order.materialPhoto as MaterialPhoto).name + "\n"
 
         }
 
@@ -129,12 +130,12 @@ class PhotosFragment : Fragment() {
     fun afterTabSelected(tab: TabLayout.Tab){
 
         val currentMaterialPhoto =  MaterialPhoto.materialsPhoto.find {
-            it.uid == tab.tag.toString()
+            (it as MaterialPhoto).uid == tab.tag.toString()
         }
 
         mainAct.order.materialPhoto     = currentMaterialPhoto
 
-        when (availableImageFormats.size ) {
+        when (mainAct.availableImageFormats.size ) {
             0 -> {
 
                 //  mainAct.log.add("ImageFormat.imageFormats = " + ImageFormat.imageFormats.size )
@@ -152,7 +153,9 @@ class PhotosFragment : Fragment() {
             spinnerFormat.onItemSelectedListener =  getSpinnerListener(mainAct, -1)
         }
 
-        fillSpinner(0, mainAct, -1)
+        //fillSpinner(0, mainAct, -1)
+        spinnerFormat.setSelection(selectedImageFormatPosition)
+        fillSpinner(selectedImageFormatPosition, mainAct, -1)
     }
 
     private fun addPackToOrder(){
@@ -196,7 +199,7 @@ class PhotosFragment : Fragment() {
 
         tabLayout.tabGravity    = TabLayout.GRAVITY_FILL
 
-        MaterialPhoto.materialsPhoto.forEach {
+        MaterialPhoto.materialsPhoto.forEach { it as MaterialPhoto
 
             val matTab  = tabLayout.newTab()
             matTab.id   = it.hash
@@ -398,7 +401,7 @@ class PhotosFragment : Fragment() {
                 //return
             }
 
-            availableImageFormats   = ArrayList()
+            mainAct.availableImageFormats   = ArrayList()
 
             //mainAct.log.add("getFormatsByMaterialThread = $res")
 
@@ -409,17 +412,17 @@ class PhotosFragment : Fragment() {
                 resArray.add( (JSONArray(res)[j] as JSONObject).getString("uuid"))
 
             // заполенние доступных форматов и цен
-            ImageFormat.imageFormats.forEach{ imageFormat ->
+            ImageFormat.imageFormats.forEach{ it ->
 
-                when (val uuidIndex = resArray.indexOf(imageFormat.uid)){
+                when (val uuidIndex = resArray.indexOf((it as  ImageFormat).uid)){
                     -1 -> {
                     }
                     else -> {
-                        imageFormat.price =  BigDecimal((JSONArray(res)[uuidIndex] as JSONObject).getString("price"))
+                        it.price =  BigDecimal((JSONArray(res)[uuidIndex] as JSONObject).getString("price"))
 
                         ///imageFormat.name = imageFormat.name + "(" + imageFormat.price + "₽)"
 
-                        availableImageFormats.add(imageFormat)
+                        mainAct.availableImageFormats.add(it)
                     }
                 }
             }
@@ -440,10 +443,12 @@ class PhotosFragment : Fragment() {
             }
             else -> {
 
-                mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
+                //mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
+
+
                 mainAct.progressBar.visibility  = ProgressBar.VISIBLE
 
-                val getFormatsByMaterialThread  = getFormatsByMaterialThread(MaterialPhoto.materialsPhoto[0].uid)
+                val getFormatsByMaterialThread  = getFormatsByMaterialThread((mainAct.order.materialPhoto as MaterialPhoto).uid)
 
                     getFormatsByMaterialThread.start()
                     getFormatsByMaterialThread.join()
@@ -451,7 +456,7 @@ class PhotosFragment : Fragment() {
                 mainAct.progressBar.visibility = ProgressBar.GONE
 
                 val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
-                val tab0        = tabLayout.getTabAt(0)
+                val tab0        = tabLayout.getTabAt((mainAct.order.materialPhoto as MaterialPhoto).indexInArray)
 
                 tab0?.select()
 
@@ -461,7 +466,7 @@ class PhotosFragment : Fragment() {
 
                 setQtyText()
 
-                when (availableImageFormats.size){
+                when (mainAct.availableImageFormats.size){
                     0 -> {
                         var warning = view.findViewById<TextView>(R.id.textViewResult)
 
@@ -516,7 +521,7 @@ class PhotosFragment : Fragment() {
 
             val imageOrder                  = ImageOrder(resultUri, resultUri.toString())
                 imageOrder.imageFormat      = mainAct.order.imageFormat
-                imageOrder.materialPhoto    = mainAct.order.materialPhoto
+                imageOrder.materialPhoto    = mainAct.order.materialPhoto as MaterialPhoto
 
             mainAct.order.imageOrderList.add(imageOrder)
             imageUriList.add(resultUri)
@@ -609,14 +614,17 @@ class PhotosFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-        @JvmStatic
-        var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
+        //@JvmStatic
+        //val mainAct     : MainActivity
+        //var availableImageFormats   : MutableList<ImageFormat?>  = ArrayList()
 
         @JvmStatic
         fun getSpinnerFormatAdapter(context: Context):ArrayAdapter<String>{
 
-            val arrNames : Array<String> = Array(availableImageFormats.size) { index ->
-                availableImageFormats[index]!!.name
+            val mainAct     = context as MainActivity
+
+            val arrNames : Array<String> = Array(mainAct.availableImageFormats.size) { index ->
+                (mainAct.availableImageFormats[index] as ImageFormat).name
             }
 
             val adapter : ArrayAdapter<String> = ArrayAdapter<String>(
@@ -658,34 +666,31 @@ class PhotosFragment : Fragment() {
                 // переключение табов
                 -1 -> {
 
-                    mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                    mainAct.order.imageFormat = (mainAct.availableImageFormats[selectedItemPosition] as ImageFormat)
                     mainAct.order.imageFormat!!.index = selectedItemPosition
                 }
                 //  без фото
                 0 -> {
                     when (mainAct.order.imageOrderList.size) {
                         0 -> {
-                            mainAct.order.imageFormat = availableImageFormats[selectedItemPosition]
+                            mainAct.order.imageFormat = (mainAct.availableImageFormats[selectedItemPosition] as ImageFormat)
                             mainAct.order.imageFormat!!.index = selectedItemPosition
                         }
                         else -> {
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat         = availableImageFormats[selectedItemPosition]
                             //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //mainAct.order.imageOrderList[mainAct.order.imageOrderList.size-1].imageFormat!!.index = selectedItemPosition
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat =
-                                    availableImageFormats[selectedItemPosition]
-                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index =
-                                    selectedItemPosition
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat         = (mainAct.availableImageFormats[selectedItemPosition] as ImageFormat)
+                            mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                             //--- MATERIAL
-                            mainAct.order.imageOrderList[imageListPosition].materialPhoto =
-                                    mainAct.order.materialPhoto
+                            mainAct.order.imageOrderList[imageListPosition].materialPhoto = mainAct.order.materialPhoto as MaterialPhoto
 
                         }
                     }
                 }
                 // с фото
                 else ->{
-                    mainAct.order.imageOrderList[imageListPosition].imageFormat         = availableImageFormats[selectedItemPosition]
+                    mainAct.order.imageOrderList[imageListPosition].imageFormat         = (mainAct.availableImageFormats[selectedItemPosition] as ImageFormat)
                     mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = selectedItemPosition
                     //mainAct.order.imageOrderList[imageListPosition].imageFormat!!.index = imageListPosition
                 }
