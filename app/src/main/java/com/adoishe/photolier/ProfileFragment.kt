@@ -29,6 +29,7 @@ class ProfileFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private val profile = Profile()
 
             val auth    = FirebaseAuth.getInstance()
 //    private val mainAct = context as MainActivity
@@ -41,6 +42,16 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    fun fillList(view: View){
+
+        val profileView             = view.findViewById<RecyclerView>(R.id.profileRecyclerView)
+
+        profileView.layoutManager   = LinearLayoutManager(requireContext())
+        profileView.adapter         = CustomRecyclerAdapter(getprofileData())
+
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,18 +59,28 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         val root                        = inflater.inflate(R.layout.fragment_profile, container, false)
         val saveProfileButton : Button   = root.findViewById(R.id.buttonSaveProfile)
+        val reloadProfileButton : Button   = root.findViewById(R.id.buttonReloadProfile)
+        /*
         val profileView                 = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
             profileView.layoutManager   = LinearLayoutManager(requireContext())
-            profileView.adapter         = CustomRecyclerAdapter(fillList())
+            profileView.adapter         = CustomRecyclerAdapter(getprofileData())
+
+         */
+
+        //Profile.load(auth.currentUser!!.uid)
+
+        fillList(root)
 
         saveProfileButton.setOnClickListener {
 
-            //view?.findNavController()?.navigate(R.id.ordersHistoryFragment)
-            val profile = Profile()
+            Profile.profile.save()
 
-            profile.phoneNumber = 343434
+        }
 
-            profile.load()
+
+        reloadProfileButton.setOnClickListener {
+
+            fillList(requireView())
 
         }
 
@@ -68,27 +89,39 @@ class ProfileFragment : Fragment() {
     }
 
 
-    private fun fillList(): List<ContentValues> {
+    private fun getprofileData(): List<ContentValues> {
+
+
+        Profile.load(auth.currentUser!!.uid)
 
         val data = mutableListOf<ContentValues>()
 
         val displayName = ContentValues()
         val email = ContentValues()
         val uidCV = ContentValues()
+        val addrrCV = ContentValues()
+        val phoneCV = ContentValues()
 
         displayName.put("Key", resources.getString(R.string.display_name))
-        displayName.put("Value", auth.currentUser?.displayName.toString())
+        displayName.put("Value", Profile.profile.displayName)
 
         email.put("Key", resources.getString(R.string.email))
-        email.put("Value", auth.currentUser?.email.toString())
+        email.put("Value", Profile.profile.email)
 
         uidCV.put("Key", resources.getString(R.string.uid))
-        uidCV.put("Value", auth.currentUser?.uid.toString())
+        uidCV.put("Value", Profile.profile.uid)
 
+        addrrCV.put("Key", "Addresses")
+        addrrCV.put("Value", Profile.profile.postalAddresses.toString())
+
+        phoneCV.put("Key", "Phone")
+        phoneCV.put("Value", Profile.profile.phoneNumber)
 
         data.add(displayName)
         data.add(email)
         data.add(uidCV)
+        data.add(addrrCV)
+        data.add(phoneCV)
 
         return data
     }

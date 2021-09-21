@@ -15,27 +15,29 @@ class Profile () {
     var uid = ""
     var email = ""
     var displayName = ""
+    var firstName = ""
+    var lastName = ""
     var phoneNumber = 0
-   // var postalAddresses : ContentValues = ContentValues()
+    var postalAddresses: ArrayList<String> = ArrayList()
 
 
-    init{
+    init {
 
-        val auth            = FirebaseAuth.getInstance()
-        this.uid            = auth.currentUser!!.uid
-        this.displayName    = auth.currentUser!!.displayName.toString()
-        this.email          = auth.currentUser?.email.toString()
+        val auth = FirebaseAuth.getInstance()
+        this.uid = auth.currentUser!!.uid
+        this.displayName = auth.currentUser!!.displayName.toString()
+        this.email = auth.currentUser?.email.toString()
 
     }
 
-    fun save (){
+    fun save() {
 
-        val ref     = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
+        val ref = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
 
         ref.child(uid).setValue(this).addOnCompleteListener {
 
-                    Log.d("FirebaseActivity", it.toString())
-                }
+            Log.d("FirebaseActivity", it.toString())
+        }
 
         /*
            //  fireId  = ref.push().key.toString()
@@ -56,25 +58,96 @@ class Profile () {
 
     }
 
-    fun load(){
+    fun load_(uid: String) {
 
-        val ref     = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles").orderByChild("uid").equalTo(uid)
+        val ref =
+            FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
 
-        //val rootRef = FirebaseDatabase.getInstance().reference
-       // val rootRef = rootRef.child("orders").orderByChild("phonenumber").equalTo(givenString)
         val valueEventListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (ds in dataSnapshot.children) {
-                    val username = ds.child("displayName").getValue(String::class.java)
-                    Log.d("FirebaseActivity", username as String)
-                }
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                val profile = snapshot.getValue(Profile::class.java)!!
+
+
+                Log.d("FirebaseActivity", profile!!.phoneNumber.toString())
+
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.d("FirebaseActivity", databaseError.getMessage()) //Don't ignore errors!
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
             }
+
         }
-        ref.addListenerForSingleValueEvent(valueEventListener)
 
+        ref.child(uid).addListenerForSingleValueEvent(valueEventListener)
+    }
+
+    companion object {
+        @JvmStatic
+        var profile : Profile = Profile()
+
+        @JvmStatic
+        fun load(uid: String) {
+
+            Log.d("FirebaseActivity", uid)
+
+            val ref =
+                FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
+
+            val valueEventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    profile = snapshot.getValue(Profile::class.java)!!
+
+
+                    Log.d("FirebaseActivity", profile.phoneNumber.toString())
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            }
+
+            ref.child(uid).addListenerForSingleValueEvent(valueEventListener)
+
+            // Log.d("FirebaseActivity", r) //Don't ignore errors!
+
+            /*
+             val ref     = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles").orderByChild("uid").equalTo(uid)
+
+             //val rootRef = FirebaseDatabase.getInstance().reference
+            // val rootRef = rootRef.child("orders").orderByChild("phonenumber").equalTo(givenString)
+             val valueEventListener = object : ValueEventListener {
+
+                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                     val profile = dataSnapshot.getValue(Profile::class.java)
+     /*
+                     for (ds in dataSnapshot.children) {
+
+                         //val username = ds.child("displayName").getValue(String::class.java)
+                         val username = ds.child(uid).ref.getValue(String::class.java)//children.getValue(Profile::class.java)
+
+                         Log.d("FirebaseActivity", uid)
+                         Log.d("FirebaseActivity", username.toString())
+                     }
+
+      */
+                     Log.d("FirebaseActivity", profile.toString())
+                 }
+
+                 override fun onCancelled(databaseError: DatabaseError) {
+
+                     Log.d("FirebaseActivity", databaseError.getMessage()) //Don't ignore errors!
+                 }
+             }
+
+             ref.addListenerForSingleValueEvent(valueEventListener)
+         }
+
+              */
+        }
     }
 }

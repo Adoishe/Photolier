@@ -26,7 +26,13 @@ class RootFragment : Fragment() {
         val syncButton                  = root.findViewById<Button>(R.id.sync)
         val photosPrint                 = root.findViewById<TextView>(R.id.printPhotos)
         val widePrint                   = root.findViewById<TextView>(R.id.printWide)
+        val profileButton               = root.findViewById<TextView>(R.id.profileButton)
 
+        profileButton.setOnClickListener {
+
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
+
+        }
 
         photosPrint.setOnClickListener {
 
@@ -74,6 +80,8 @@ class RootFragment : Fragment() {
         ImageFormat.sync(mainAct)
 
         MaterialPhoto.sync(mainAct)
+
+
 
         mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
 

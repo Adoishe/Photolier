@@ -30,4 +30,6 @@
     <string name="prinWide">Интерьерная  печать</string>
     <string name="qty">Количество</string>
     <string name="saveProfile">Сохранить данные</string>
+    <string name="Profile">Личный кабинет</string>
+    <string name="reloadData">Обновить</string>
 </resources>

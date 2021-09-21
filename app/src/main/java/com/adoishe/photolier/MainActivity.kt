@@ -634,6 +634,8 @@ class MainActivity : AppCompatActivity() {
     private fun setAppTitle(){
 
         title = resources.getString(R.string.app_name) + ' ' + resources.getString(R.string.ffor) + ' ' + auth.currentUser!!.displayName as CharSequence
+
+      //  Profile.load(auth.currentUser!!.uid)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -659,6 +661,7 @@ class MainActivity : AppCompatActivity() {
                 if(auth.currentUser != null){ //If user is signed in
 
                     setAppTitle()
+                    //Profile.load(auth.currentUser!!.uid)
     //                startActivity(Next Activity)
                 }
 

@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/get_orders"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/goToPhotobutton" />
@@ -96,6 +96,24 @@
                     android:background="@drawable/custom_border_filled"/>
 
                 <View
+                    android:id="@+id/divider1"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/profileButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/Profile"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:textSize="50sp"
+                    android:visibility="visible"
+                    android:background="@drawable/custom_border_filled"/>
+
+                <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
@@ -115,6 +133,7 @@
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

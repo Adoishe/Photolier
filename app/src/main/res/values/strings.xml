@@ -123,5 +123,7 @@
     <string name="minus" translatable="false">-</string>
     <string name="qty">Quantity</string>
     <string name="saveProfile">Save Profile</string>
+    <string name="Profile">Profile</string>
+    <string name="reloadData">Reload</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
