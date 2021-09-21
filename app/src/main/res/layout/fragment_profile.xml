@@ -8,11 +8,11 @@
     tools:context=".ProfileFragment">
 
     <Button
-        android:id="@+id/buttonGetOrders"
+        android:id="@+id/buttonSaveProfile"
         android:layout_width="124dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="@string/get_orders"
+        android:text="@string/saveProfile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonGetOrders" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonSaveProfile" />
 
 
 

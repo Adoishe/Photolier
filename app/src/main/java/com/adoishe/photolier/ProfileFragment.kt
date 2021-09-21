@@ -30,7 +30,8 @@ class ProfileFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    val auth                                        = FirebaseAuth.getInstance()
+            val auth    = FirebaseAuth.getInstance()
+//    private val mainAct = context as MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,18 +46,20 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val root = inflater.inflate(R.layout.fragment_profile, container, false)
+        val root                        = inflater.inflate(R.layout.fragment_profile, container, false)
+        val saveProfileButton : Button   = root.findViewById(R.id.buttonSaveProfile)
+        val profileView                 = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
+            profileView.layoutManager   = LinearLayoutManager(requireContext())
+            profileView.adapter         = CustomRecyclerAdapter(fillList())
 
-        val profile = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
+        saveProfileButton.setOnClickListener {
 
-        profile.layoutManager = LinearLayoutManager(requireContext())
-        profile.adapter = CustomRecyclerAdapter(fillList())
+            //view?.findNavController()?.navigate(R.id.ordersHistoryFragment)
+            val profile = Profile()
 
-        val ordersButton : Button = root.findViewById(R.id.buttonGetOrders)
+            profile.phoneNumber = 343434
 
-        ordersButton.setOnClickListener {
-
-            view?.findNavController()?.navigate(R.id.ordersHistoryFragment)
+            profile.load()
 
         }
 

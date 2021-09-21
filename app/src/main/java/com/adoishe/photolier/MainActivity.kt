@@ -82,6 +82,12 @@ class MainActivity : AppCompatActivity() {
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
 
 
+    companion object {
+         val FIREINSTANCE = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
+    }
+
+
+
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
         try {
             if (source.height >= source.width) {
@@ -523,16 +529,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         setTheme(R.style.Theme_Photolier)
-
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
-
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
         supportActionBar!!.setDisplayShowHomeEnabled(true)
-
-
 
         val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
         progressBar                 = findViewById(R.id.progressBar)
@@ -587,7 +587,6 @@ class MainActivity : AppCompatActivity() {
 
             return true
         }
-
 
         try {
            rootReached = (hostFragment.currentDestination!!.id == R.id.rootFragment)

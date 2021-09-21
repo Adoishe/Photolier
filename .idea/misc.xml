@@ -3,11 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/activity_main.xml" value="0.24365942028985507" />
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_get_material.xml" value="0.371875" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_get_paper.xml" value="0.371875" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_get_size.xml" value="0.371875" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_order.xml" value="0.10157041540020263" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_orders_history.xml" value="0.371875" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_photos.xml" value="0.25" />
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_profile.xml" value="0.371875" />
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/fragment_root.xml" value="0.24365942028985507" />
       </map>
     </option>
   </component>

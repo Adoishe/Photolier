@@ -30,7 +30,8 @@ class RootFragment : Fragment() {
 
         photosPrint.setOnClickListener {
 
-            (context as MainActivity).showPhotos()
+            //(context as MainActivity).showPhotos()
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_getMaterialFragment)
         }
 
         goToPhotoButton.setOnClickListener{
@@ -41,7 +42,8 @@ class RootFragment : Fragment() {
         ordersButton.setOnClickListener {
 
             //view?.findNavController()?.navigate(R.id.action_rootFragment_to_ordersHistoryFragment)
-            view?.findNavController()?.navigate(R.id.action_rootFragment_to_getMaterialFragment)
+            //view?.findNavController()?.navigate(R.id.action_rootFragment_to_getMaterialFragment)
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
 
         }
 

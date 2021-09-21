@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/printPhotos"
-android:textColor="@color/white"
+                    android:textColor="@color/white"
 
                     android:textAlignment="center"
                     android:textSize="50sp"

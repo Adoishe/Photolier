@@ -122,5 +122,6 @@
     <string name="plus" translatable="false">+</string>
     <string name="minus" translatable="false">-</string>
     <string name="qty">Quantity</string>
+    <string name="saveProfile">Save Profile</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
