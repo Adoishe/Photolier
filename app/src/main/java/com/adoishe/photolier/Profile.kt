@@ -97,7 +97,13 @@ class Profile () {
             val valueEventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
-                    profile = snapshot.getValue(Profile::class.java)!!
+                    val gottenValue = snapshot.getValue(Profile::class.java)
+
+                    if (gottenValue != null) {
+
+                        profile = gottenValue
+                    }
+
 
 
                     Log.d("FirebaseActivity", profile.phoneNumber.toString())

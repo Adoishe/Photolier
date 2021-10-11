@@ -2,13 +2,15 @@ package com.adoishe.photolier
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.text.InputType
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -42,12 +44,12 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    fun fillList(view: View){
+    private fun fillList(view: View){
 
         val profileView             = view.findViewById<RecyclerView>(R.id.profileRecyclerView)
 
         profileView.layoutManager   = LinearLayoutManager(requireContext())
-        profileView.adapter         = CustomRecyclerAdapter(getprofileData())
+        profileView.adapter         = CustomRecyclerAdapter(getProfileData())
 
 
     }
@@ -57,13 +59,13 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val root                        = inflater.inflate(R.layout.fragment_profile, container, false)
-        val saveProfileButton : Button   = root.findViewById(R.id.buttonSaveProfile)
-        val reloadProfileButton : Button   = root.findViewById(R.id.buttonReloadProfile)
+        val root                            = inflater.inflate(R.layout.fragment_profile, container, false)
+        val saveProfileButton : Button      = root.findViewById(R.id.buttonSaveProfile)
+        val reloadProfileButton : Button    = root.findViewById(R.id.buttonReloadProfile)
         /*
         val profileView                 = root.findViewById<RecyclerView>(R.id.profileRecyclerView)
             profileView.layoutManager   = LinearLayoutManager(requireContext())
-            profileView.adapter         = CustomRecyclerAdapter(getprofileData())
+            profileView.adapter         = CustomRecyclerAdapter(getProfileData())
 
          */
 
@@ -89,7 +91,7 @@ class ProfileFragment : Fragment() {
     }
 
 
-    private fun getprofileData(): List<ContentValues> {
+    private fun getProfileData(): List<ContentValues> {
 
 
         Profile.load(auth.currentUser!!.uid)
@@ -97,25 +99,25 @@ class ProfileFragment : Fragment() {
         val data = mutableListOf<ContentValues>()
 
         val displayName = ContentValues()
-        val email = ContentValues()
-        val uidCV = ContentValues()
-        val addrrCV = ContentValues()
-        val phoneCV = ContentValues()
+        val email       = ContentValues()
+        val uidCV       = ContentValues()
+        val addrrCV     = ContentValues()
+        val phoneCV     = ContentValues()
 
-        displayName.put("Key", resources.getString(R.string.display_name))
-        displayName.put("Value", Profile.profile.displayName)
+        displayName.put("Key"   , resources.getString(R.string.display_name))
+        displayName.put("Value" , Profile.profile.displayName)
 
-        email.put("Key", resources.getString(R.string.email))
-        email.put("Value", Profile.profile.email)
+        email.put("Key"     , resources.getString(R.string.email))
+        email.put("Value"   , Profile.profile.email)
 
-        uidCV.put("Key", resources.getString(R.string.uid))
-        uidCV.put("Value", Profile.profile.uid)
+        uidCV.put("Key"     , resources.getString(R.string.uid))
+        uidCV.put("Value"   , Profile.profile.uid)
 
-        addrrCV.put("Key", "Addresses")
-        addrrCV.put("Value", Profile.profile.postalAddresses.toString())
+        addrrCV.put("Key"   , "Addresses")
+        addrrCV.put("Value" , Profile.profile.postalAddresses.toString())
 
-        phoneCV.put("Key", "Phone")
-        phoneCV.put("Value", Profile.profile.phoneNumber)
+        phoneCV.put("Key"   , "Phone")
+        phoneCV.put("Value" , Profile.profile.phoneNumber)
 
         data.add(displayName)
         data.add(email)
@@ -126,24 +128,68 @@ class ProfileFragment : Fragment() {
         return data
     }
 
-    class CustomRecyclerAdapter(private val values: List<ContentValues>) : RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+    class CustomRecyclerAdapter(private val values: List<ContentValues>) : RecyclerView.Adapter<CustomRecyclerAdapter.ProfileViewViewHolder>() {
 
         override fun getItemCount() = values.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewViewHolder {
 
             val itemView = LayoutInflater.from(parent.context).inflate(R.layout.profile_item, parent, false)
 
-            return MyViewHolder(itemView)
+            return ProfileViewViewHolder(itemView)
         }
 
-        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            holder.largeTextView?.text = (values[position] as ContentValues).getAsString("Value")
-            holder.smallTextView?.text =  (values[position] as ContentValues).getAsString("Key")
+        override fun onBindViewHolder(holder: ProfileViewViewHolder, position: Int) {
+
+            val key     = (values[position] as ContentValues).getAsString("Key")
+            val value   = (values[position] as ContentValues).getAsString("Value")
+
+            holder.largeTextView?.setText(value)
+
+            holder.largeTextView?.setOnKeyListener { v, keyCode, event ->
+                // if the event is a key down event on the enter button
+                if (event.action == KeyEvent.ACTION_DOWN &&
+                    keyCode == KeyEvent.KEYCODE_ENTER
+                ) {
+                    // perform action on key press
+
+                    val keyFromTag = holder.largeTextView!!.tag
+
+                    when (keyFromTag){
+                        "E-mail"    -> Profile.profile.email =  holder.largeTextView!!.text.toString()
+                        "Phone"     -> Profile.profile.phoneNumber =  holder.largeTextView!!.text.toString().toInt()
+                            //"Addresses" -> Profile.profile.postalAddresses =  holder.largeTextView!!.text.toString()
+
+                    }
+
+
+
+
+
+                    return@setOnKeyListener true
+                }
+                return@setOnKeyListener false
+
+            }
+
+
+            when (key){
+                "E-mail"    -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                "Phone"     -> holder.largeTextView?.inputType = InputType.TYPE_CLASS_PHONE
+                "ID"        -> holder.largeTextView?.keyListener = null
+                "Addresses" -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+
+            }
+
+
+
+            holder.largeTextView?.tag   = key
+            holder.smallTextView?.text  = key
+
         }
 
-        class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            var largeTextView: TextView? = null
+        class ProfileViewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            var largeTextView: EditText? = null
             var smallTextView: TextView? = null
 
             init {
