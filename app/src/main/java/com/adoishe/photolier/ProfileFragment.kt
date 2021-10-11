@@ -156,15 +156,11 @@ class ProfileFragment : Fragment() {
                     val keyFromTag = holder.largeTextView!!.tag
 
                     when (keyFromTag){
-                        "E-mail"    -> Profile.profile.email =  holder.largeTextView!!.text.toString()
-                        "Phone"     -> Profile.profile.phoneNumber =  holder.largeTextView!!.text.toString().toInt()
+                        "E-mail"    -> Profile.profile.email        =  holder.largeTextView!!.text.toString()
+                        "Phone"     -> Profile.profile.phoneNumber  =  holder.largeTextView!!.text.toString().toInt()
                             //"Addresses" -> Profile.profile.postalAddresses =  holder.largeTextView!!.text.toString()
 
                     }
-
-
-
-
 
                     return@setOnKeyListener true
                 }
