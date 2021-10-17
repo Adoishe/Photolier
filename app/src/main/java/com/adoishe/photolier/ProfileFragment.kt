@@ -3,6 +3,7 @@ package com.adoishe.photolier
 import android.content.ContentValues
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,9 +12,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,7 +35,7 @@ class ProfileFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private val profile = Profile()
+
 
             val auth    = FirebaseAuth.getInstance()
 //    private val mainAct = context as MainActivity
@@ -96,6 +100,38 @@ class ProfileFragment : Fragment() {
 
         Profile.load(auth.currentUser!!.uid)
 
+
+        // 1
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                // 2
+                if (!task.isSuccessful) {
+                    Log.w("Token failed", "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+                // 3
+                val token = task.result?.token
+
+                // 4
+                //val msg = getString(R.string.token_prefix, token)
+                if (token != null) {
+
+                    val oldToken = Profile.profile.pushToken
+
+                    if (oldToken != token)
+                    {
+                        Profile.profile.pushToken = token
+
+                        Profile.profile.save()
+                    }
+
+                    Log.d("Token!!!!!", token)
+                }
+                Toast.makeText(requireContext(), token, Toast.LENGTH_LONG).show()
+            })
+
+
+
         val data = mutableListOf<ContentValues>()
 
         val displayName = ContentValues()
@@ -110,8 +146,6 @@ class ProfileFragment : Fragment() {
         email.put("Key"     , resources.getString(R.string.email))
         email.put("Value"   , Profile.profile.email)
 
-        uidCV.put("Key"     , resources.getString(R.string.uid))
-        uidCV.put("Value"   , Profile.profile.uid)
 
         addrrCV.put("Key"   , "Addresses")
         addrrCV.put("Value" , Profile.profile.postalAddresses.toString())
@@ -119,11 +153,15 @@ class ProfileFragment : Fragment() {
         phoneCV.put("Key"   , "Phone")
         phoneCV.put("Value" , Profile.profile.phoneNumber)
 
+        uidCV.put("Key"     , resources.getString(R.string.uid))
+        uidCV.put("Value"   , Profile.profile.uid)
+
+
         data.add(displayName)
         data.add(email)
-        data.add(uidCV)
-        data.add(addrrCV)
         data.add(phoneCV)
+        data.add(addrrCV)
+        data.add(uidCV)
 
         return data
     }

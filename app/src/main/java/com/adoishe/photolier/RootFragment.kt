@@ -1,6 +1,7 @@
 package com.adoishe.photolier
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 
 class RootFragment : Fragment() {
 
@@ -30,9 +33,13 @@ class RootFragment : Fragment() {
 
         profileButton.setOnClickListener {
 
+
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
 
         }
+
+
+
 
         photosPrint.setOnClickListener {
 
@@ -81,7 +88,16 @@ class RootFragment : Fragment() {
 
         MaterialPhoto.sync(mainAct)
 
+/*
+        Profile.load(mainAct.auth.currentUser!!.uid)
 
+        if (!Profile.hasEnoughData()){
+
+            view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
+
+        }
+
+ */
 
         mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
 
@@ -103,6 +119,8 @@ class RootFragment : Fragment() {
                 mainAct.log.clear()
             }
         }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -110,6 +128,7 @@ class RootFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         sync()
+
 
 
     }

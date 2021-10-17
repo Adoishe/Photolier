@@ -80,6 +80,8 @@ class MainActivity : AppCompatActivity() {
                 val REG                                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
     private     var PATTERN             : Pattern               = Pattern.compile(REG)
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
+    //val profile                                     = Profile()
+
 
 
     companion object {
@@ -411,6 +413,8 @@ class MainActivity : AppCompatActivity() {
                 else -> setAppTitle()
             }
 
+
+
             //sync()
 
         }
@@ -635,7 +639,9 @@ class MainActivity : AppCompatActivity() {
 
         title = resources.getString(R.string.app_name) + ' ' + resources.getString(R.string.ffor) + ' ' + auth.currentUser!!.displayName as CharSequence
 
-      //  Profile.load(auth.currentUser!!.uid)
+
+
+        //Profile.load(auth.currentUser!!.uid)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -661,7 +667,8 @@ class MainActivity : AppCompatActivity() {
                 if(auth.currentUser != null){ //If user is signed in
 
                     setAppTitle()
-                    //Profile.load(auth.currentUser!!.uid)
+
+
     //                startActivity(Next Activity)
                 }
 

@@ -19,16 +19,18 @@ class Profile () {
     var lastName = ""
     var phoneNumber = 0
     var postalAddresses: ArrayList<String> = ArrayList()
+    var pushToken = ""
 
 
     init {
 
-        val auth = FirebaseAuth.getInstance()
-        this.uid = auth.currentUser!!.uid
-        this.displayName = auth.currentUser!!.displayName.toString()
-        this.email = auth.currentUser?.email.toString()
+        val auth            = FirebaseAuth.getInstance()
+        this.uid            = auth.currentUser!!.uid
+        this.displayName    = auth.currentUser!!.displayName.toString()
+        this.email          = auth.currentUser?.email.toString()
 
     }
+
 
     fun save() {
 
@@ -69,7 +71,7 @@ class Profile () {
                 val profile = snapshot.getValue(Profile::class.java)!!
 
 
-                Log.d("FirebaseActivity", profile!!.phoneNumber.toString())
+                Log.d("FirebaseActivity", profile.phoneNumber.toString())
 
             }
 
@@ -87,6 +89,17 @@ class Profile () {
         var profile : Profile = Profile()
 
         @JvmStatic
+
+        fun hasEnoughData(): Boolean{
+
+            var result = true
+
+            result = result  and (profile.email != "") and (profile.phoneNumber != 0)
+
+            return result
+        }
+
+
         fun load(uid: String) {
 
             Log.d("FirebaseActivity", uid)
