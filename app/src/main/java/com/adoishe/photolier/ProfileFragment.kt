@@ -2,6 +2,8 @@ package com.adoishe.photolier
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.telephony.PhoneNumberFormattingTextWatcher
+import android.telephony.PhoneNumberUtils
 import android.text.InputType
 import android.util.Log
 import android.view.KeyEvent
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,7 +57,6 @@ class ProfileFragment : Fragment() {
 
         profileView.layoutManager   = LinearLayoutManager(requireContext())
         profileView.adapter         = CustomRecyclerAdapter(getProfileData())
-
 
     }
 
@@ -184,32 +186,62 @@ class ProfileFragment : Fragment() {
 
             holder.largeTextView?.setText(value)
 
-            holder.largeTextView?.setOnKeyListener { v, keyCode, event ->
-                // if the event is a key down event on the enter button
-                if (event.action == KeyEvent.ACTION_DOWN &&
-                    keyCode == KeyEvent.KEYCODE_ENTER
-                ) {
-                    // perform action on key press
+            holder.largeTextView?.setOnFocusChangeListener { view, hasFocus ->
+
+                if (!hasFocus) {
 
                     val keyFromTag = holder.largeTextView!!.tag
 
                     when (keyFromTag){
-                        "E-mail"    -> Profile.profile.email        =  holder.largeTextView!!.text.toString()
-                        "Phone"     -> Profile.profile.phoneNumber  =  holder.largeTextView!!.text.toString().toInt()
-                            //"Addresses" -> Profile.profile.postalAddresses =  holder.largeTextView!!.text.toString()
+                        "E-mail"    -> Profile.profile.email  =  holder.largeTextView!!.text.toString()
+                        "Phone"     -> {
+                                        val phoneAsString       = holder.largeTextView!!.text.toString()
+                                        val phoneAsFormatted    = PhoneNumberUtils.formatNumber(phoneAsString,  Locale.getDefault().country)
+
+                                        holder.largeTextView!!.setText(phoneAsFormatted)
+
+                                        Profile.profile.phoneNumber  = phoneAsFormatted
+                        }
+                        //"Addresses" -> Profile.profile.postalAddresses =  holder.largeTextView!!.text.toString()
 
                     }
+                }
+            }
 
-                    return@setOnKeyListener true
+
+
+
+
+            holder.largeTextView?.setOnKeyListener { v, keyCode, event ->
+                // if the event is a key down event on the enter button
+                if (event.action == KeyEvent.ACTION_DOWN
+                    //&&
+                    //keyCode == KeyEvent.KEYCODE_ENTER
+                ) {
+                    // perform action on key press
+
+                    val phoneAsString       = holder.largeTextView!!.text.toString()
+
+
+
+                    return@setOnKeyListener phoneAsString.length > 15
                 }
                 return@setOnKeyListener false
 
             }
 
 
+
+
             when (key){
                 "E-mail"    -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                "Phone"     -> holder.largeTextView?.inputType = InputType.TYPE_CLASS_PHONE
+                "Phone"     -> {
+                                holder.largeTextView?.inputType = InputType.TYPE_CLASS_PHONE
+
+                                holder.largeTextView?.addTextChangedListener(
+                                    PhoneNumberFormattingTextWatcher(Locale.getDefault().country)
+                                )
+                }
                 "ID"        -> holder.largeTextView?.keyListener = null
                 "Addresses" -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
 
@@ -223,6 +255,7 @@ class ProfileFragment : Fragment() {
         }
 
         class ProfileViewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
             var largeTextView: EditText? = null
             var smallTextView: TextView? = null
 

@@ -17,7 +17,7 @@ class Profile () {
     var displayName = ""
     var firstName = ""
     var lastName = ""
-    var phoneNumber = 0
+    var phoneNumber = ""
     var postalAddresses: ArrayList<String> = ArrayList()
     var pushToken = ""
 
@@ -94,7 +94,7 @@ class Profile () {
 
             var result = true
 
-            result = result  and (profile.email != "") and (profile.phoneNumber != 0)
+            result = result  and (profile.email != "") and (profile.phoneNumber != "")
 
             return result
         }
