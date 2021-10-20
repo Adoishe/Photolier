@@ -1,13 +1,15 @@
 package com.adoishe.photolier
 
 import android.Manifest
-import android.app.Activity
+import android.app.*
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -18,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -26,6 +29,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -35,6 +39,16 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
+import android.app.NotificationManager
+
+import android.app.NotificationChannel
+
+import android.annotation.SuppressLint
+
+import android.os.Build
+
+
+
 
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
@@ -81,14 +95,65 @@ class MainActivity : AppCompatActivity() {
     private     var PATTERN             : Pattern               = Pattern.compile(REG)
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
     //val profile                                     = Profile()
-
+    lateinit var notificationChannel: NotificationChannel
+    lateinit var notificationManager: NotificationManager
+    lateinit var builder: Notification.Builder
 
 
     companion object {
          val FIREINSTANCE = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
+        const val CHANNEL_ID = "photolier.app.CHANNEL_ID"
+        const val CHANNEL_NAME = "photolier.app.Notification"
     }
 
 
+     fun sendNotification(remoteMessage: RemoteMessage) {
+        val intent = Intent(this, MainActivity::class.java)
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        val pendingIntent = PendingIntent.getActivity(this
+            , 0 /* Request code */
+            , intent
+            , PendingIntent.FLAG_ONE_SHOT)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+
+         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+         val NOTIFICATION_CHANNEL_ID = "tutorialspoint_01"
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             @SuppressLint("WrongConstant")
+             val notificationChannel = NotificationChannel(
+                 NOTIFICATION_CHANNEL_ID,
+                 "My Notifications",
+                 NotificationManager.IMPORTANCE_MAX
+             )
+             // Configure the notification channel.
+             notificationChannel.description = "Sample Channel description"
+             notificationChannel.enableLights(true)
+             notificationChannel.lightColor = Color.RED
+             notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
+             notificationChannel.enableVibration(true)
+             notificationManager.createNotificationChannel(notificationChannel)
+         }
+
+
+
+         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+             //.setContentText(remoteMessage.notification?.body)
+             //.setContentText("eeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+             //.setAutoCancel(true)
+             .setSmallIcon(R.mipmap.ic_launcher_round)
+             //.setSound(defaultSoundUri)
+             .setContentTitle("My notification")
+             .setContentText("Hello World!")
+             .setContentIntent(pendingIntent)
+
+             //  val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
+    }
 
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
         try {
