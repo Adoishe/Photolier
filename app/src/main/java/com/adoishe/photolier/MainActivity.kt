@@ -107,53 +107,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-     fun sendNotification(remoteMessage: RemoteMessage) {
-        val intent = Intent(this, MainActivity::class.java)
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-
-        val pendingIntent = PendingIntent.getActivity(this
-            , 0 /* Request code */
-            , intent
-            , PendingIntent.FLAG_ONE_SHOT)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-
-         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-         val NOTIFICATION_CHANNEL_ID = "tutorialspoint_01"
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-             @SuppressLint("WrongConstant")
-             val notificationChannel = NotificationChannel(
-                 NOTIFICATION_CHANNEL_ID,
-                 "My Notifications",
-                 NotificationManager.IMPORTANCE_MAX
-             )
-             // Configure the notification channel.
-             notificationChannel.description = "Sample Channel description"
-             notificationChannel.enableLights(true)
-             notificationChannel.lightColor = Color.RED
-             notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
-             notificationChannel.enableVibration(true)
-             notificationManager.createNotificationChannel(notificationChannel)
-         }
-
-
-
-         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-             //.setContentText(remoteMessage.notification?.body)
-             //.setContentText("eeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-             //.setAutoCancel(true)
-             .setSmallIcon(R.mipmap.ic_launcher_round)
-             //.setSound(defaultSoundUri)
-             .setContentTitle("My notification")
-             .setContentText("Hello World!")
-             .setContentIntent(pendingIntent)
-
-             //  val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
-    }
 
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
         try {

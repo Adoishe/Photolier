@@ -33,10 +33,10 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         //Log.d(TAG, "Notification Message Body: " + p0.notification?.body!!)
 
         val params: Map<String?, String?> = remoteMessage.data
-        val `object` = JSONObject(params)
-        Log.e(TAG, `object`.toString())
+        val receivedJSONobject = JSONObject(params)
+        Log.e(TAG, receivedJSONobject.toString())
 
-        sendNotification(remoteMessage)
+        sendNotification(remoteMessage , receivedJSONobject)
         /*
         val intent = Intent(applicationContext, MainActivity::class.java)
 
@@ -52,20 +52,17 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
     }
 
-    private fun sendNotification(remoteMessage: RemoteMessage) {
-
-
+    private fun sendNotification(remoteMessage: RemoteMessage , receivedJSONobject : JSONObject) {
 
         val intent = Intent(applicationContext, MainActivity::class.java)
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val pendingIntent = PendingIntent.getActivity(applicationContext
+        val pendingIntent       = PendingIntent.getActivity(applicationContext
                                                     , 11111 /* Request code */
                                                     , intent
                                                     , PendingIntent.FLAG_ONE_SHOT)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
+        val defaultSoundUri     = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         val NOTIFICATION_CHANNEL_ID = "tutorialspoint_01"
@@ -74,14 +71,16 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
             @SuppressLint("WrongConstant")
             val notificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                "My Notifications",
+                "Photolier",
                 NotificationManager.IMPORTANCE_MAX
             )
             // Configure the notification channel.
             notificationChannel.description = "Sample Channel description"
+
             notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
+            notificationChannel.lightColor          = Color.RED
+            notificationChannel.vibrationPattern    = longArrayOf(0, 1000, 500, 1000)
+
             notificationChannel.enableVibration(true)
             notificationManager.createNotificationChannel(notificationChannel)
         }
@@ -89,8 +88,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
 
         val notificationBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("My Message")
-            .setContentText("My test message!")
+            .setContentTitle(receivedJSONobject.getString("title"))
+            .setContentText(receivedJSONobject.getString("content"))
             .setSmallIcon(R.drawable.ic_media_play)
             .setContentIntent(pendingIntent)
             //.setChannel(channelId)
@@ -109,7 +108,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         //val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.notify(111111 /* ID of notification */, notificationBuilder.build())
+        notificationManager.notify(111111 /* ID of notification */
+                                    , notificationBuilder.build())
 
 
 

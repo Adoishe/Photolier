@@ -4,11 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.iid.FirebaseInstanceId
 
 class Profile () {
 
@@ -99,6 +101,40 @@ class Profile () {
             return result
         }
 
+    fun updateToken(){
+
+        // 1
+//        FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE)
+
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                // 2
+                if (!task.isSuccessful) {
+                    Log.w("Token failed", "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+                // 3
+                val token = task.result?.token
+
+                // 4
+                //val msg = getString(R.string.token_prefix, token)
+                if (token != null) {
+
+                    val oldToken = profile.pushToken
+
+                    if (oldToken != token)
+                    {
+                        profile.pushToken = token
+
+                        profile.save()
+                    }
+
+                    Log.d("Token", token)
+                }
+                // Toast.makeText(requireContext(), token, Toast.LENGTH_LONG).show()
+            })
+
+    }
 
         fun load(uid: String) {
 
@@ -108,6 +144,7 @@ class Profile () {
                 FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
 
             val valueEventListener = object : ValueEventListener {
+
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     val gottenValue = snapshot.getValue(Profile::class.java)
@@ -115,6 +152,8 @@ class Profile () {
                     if (gottenValue != null) {
 
                         profile = gottenValue
+
+                        updateToken()
                     }
 
 

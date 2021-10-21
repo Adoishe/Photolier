@@ -103,36 +103,6 @@ class ProfileFragment : Fragment() {
         Profile.load(auth.currentUser!!.uid)
 
 
-        // 1
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                // 2
-                if (!task.isSuccessful) {
-                    Log.w("Token failed", "getInstanceId failed", task.exception)
-                    return@OnCompleteListener
-                }
-                // 3
-                val token = task.result?.token
-
-                // 4
-                //val msg = getString(R.string.token_prefix, token)
-                if (token != null) {
-
-                    val oldToken = Profile.profile.pushToken
-
-                    if (oldToken != token)
-                    {
-                        Profile.profile.pushToken = token
-
-                        Profile.profile.save()
-                    }
-
-                    Log.d("Token!!!!!", token)
-                }
-                Toast.makeText(requireContext(), token, Toast.LENGTH_LONG).show()
-            })
-
-
 
         val data = mutableListOf<ContentValues>()
 
@@ -201,6 +171,7 @@ class ProfileFragment : Fragment() {
                                         holder.largeTextView!!.setText(phoneAsFormatted)
 
                                         Profile.profile.phoneNumber  = phoneAsFormatted
+                                        Profile.profile.save()
                         }
                         //"Addresses" -> Profile.profile.postalAddresses =  holder.largeTextView!!.text.toString()
 
