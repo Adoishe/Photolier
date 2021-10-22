@@ -92,13 +92,8 @@ class MainActivity : AppCompatActivity() {
                 var log                 : MutableList<String>   = ArrayList()
 
                 val REG                                         = "^(\\+91[\\-\\s]?)?[0]?(91)?[789]\\d{9}\$"
-    private     var PATTERN             : Pattern               = Pattern.compile(REG)
+    private     var PATTERN                 : Pattern           = Pattern.compile(REG)
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
-    //val profile                                     = Profile()
-    lateinit var notificationChannel: NotificationChannel
-    lateinit var notificationManager: NotificationManager
-    lateinit var builder: Notification.Builder
-
 
     companion object {
          val FIREINSTANCE = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -588,6 +583,11 @@ class MainActivity : AppCompatActivity() {
 
             false
         }
+
+
+        //val intent = intent
+
+
 
     }
 

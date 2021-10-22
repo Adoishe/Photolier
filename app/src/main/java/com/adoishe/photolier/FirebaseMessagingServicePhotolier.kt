@@ -32,11 +32,12 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         Log.d(TAG, "From: " + remoteMessage!!.from)
         //Log.d(TAG, "Notification Message Body: " + p0.notification?.body!!)
 
-        val params: Map<String?, String?> = remoteMessage.data
-        val receivedJSONobject = JSONObject(params)
-        Log.e(TAG, receivedJSONobject.toString())
+        val params: Map<String?, String?>   = remoteMessage.data
+        val receivedJSONObject              = JSONObject(params)
 
-        sendNotification(remoteMessage , receivedJSONobject)
+        Log.e(TAG, receivedJSONObject.toString())
+
+        sendNotification(remoteMessage , receivedJSONObject)
         /*
         val intent = Intent(applicationContext, MainActivity::class.java)
 
@@ -52,11 +53,17 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
     }
 
-    private fun sendNotification(remoteMessage: RemoteMessage , receivedJSONobject : JSONObject) {
+    private fun sendNotification(remoteMessage: RemoteMessage , receivedJSONObject : JSONObject) {
 
         val intent = Intent(applicationContext, MainActivity::class.java)
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        intent.putExtra("orderId" , receivedJSONObject.getString("orderId"));
+        intent.putExtra("orderText" , receivedJSONObject.getString("title"));
+
+        // FLAG_ACTIVITY_CLEAR_TASK
+        //https://startandroid.ru/ru/uroki/vse-uroki-spiskom/190-urok-116-povedenie-activity-v-task-intent-flagi-launchmode-affinity.html
 
         val pendingIntent       = PendingIntent.getActivity(applicationContext
                                                     , 11111 /* Request code */
@@ -88,8 +95,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
 
         val notificationBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle(receivedJSONobject.getString("title"))
-            .setContentText(receivedJSONobject.getString("content"))
+            .setContentTitle(receivedJSONObject.getString("title"))
+            .setContentText(receivedJSONObject.getString("content"))
             .setSmallIcon(R.drawable.ic_media_play)
             .setContentIntent(pendingIntent)
             //.setChannel(channelId)

@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 
 class Profile () {
 
@@ -106,6 +107,28 @@ class Profile () {
         // 1
 //        FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE)
 
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if(task.isComplete){
+
+                val firebaseToken   = task.result.toString()
+                val oldToken        = profile.pushToken
+
+                if (oldToken != firebaseToken)
+                {
+                    profile.pushToken = firebaseToken
+
+                    profile.save()
+                }
+
+                Log.d("Token", firebaseToken)
+
+                //Util.printLog(firebaseToken)
+            }
+        }
+
+
+        /*
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 // 2
@@ -134,6 +157,8 @@ class Profile () {
                 // Toast.makeText(requireContext(), token, Toast.LENGTH_LONG).show()
             })
 
+         */
+
     }
 
         fun load(uid: String) {
@@ -155,8 +180,6 @@ class Profile () {
 
                         updateToken()
                     }
-
-
 
                     Log.d("FirebaseActivity", profile.phoneNumber.toString())
 

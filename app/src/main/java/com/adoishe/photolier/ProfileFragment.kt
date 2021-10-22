@@ -100,7 +100,7 @@ class ProfileFragment : Fragment() {
     private fun getProfileData(): List<ContentValues> {
 
 
-        Profile.load(auth.currentUser!!.uid)
+       // Profile.load(auth.currentUser!!.uid)
 
 
 
