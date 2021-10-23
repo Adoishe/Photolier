@@ -134,26 +134,27 @@ class RootFragment : Fragment() {
         Profile.load(mainAct.auth.currentUser!!.uid)
 
 
-        val orderId = mainAct.intent.getStringExtra("orderId")
 
-        when (orderId) {
 
-            null -> {}
-            else ->{
-                val orderText = mainAct.intent.getStringExtra("orderText")
+        when (mainAct.intent.extras == null) {
 
-                val bundle = Bundle()
+            true -> {}
+            false ->{
 
-            bundle.putString("orderUuid",orderId)
+                    val orderId     = mainAct.intent.getStringExtra("orderId")
+                    val orderText   = mainAct.intent.getStringExtra("orderText")
+                    val bundle      = Bundle()
+
+                    bundle.putString("orderUuid",orderId)
                     //bundle.putInt("orderId", orderId)
                     bundle.putString("orderName", orderText)
-                bundle.putString("orderText", orderText)
-            bundle.putBoolean("ordersHistory", true)
+                    bundle.putString("orderText", orderText)
+                    bundle.putBoolean("ordersHistory", true)
 
                     view.findNavController().navigate(
-                R.id.action_ordersHistoryFragment_to_orderFragment,
-                bundle
-            )
+                                                    R.id.action_rootFragment_to_orderFragment,
+                                                    bundle
+                                                    )
             }
         }
 
