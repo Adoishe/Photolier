@@ -142,8 +142,8 @@ class DataLoader () {
 
             val request = SoapObject(NAMESPACE, SEND_ORDER_METHOD_NAME)
 
-            request.addProperty("ID", jsonString)
-            request.addProperty("Num", jsoncvArrayList)
+            request.addProperty("ID"    , jsonString)
+            request.addProperty("Num"   , jsoncvArrayList)
 //-----------------------------------------------------------------------------
             res = sendSoapObject(request, SEND_ORDER_ACTION)
 
@@ -153,6 +153,7 @@ class DataLoader () {
 
             res = e.toString()
         }
+
         return res
     }
 
@@ -162,9 +163,9 @@ class DataLoader () {
 
         envelope.setOutputSoapObject(soapObject)
 
-        val androidHttpTransport    = HttpTransportSE(URL)
-        androidHttpTransport.debug  = true
-        var res                     = ""
+        val androidHttpTransport        = HttpTransportSE(URL)
+            androidHttpTransport.debug  = true
+        var res                         = ""
 
         try {
 

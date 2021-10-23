@@ -206,6 +206,7 @@ class OrderFragment : Fragment() {
                         order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
                 val     uriJSONArray        = JSONArray(orderItem.getJSONObject("mValues").get("imageUriList").toString())
                 val     orderStatus         = orderItem.getJSONObject("mValues").getString("orderStatus")
+                val     orderPayed          = orderItem.getJSONObject("mValues").getBoolean("orderPayed")
 
                         order1c.setUuid(orderItem.getJSONObject("mValues").getString("orderUuid"))
 
@@ -236,6 +237,7 @@ class OrderFragment : Fragment() {
 
                         order1c.imageUriList    = imageUriList
                         order1c.orderStatus     = orderStatus
+                        order1c.payed           = orderPayed
 
             }
             catch (e: Exception) {
@@ -256,7 +258,7 @@ class OrderFragment : Fragment() {
         val getOrderThread              = getOrder(orderUuid!!)
         mainAct.progressBar.visibility  = View.VISIBLE
         textViewResult.text             = "$orderText \n $orderUuid"
-
+        // get order1c data
         getOrderThread.start()
         getOrderThread.join()
 

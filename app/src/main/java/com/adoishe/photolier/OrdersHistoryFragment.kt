@@ -226,11 +226,11 @@ class OrdersHistoryFragment : Fragment() {
                 val order1c = orders[it.id]
                 val bundle = Bundle()
 
-                bundle.putString("orderUuid", order1c.getUuid())
-                bundle.putInt("orderId", it.id)
-                bundle.putString("orderName", order1c.name)
-                bundle.putString("orderText", order1c.text)
-                bundle.putBoolean("ordersHistory", true)
+                bundle.putString    ("orderUuid"    , order1c.getUuid())
+                bundle.putInt       ("orderId"      , it.id)
+                bundle.putString    ("orderName"    , order1c.name)
+                bundle.putString    ("orderText"    , order1c.text)
+                bundle.putBoolean   ("ordersHistory", true)
 
                 view.findNavController().navigate(
                     R.id.action_ordersHistoryFragment_to_orderFragment,

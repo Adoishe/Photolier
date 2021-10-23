@@ -59,7 +59,7 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        intent.putExtra("orderId" , receivedJSONObject.getString("orderId"));
+        intent.putExtra("orderId"   , receivedJSONObject.getString("orderId"));
         intent.putExtra("orderText" , receivedJSONObject.getString("title"));
 
         // FLAG_ACTIVITY_CLEAR_TASK

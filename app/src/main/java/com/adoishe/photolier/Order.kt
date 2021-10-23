@@ -9,11 +9,16 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -41,7 +46,9 @@ class Order(var context: Activity) {
                 var indexInPacket   : Int                       = 0
                 var countOfPacket   : Int                       = 0
                 var status          : Int                       = NEW
+                var payed           : Boolean                   = false
     private     val mainAct                                     = context as MainActivity
+                var userId          : String                    = mainAct.auth.currentUser?.uid.toString()
 
 
     init {
@@ -238,7 +245,7 @@ class Order(var context: Activity) {
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
-        json.put("uid"              , mainAct.auth.currentUser?.uid.toString())
+        json.put("uid"              , userId)//mainAct.auth.currentUser?.uid.toString())
         json.put("indexInPacket"    , this.indexInPacket)
         json.put("countOfPacket"    , this.countOfPacket)
 
@@ -463,6 +470,23 @@ class Order(var context: Activity) {
              */
         }
     }
+
+    /*
+    fun save() {
+
+        val ref = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
+
+        ref.child(uuid).setValue(this).addOnCompleteListener {
+
+            Log.d("FirebaseActivity", it.toString())
+        }
+
+    }
+
+     */
+
+
+
 
     fun send (fragment: OrderFragment){
 
