@@ -142,20 +142,30 @@ class RootFragment : Fragment() {
             false ->{
 
                     val orderId     = mainAct.intent.getStringExtra("orderId")
-                    val orderText   = mainAct.intent.getStringExtra("orderText")
-                    val bundle      = Bundle()
 
-                    bundle.putString    ("orderUuid",orderId)
-                    //bundle.putInt ("orderId", orderId)
-                    bundle.putString    ("orderName", orderText)
-                    bundle.putString    ("orderText", orderText)
-                    bundle.putBoolean   ("ordersHistory", true)
+                    when (orderId){
+                        ""      -> {}
+                        else    -> {
+                            val orderText   = mainAct.intent.getStringExtra("orderText")
+                            val bundle      = Bundle()
 
-                    view.findNavController().navigate(
-                                                    //R.id.action_rootFragment_to_orderFragment,
-                                                    R.id.orderFragment,
-                                                    bundle
-                                                    )
+                            bundle.putString    ("orderUuid",orderId)
+                            //bundle.putInt ("orderId", orderId)
+                            bundle.putString    ("orderName", orderText)
+                            bundle.putString    ("orderText", orderText)
+                            bundle.putBoolean   ("ordersHistory", true)
+
+                            view.findNavController().navigate(
+                                //R.id.action_rootFragment_to_orderFragment,
+                                R.id.orderFragment,
+                                bundle
+                            )
+
+
+                        }
+                    }
+
+
             }
         }
 

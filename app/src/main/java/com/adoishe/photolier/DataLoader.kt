@@ -389,7 +389,8 @@ class DataLoader () {
                         val jObject = JSONObject()
 
                         jObject.put("res", res)
-                        (context as MainActivity).log.add(res)
+                        //(context as MainActivity).log.add(res)
+                        (context as MainActivity).saveLog(res)
 
                         return jObject
                     }
@@ -415,12 +416,15 @@ class DataLoader () {
                             }
                         }
                         false->{
-                            (context as MainActivity).log.add(sendResult)
+                            //(context as MainActivity).log.add(sendResult)
+                            (context as MainActivity).saveLog(sendResult)
                         }
                     }
                 }
                 false->{
-                    (context as MainActivity).log.add(sendResult)
+                    //(context as MainActivity).log.add(sendResult)
+                    (context as MainActivity).saveLog(sendResult)
+
                 }
             }
             return resultJSSONObj

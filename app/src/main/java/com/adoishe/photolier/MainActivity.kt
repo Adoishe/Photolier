@@ -46,9 +46,8 @@ import android.app.NotificationChannel
 import android.annotation.SuppressLint
 
 import android.os.Build
-
-
-
+import android.util.Log
+import com.google.firebase.database.FirebaseDatabase
 
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
@@ -442,6 +441,26 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    fun saveLog(msg:String){
+
+        log.add(msg)
+
+
+        val logs = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("logs")
+
+        logs
+            .child(auth.currentUser!!.uid)
+            .child(session)
+            .setValue(log)
+            .addOnCompleteListener {
+
+           Log.d("FirebaseActivity", msg)
+        }
+
+
+
+    }
 
     private fun isPermissionsAllowed(): Boolean {
         return ContextCompat.checkSelfPermission(this , Manifest.permission.MANAGE_DOCUMENTS) == PackageManager.PERMISSION_GRANTED

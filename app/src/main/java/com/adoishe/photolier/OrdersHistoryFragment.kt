@@ -56,17 +56,21 @@ class OrdersHistoryFragment : Fragment() {
              // val mainAct    = (requireActivity() as MainActivity)
              orders         = ArrayList()
 
-             mainAct.log.add("gwt orders thread started")
+             //mainAct.log.add("get orders thread started")
+             mainAct.saveLog("get orders thread started")
 
             var result : String
             val dl = DataLoader()
 
-             mainAct.log.add("getOrders requested")
-             mainAct.log.add("uid = " + mainAct.auth.currentUser!!.uid)
+             //mainAct.log.add("getOrders requested")
+             //mainAct.log.add("uid = " + mainAct.auth.currentUser!!.uid)
+             mainAct.saveLog("getOrders requested")
+             mainAct.saveLog("uid = " + mainAct.auth.currentUser!!.uid)
 
             val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid)
 
-            mainAct.log.add(sendResult)
+            //mainAct.log.add(sendResult)
+             mainAct.saveLog(sendResult)
 
             try {
 
@@ -119,7 +123,8 @@ class OrdersHistoryFragment : Fragment() {
 
                 result = sendResult.toString()
 
-                mainAct.log.add(result)
+               // mainAct.log.add(result)
+                mainAct.saveLog(result)
 
             }
 

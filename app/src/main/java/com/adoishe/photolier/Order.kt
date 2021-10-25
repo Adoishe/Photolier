@@ -273,8 +273,8 @@ class Order(var context: Activity) {
     private fun getSendThread(fragment: OrderFragment) : Thread {
         return Thread {
 
-            mainAct.log.add("send thread create")
-
+            //mainAct.log.add("send thread create")
+            mainAct.saveLog("send thread create")
 
 
             //byteArrayList               = getByteArrayList()
@@ -421,7 +421,8 @@ class Order(var context: Activity) {
                     val mValues         = resultJSSONObj.getJSONObject("mValues")
                     result              = resultJSSONObj.toString()
 
-                    mainAct.log.add("result = $result")
+                    //mainAct.log.add("result = $result")
+                    mainAct.saveLog("result = $result")
 
                     name            = mValues.getString("orderName")
                     orderStatus     = mValues.getString("orderStatus")
@@ -444,7 +445,8 @@ class Order(var context: Activity) {
                 result = sendResult
                 status = SEND_ERROR
 
-                mainAct.log.add("result = $result")
+                //mainAct.log.add("result = $result")
+                mainAct.saveLog("result = $result")
                 }
 
            // fragment.progressBar.visibility  = ProgressBar.GONE
@@ -493,7 +495,8 @@ class Order(var context: Activity) {
         when (imageOrderList.size){
             0 -> {
                 // nothing
-                mainAct.log.add("nothing to send ")
+                //mainAct.log.add("nothing to send ")
+                mainAct.saveLog("nothing to send ")
             }
             else ->{
 

@@ -59,8 +59,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        intent.putExtra("orderId"   , receivedJSONObject.getString("orderId"));
-        intent.putExtra("orderText" , receivedJSONObject.getString("title"));
+        intent.putExtra("orderId"   , receivedJSONObject.optString("orderId", ""));
+        intent.putExtra("orderText" , receivedJSONObject.optString("title", ""));
 
         // FLAG_ACTIVITY_CLEAR_TASK
         //https://startandroid.ru/ru/uroki/vse-uroki-spiskom/190-urok-116-povedenie-activity-v-task-intent-flagi-launchmode-affinity.html
