@@ -84,6 +84,8 @@ class RootFragment : Fragment() {
 
         Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
 
+        mainAct.saveLog(resources.getString(R.string.sync))
+
         ImageFormat.sync(mainAct)
 
         MaterialPhoto.sync(mainAct)
@@ -110,6 +112,8 @@ class RootFragment : Fragment() {
 
             false ->{
 
+                mainAct.saveLog("SYNC failed")
+                /*
                 val mess = mainAct.log.joinToString("\n")
 
                 requireView().findViewById<EditText>(R.id.log).setText(mess)
@@ -117,6 +121,8 @@ class RootFragment : Fragment() {
                 Toast.makeText(context, mess, Toast.LENGTH_LONG).show()
 
                 mainAct.log.clear()
+
+                 */
             }
         }
 
@@ -160,7 +166,6 @@ class RootFragment : Fragment() {
                                 R.id.orderFragment,
                                 bundle
                             )
-
 
                         }
                     }

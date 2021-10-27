@@ -308,23 +308,17 @@ class Order(var context: Activity) {
 
             var sendResult = ""
 
-
-
-
             mainAct.runOnUiThread{
                 fragment.progressBar.visibility         = View.VISIBLE
                 fragment.progressBar.isIndeterminate    = false
                 fragment.progressBar.max                = imageOrderList.size-1
                 fragment.progressBar.min                = 0
-
             }
-
 
             val lastIndex = imageOrderList.size -1
             imageOrderList.forEachIndexed  { index, imageOrder ->
 
                 imageOrder.isLastOne(lastIndex ==  index)
-
 
                 val uiInfo  = Runnable               {
 
@@ -431,9 +425,9 @@ class Order(var context: Activity) {
                     status          = SENT
 
                     mainAct.runOnUiThread {
-                        fragment.arguments?.putString("orderName", name)
-                        fragment.arguments?.putString("orderStatus", orderStatus)
-                        fragment.arguments?.putString("orderUuid", uuid)
+                        fragment.arguments?.putString("orderName"   , name)
+                        fragment.arguments?.putString("orderStatus" , orderStatus)
+                        fragment.arguments?.putString("orderUuid"   , uuid)
 
                         fragment.fillBySend(fragment.requireView().rootView)
                         //  progressBar.progress

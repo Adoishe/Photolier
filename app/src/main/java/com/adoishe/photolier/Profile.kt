@@ -163,6 +163,8 @@ class Profile () {
 
         fun load(uid: String) {
 
+
+
             Log.d("FirebaseActivity", uid)
 
             val ref =

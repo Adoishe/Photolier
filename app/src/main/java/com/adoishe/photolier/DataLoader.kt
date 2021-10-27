@@ -235,12 +235,13 @@ class DataLoader () {
         return res
     }
 
-    fun getOrders(jsonString: String): String {
+    fun getOrders(jsonString: String , displayName : String): String {
 
         val request = SoapObject(NAMESPACE, GET_ORDERS_METHOD_NAME)
         var res     = ""
 
         request.addProperty("userUUid", jsonString)
+        request.addProperty("displayName", displayName)
 
         res = sendSoapObject(request, GET_ORDERS_SOAP_ACTION)
 
@@ -347,6 +348,8 @@ class DataLoader () {
         @JvmStatic
         fun sync(context: Context, sourceName: String): JSONObject {
 
+            (context as MainActivity).saveLog("sync $sourceName")
+
             val hashArrayList: MutableList<Int> = ArrayList()
 
             hashArrayList.add(1)
@@ -360,6 +363,8 @@ class DataLoader () {
             var resultJSSONObj                  = JSONObject()
             var succ: Boolean                   = (sendResult != "")
             progressBar.visibility              = View.INVISIBLE
+
+            (context as MainActivity).saveLog("result $sourceName : $sendResult")
 
             val c   : Collection<String>
 

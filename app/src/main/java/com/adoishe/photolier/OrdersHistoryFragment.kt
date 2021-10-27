@@ -36,7 +36,7 @@ class OrdersHistoryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    val mainAct    = (requireActivity() as MainActivity)
+  //  private val mainAct    = (requireActivity() as MainActivity)
 
     var orders : MutableList<Order> = ArrayList()
     private var prg: ProgressBar? = null
@@ -53,7 +53,7 @@ class OrdersHistoryFragment : Fragment() {
 
          return Thread {
 
-             // val mainAct    = (requireActivity() as MainActivity)
+              val mainAct    = (requireActivity() as MainActivity)
              orders         = ArrayList()
 
              //mainAct.log.add("get orders thread started")
@@ -67,7 +67,7 @@ class OrdersHistoryFragment : Fragment() {
              mainAct.saveLog("getOrders requested")
              mainAct.saveLog("uid = " + mainAct.auth.currentUser!!.uid)
 
-            val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid)
+            val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid , mainAct.auth.currentUser!!.displayName!!)
 
             //mainAct.log.add(sendResult)
              mainAct.saveLog(sendResult)
@@ -168,6 +168,7 @@ class OrdersHistoryFragment : Fragment() {
     private fun createCardView(view: View){
 
         // Add an ImageView to the CardView
+        val mainAct    = (requireActivity() as MainActivity)
         val historyLayout = view.findViewById<LinearLayout>(R.id.history_layout)
 
             // Initialize a new CardView instance

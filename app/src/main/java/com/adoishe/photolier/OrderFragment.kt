@@ -153,7 +153,7 @@ class OrderFragment : Fragment() {
 
 
        // val htmlText = "<html><body>$htmlCode</body></html>"
-
+        (context as MainActivity).saveLog(htmlCode)
         webView.loadDataWithBaseURL(null, htmlCode, "text/html", "ru_RU", null)
     }
 
@@ -166,10 +166,7 @@ class OrderFragment : Fragment() {
         val orderName           = arguments?.getString("orderName")
         val orderStatus         = arguments?.getString("orderStatus")
             textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
-
-
-
-        val getOrderThread              = getOrder(orderUuid!!)
+        val getOrderThread      = getOrder(orderUuid!!)
 
         getOrderThread.start()
         getOrderThread.join()
@@ -187,16 +184,20 @@ class OrderFragment : Fragment() {
 
             val mainAct    = (requireActivity() as MainActivity)
 
-            mainAct.log.add("get order thread started")
+            mainAct.saveLog("get order thread started")
+            //mainAct.log.add()
 
             val dl = DataLoader()
 
-            mainAct.log.add("getOrder requested")
-            mainAct.log.add("orderUuid = $orderUuid")
+            mainAct.saveLog("getOrder requested")
+            mainAct.saveLog("orderUuid = $orderUuid")
+            //mainAct.log.add("getOrder requested")
+            //mainAct.log.add("orderUuid = $orderUuid")
 
             val sendResult = dl.getOrder(orderUuid)
 
-            mainAct.log.add(sendResult)
+            mainAct.saveLog(sendResult)
+            //mainAct.log.add(sendResult)
 
             try {
 
@@ -242,7 +243,8 @@ class OrderFragment : Fragment() {
             }
             catch (e: Exception) {
 
-                mainAct.log.add(sendResult)
+                mainAct.saveLog(sendResult)
+                //mainAct.log.add(sendResult)
 
             }
 
