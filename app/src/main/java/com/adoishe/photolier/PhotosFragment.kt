@@ -429,6 +429,37 @@ class PhotosFragment : Fragment() {
         }
     }
 
+    private fun fillView (view : View){
+
+        mainAct.progressBar.visibility  = ProgressBar.VISIBLE
+
+        val getFormatsByMaterialThread  = getFormatsByMaterialThread((mainAct.order.materialPhoto as MaterialPhoto).uid)
+
+        getFormatsByMaterialThread.start()
+        getFormatsByMaterialThread.join()
+
+        mainAct.progressBar.visibility = ProgressBar.GONE
+
+        val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
+        val tab0        = tabLayout.getTabAt((mainAct.order.materialPhoto as MaterialPhoto).indexInArray)
+
+        tab0?.select()
+
+        tab0?.let {
+            afterTabSelected(it)
+        }
+
+        setQtyText()
+
+        when (mainAct.availableImageFormats.size){
+            0 -> {
+                var warning = view.findViewById<TextView>(R.id.textViewResult)
+
+                warning.text = mainAct.log[mainAct.log.size - 1]
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
@@ -438,41 +469,17 @@ class PhotosFragment : Fragment() {
 
                 val messsage = resources.getString(R.string.netTrouble)
 
-                mainAct.log.add(messsage + DataLoader.res)
+                mainAct.saveLog(messsage + " | " + DataLoader.res)
+                //mainAct.log.add(messsage + DataLoader.res)
 
             }
             else -> {
 
-                //mainAct.order.materialPhoto     = MaterialPhoto.materialsPhoto[0]
-
-
-                mainAct.progressBar.visibility  = ProgressBar.VISIBLE
-
-                val getFormatsByMaterialThread  = getFormatsByMaterialThread((mainAct.order.materialPhoto as MaterialPhoto).uid)
-
-                    getFormatsByMaterialThread.start()
-                    getFormatsByMaterialThread.join()
-
-                mainAct.progressBar.visibility = ProgressBar.GONE
-
-                val tabLayout   = requireView().findViewById<TabLayout>(R.id.tabLayout)
-                val tab0        = tabLayout.getTabAt((mainAct.order.materialPhoto as MaterialPhoto).indexInArray)
-
-                tab0?.select()
-
-                tab0?.let {
-                    afterTabSelected(it)
+                when (mainAct.order.materialPhoto == null){
+                    true    ->  view.findNavController().navigate(R.id.getMaterialFragment)
+                    false   ->  fillView(view)
                 }
 
-                setQtyText()
-
-                when (mainAct.availableImageFormats.size){
-                    0 -> {
-                        var warning = view.findViewById<TextView>(R.id.textViewResult)
-
-                        warning.text = mainAct.log[mainAct.log.size - 1]
-                    }
-                }
             }
         }
 

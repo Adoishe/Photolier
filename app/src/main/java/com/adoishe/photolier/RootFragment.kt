@@ -83,23 +83,9 @@ class RootFragment : Fragment() {
         mainAct.progressBar.visibility = ProgressBar.VISIBLE
 
         Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
-
         mainAct.saveLog(resources.getString(R.string.sync))
-
         ImageFormat.sync(mainAct)
-
         MaterialPhoto.sync(mainAct)
-
-/*
-        Profile.load(mainAct.auth.currentUser!!.uid)
-
-        if (!Profile.hasEnoughData()){
-
-            view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
-
-        }
-
- */
 
         mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
 
@@ -109,24 +95,11 @@ class RootFragment : Fragment() {
                 //(context as MainActivity).setTheme(R.style.Theme_Photolier)
             }
 
-
             false ->{
 
                 mainAct.saveLog("SYNC failed")
-                /*
-                val mess = mainAct.log.joinToString("\n")
-
-                requireView().findViewById<EditText>(R.id.log).setText(mess)
-
-                Toast.makeText(context, mess, Toast.LENGTH_LONG).show()
-
-                mainAct.log.clear()
-
-                 */
             }
         }
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -139,46 +112,33 @@ class RootFragment : Fragment() {
 
         Profile.load(mainAct.auth.currentUser!!.uid)
 
-
-
-
         when (mainAct.intent.extras == null) {
 
             true -> {}
             false ->{
 
-                    val orderId     = mainAct.intent.getStringExtra("orderId")
+                val orderId     = mainAct.intent.getStringExtra("orderId")
 
-                    when (orderId){
-                        ""      -> {}
-                        else    -> {
-                            val orderText   = mainAct.intent.getStringExtra("orderText")
-                            val bundle      = Bundle()
+                when (orderId){
+                    ""      -> {}
+                    else    -> {
+                        val orderText   = mainAct.intent.getStringExtra("orderText")
+                        val bundle      = Bundle()
 
-                            bundle.putString    ("orderUuid",orderId)
-                            //bundle.putInt ("orderId", orderId)
-                            bundle.putString    ("orderName", orderText)
-                            bundle.putString    ("orderText", orderText)
-                            bundle.putBoolean   ("ordersHistory", true)
+                        bundle.putString    ("orderUuid",orderId)
+                        //bundle.putInt ("orderId", orderId)
+                        bundle.putString    ("orderName", orderText)
+                        bundle.putString    ("orderText", orderText)
+                        bundle.putBoolean   ("ordersHistory", true)
 
-                            view.findNavController().navigate(
-                                //R.id.action_rootFragment_to_orderFragment,
-                                R.id.orderFragment,
-                                bundle
-                            )
-
-                        }
+                        view.findNavController().navigate(
+                            //R.id.action_rootFragment_to_orderFragment,
+                            R.id.orderFragment,
+                            bundle
+                        )
                     }
-
-
+                }
             }
         }
-
-
-
-
-
-
     }
-
 }

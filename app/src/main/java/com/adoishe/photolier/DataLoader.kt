@@ -190,6 +190,9 @@ class DataLoader () {
 
                 res = (envelope.bodyIn as SoapObject).getPropertyAsString(0)
 
+                androidHttpTransport.reset()
+                androidHttpTransport.serviceConnection.disconnect()
+
             } catch (e: Exception) {
 
                 e.printStackTrace()

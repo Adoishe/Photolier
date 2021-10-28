@@ -48,6 +48,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
 
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
@@ -95,33 +96,35 @@ class MainActivity : AppCompatActivity() {
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
 
     companion object {
-         val FIREINSTANCE = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
-        const val CHANNEL_ID = "photolier.app.CHANNEL_ID"
-        const val CHANNEL_NAME = "photolier.app.Notification"
+                val FIREINSTANCE    = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
+        const   val CHANNEL_ID      = "photolier.app.CHANNEL_ID"
+        const   val CHANNEL_NAME    = "photolier.app.Notification"
     }
-
-
 
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
         try {
+
             if (source.height >= source.width) {
+
                 if (source.height <= maxLength) { // if image height already smaller than the required height
                     return source
                 }
 
                 val aspectRatio = source.width.toDouble() / source.height.toDouble()
                 val targetWidth = (maxLength * aspectRatio).toInt()
-                val result = Bitmap.createScaledBitmap(source, targetWidth, maxLength, false)
+                val result      = Bitmap.createScaledBitmap(source, targetWidth, maxLength, false)
+
                 return result
+
             } else {
                 if (source.width <= maxLength) { // if image width already smaller than the required width
-                    return source
-                }
+                        return source
+                    }
 
-                val aspectRatio = source.height.toDouble() / source.width.toDouble()
-                val targetHeight = (maxLength * aspectRatio).toInt()
+                val aspectRatio     = source.height.toDouble() / source.width.toDouble()
+                val targetHeight    = (maxLength * aspectRatio).toInt()
+                val result          = Bitmap.createScaledBitmap(source, maxLength, targetHeight, false)
 
-                val result = Bitmap.createScaledBitmap(source, maxLength, targetHeight, false)
                 return result
             }
         } catch (e: Exception) {
@@ -148,12 +151,12 @@ class MainActivity : AppCompatActivity() {
 
             } catch (e: Exception) {
 
-
                 e.printStackTrace()
 
                 res = e.toString()
 
-                log.add("getFormatsByMaterialThread = $res")
+                saveLog("getFormatsByMaterialThread = $res")
+                //log.add("getFormatsByMaterialThread = $res")
 
                 //return
             }
@@ -186,8 +189,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     fun generateImageView(base64: String): ImageView {
 
         val imageView = ImageView(this)
@@ -206,8 +207,8 @@ class MainActivity : AppCompatActivity() {
         //imageView.setImageResource(R.drawable.ic_launcher_foreground)
 
             imageView.scaleType             = ImageView.ScaleType.CENTER_CROP
-        val imageByteArray                   = Base64.getDecoder().decode(base64)
-        val bmp                              = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
+        val imageByteArray                  = Base64.getDecoder().decode(base64)
+        val bmp                             = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
             imageView.layoutParams.height   = bmp.height
             imageView.layoutParams.width    = bmp.width
             imageView.requestLayout()
@@ -220,26 +221,7 @@ class MainActivity : AppCompatActivity() {
 
         return imageView
     }
-/*
-    private fun generateTextView(
-        string: String
-        //, orderIndex : Int
-        , view: View
-    ): TextView {
 
-        val textView            = TextView(requireContext())
-        val params              = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        textView.layoutParams   = params
-        textView.text           = string
-        //textView.id             = orderIndex
-
-
-        return textView
-    }
-  */
     fun generateTextView(string : String) :TextView {
 
         val textView = TextView(this)
@@ -289,11 +271,10 @@ class MainActivity : AppCompatActivity() {
         // Initialize a new CardView instance
         listCV.forEach {
 
-            val cardView = CardView(this)
+            val cardView    = CardView(this)
 
-            cardView.id = listCV.indexOf(it)
-
-            cardView.tag = it.getAsString("uid")
+            cardView.id     = listCV.indexOf(it)
+            cardView.tag    = it.getAsString("uid")
 
             // Initialize a new LayoutParams instance, CardView width and height
             val layoutParams = LinearLayout.LayoutParams(
@@ -333,9 +314,8 @@ class MainActivity : AppCompatActivity() {
                // val imageFormat = ImageFormat.imageFormats[it.id]
                 val bundle = Bundle()
 
-
-                bundle.putInt("id"      , it.id)
-                bundle.putString("uid"  , it.tag as String?)
+                bundle.putInt(      "id"   , it.id)
+                bundle.putString(   "uid"  , it.tag as String?)
 
 
                 //bundle.putString("imageFormatName", imageFormat.name)
@@ -344,12 +324,9 @@ class MainActivity : AppCompatActivity() {
 
 
                 view.findNavController().navigate(
-                    action,
-                    bundle
+                    action
+                    ,bundle
                 )
-
-
-
             }
             // Finally, add the CardView in root layout
             cardView_targetLayout?.addView(cardView)
@@ -376,43 +353,15 @@ class MainActivity : AppCompatActivity() {
                 .setAvailableProviders(providers)
                 //     .setTosUrl("link to app terms and service")
                 //    .setPrivacyPolicyUrl("link to app privacy policy")
-                .build(),
-            RC_SIGN_IN
+                .build()
+            , RC_SIGN_IN
         )
     }
 
     override fun onStart() {
         super.onStart()
 
-    /*
-        var progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.visibility  = ProgressBar.VISIBLE
-
-        if(auth.currentUser == null){ //If user is signed in
-            //  startActivity(Next Activity)
-            authenticate()
-            //log.add(auth.currentUser!!.email.toString())
-        }
-        else {
-
-            // log.add("auth.currentUser == null")
-            // authenticate()
-        }
-
-        ImageFormat.sync(this )
-        //    log.add("ImageFormat = ")
-        MaterialPhoto.sync(this )
-        //  log.add("MaterialPhoto = ")
-
-
-
-        progressBar.visibility  = ProgressBar.INVISIBLE
-
-
- */
     }
-
-
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
 
@@ -424,11 +373,6 @@ class MainActivity : AppCompatActivity() {
                 null -> authenticate()
                 else -> setAppTitle()
             }
-
-
-
-            //sync()
-
         }
     }
 
@@ -446,20 +390,20 @@ class MainActivity : AppCompatActivity() {
 
         log.add(msg)
 
-
-        val logs = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("logs")
+        val logs            = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("logs")
+        val date            = java.util.Calendar.getInstance().time
+        val formatter       = SimpleDateFormat("dd-MM-yyyy")//SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
+        val formattedDate   = formatter.format(date)
 
         logs
             .child(auth.currentUser!!.uid)
             .child(session)
+            .child(formattedDate)
             .setValue(log)
             .addOnCompleteListener {
 
            Log.d("FirebaseActivity", msg)
         }
-
-
-
     }
 
     private fun isPermissionsAllowed(): Boolean {
@@ -467,7 +411,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askForPermissions(): Boolean {
+
         if (!isPermissionsAllowed()) {
+
             if (ActivityCompat.shouldShowRequestPermissionRationale(this , Manifest.permission.MANAGE_DOCUMENTS)) {
 
                 showPermissionDeniedDialog()
@@ -481,8 +427,8 @@ class MainActivity : AppCompatActivity() {
 
                  */
 
-                requestPermissions( arrayOf(Manifest.permission.MANAGE_DOCUMENTS)
-                    , OrdersHistoryFragment.REQUEST_CODE
+                requestPermissions(     arrayOf(Manifest.permission.MANAGE_DOCUMENTS)
+                                    ,   OrdersHistoryFragment.REQUEST_CODE
 
                 )
             }
