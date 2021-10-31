@@ -22,7 +22,10 @@ class SwipeHelperCallback(private val adapter : ItemTouchHelperAdapter) : ItemTo
             target: RecyclerView.ViewHolder
     ): Boolean {
 
-        TODO("Not yet implemented")
+        adapter.onItemMove(source.adapterPosition,
+                            target.adapterPosition
+                             );
+        return true
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
