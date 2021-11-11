@@ -15,6 +15,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -316,52 +317,37 @@ class Order(var context: Activity) {
             }
 
             val lastIndex = imageOrderList.size -1
+
             imageOrderList.forEachIndexed  { index, imageOrder ->
 
-                imageOrder.isLastOne(lastIndex ==  index)
+                var thisIsLastOne = (lastIndex ==  index)
 
-                val uiInfo  = Runnable               {
+                when (thisIsLastOne) {
 
-                        //
-                       // val toast = Toast(mainAct)
+                    true -> mainAct.saveLog("sending $index img")
+                    false -> mainAct.saveLog("lastOne sending $index img")
+                }
 
-                        // mainAct.progressBar.visibility = ProgressBar.VISIBLE
-                fragment.progressBar.progress = index
+                imageOrder.isLastOne(thisIsLastOne)
 
+                val uiInfo  = Runnable {
 
-                      //  toast.setText(index.toString())
-
-                      //  toast.show()
-/*
-                        synchronized(this)
-                        {
-                            this.noti;
-                        }
-
- */
+                    fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
+//                         + " " + index.toString() + "/" + imageOrderList.size.toString()
+                    fragment.progressBar.progress   = index
 
                 }
 
-             //   synchronized( uiInfo ) {
                     mainAct.runOnUiThread(uiInfo) ;
 
                     //uiInfo.wait() ; // unlocks myRunable while waiting
               //  }
 
-
-
-
-
                // mainAct.runOnUiThread(uiInfo )
-
-
-
-
 
 /*
 
                 val photosFragment = mainAct.supportFragmentManager.fragments[0].childFragmentManager.fragments[0] as PhotosFragment
-
 
                 photosFragment.imageUriList.removeAt(index)
                 photosFragment.updateList()
@@ -371,8 +357,6 @@ class Order(var context: Activity) {
                 val cvArrayList             = getJSONArrayListSingle(imageOrder)
                 val jsoCvArrayList: String  = cvArrayList.toString()
                     sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
-
-
 
 
 /*
@@ -497,7 +481,7 @@ class Order(var context: Activity) {
                // val progressBar             = mainAct.progressBar
                //     progressBar.visibility  = ProgressBar.VISIBLE
 
-                val sendThread              = getSendThread(fragment)
+                val sendThread = getSendThread(fragment)
 
                 sendThread.start()
                 //sendThread.join()

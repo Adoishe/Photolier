@@ -117,11 +117,12 @@ class RootFragment : Fragment() {
             true -> {}
             false ->{
 
-                val orderId     = mainAct.intent.getStringExtra("orderId")
+                val orderId  = mainAct.intent.getStringExtra("orderId")
 
                 when (orderId){
-                    ""      -> {}
-                    else    -> {
+                    ""   -> {}
+                    else -> {
+
                         val orderText   = mainAct.intent.getStringExtra("orderText")
                         val bundle      = Bundle()
 
@@ -131,11 +132,17 @@ class RootFragment : Fragment() {
                         bundle.putString    ("orderText", orderText)
                         bundle.putBoolean   ("ordersHistory", true)
 
-                        view.findNavController().navigate(
-                            //R.id.action_rootFragment_to_orderFragment,
-                            R.id.orderFragment,
-                            bundle
-                        )
+                        when(mainAct.intent.getStringExtra("messageId")){
+                            "GOT_LAST_IMAGE_OF_ORDER" -> {}
+                            "GOT_A_NEW_ORDER_PAYMENT" -> {
+
+                                view.findNavController().navigate(
+                                    //R.id.action_rootFragment_to_orderFragment,
+                                    R.id.orderFragment,
+                                    bundle
+                                )
+                            }
+                        }
                     }
                 }
             }

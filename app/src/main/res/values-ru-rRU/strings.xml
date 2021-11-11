@@ -32,4 +32,5 @@
     <string name="saveProfile">Сохранить данные</string>
     <string name="Profile">Личный кабинет</string>
     <string name="reloadData">Обновить</string>
+    <string name="sending">Отправка %1$d из  %2$d</string>
 </resources>

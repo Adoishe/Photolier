@@ -36,6 +36,7 @@ class OrderFragment : Fragment() {
             var sendorder       : Boolean? = null
             var ordersHistory   : Boolean? = null
     lateinit var progressBar     : ProgressBar
+    lateinit var textViewResult   : TextView
     private lateinit var order1c : Order  //       = Order(requireActivity())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -315,6 +316,7 @@ class OrderFragment : Fragment() {
             sendorder       = arguments?.getBoolean("sendorder")
             ordersHistory   = arguments?.getBoolean("ordersHistory")
             progressBar     = root.findViewById(R.id.progressBarSend)
+            textViewResult     = root.findViewById(R.id.textViewResult)
 
         return root
     }

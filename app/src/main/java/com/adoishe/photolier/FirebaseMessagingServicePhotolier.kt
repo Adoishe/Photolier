@@ -29,27 +29,23 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         // If the application is in the foreground handle both data and notification messages here.
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated.
-        Log.d(TAG, "From: " + remoteMessage!!.from)
-        //Log.d(TAG, "Notification Message Body: " + p0.notification?.body!!)
 
         val params: Map<String?, String?>   = remoteMessage.data
         val receivedJSONObject              = JSONObject(params)
 
-        Log.e(TAG, receivedJSONObject.toString())
+//        Log.e(TAG, receivedJSONObject.toString())
+
+        val messageId = receivedJSONObject.optString("message_id"    , "")
+
+        Log.d(TAG, "got $messageId From: " + remoteMessage!!.from)
+
+
 
         sendNotification(remoteMessage , receivedJSONObject)
-        /*
-        val intent = Intent(applicationContext, MainActivity::class.java)
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra("message", p0.notification?.body!!)
+    }
 
-        startActivity(intent)
-
-
-         */
-
-
+    private  fun sendLastImageNotification (remoteMessage: RemoteMessage , receivedJSONObject : JSONObject){
 
     }
 
@@ -59,8 +55,9 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        intent.putExtra("orderId"   , receivedJSONObject.optString("orderId", ""));
-        intent.putExtra("orderText" , receivedJSONObject.optString("title", ""));
+        intent.putExtra("orderId"   , receivedJSONObject.optString("orderId"    , ""));
+        intent.putExtra("orderText" , receivedJSONObject.optString("title"      , ""));
+        intent.putExtra("messageId" , receivedJSONObject.optString("message_id" , ""));
 
         // FLAG_ACTIVITY_CLEAR_TASK
         //https://startandroid.ru/ru/uroki/vse-uroki-spiskom/190-urok-116-povedenie-activity-v-task-intent-flagi-launchmode-affinity.html
@@ -82,17 +79,15 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
                 NotificationManager.IMPORTANCE_MAX
             )
             // Configure the notification channel.
-            notificationChannel.description = "Sample Channel description"
 
-            notificationChannel.enableLights(true)
+            notificationChannel.description         = "Sample Channel description"
             notificationChannel.lightColor          = Color.RED
             notificationChannel.vibrationPattern    = longArrayOf(0, 1000, 500, 1000)
 
+            notificationChannel.enableLights(true)
             notificationChannel.enableVibration(true)
             notificationManager.createNotificationChannel(notificationChannel)
         }
-
-
 
         val notificationBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(receivedJSONObject.getString("title"))
@@ -117,10 +112,6 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         notificationManager.notify(111111 /* ID of notification */
                                     , notificationBuilder.build())
-
-
-
- 
 
 
     }

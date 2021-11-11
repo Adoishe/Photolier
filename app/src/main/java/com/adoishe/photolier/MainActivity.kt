@@ -132,12 +132,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
 
-
-     fun getFormatsByMaterialThread(materialUid: String): Thread{
+    fun getFormatsByMaterialThread(materialUid: String): Thread{
 
         return Thread{
             //viewPager.currentItem = tab.position
