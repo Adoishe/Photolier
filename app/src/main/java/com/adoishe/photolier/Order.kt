@@ -122,11 +122,11 @@ class Order(var context: Activity) {
 
     private fun getJSONArrayListSingle(it : ImageOrder) : JSONArray{
 
-        val cvArrayList    =  JSONArray()
+        val jsonArrayList    =  JSONArray()
 
         //imageOrderList.forEach{
 
-            val cv          = JSONObject()
+            val jsonObj          = JSONObject()
             val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
             val bitMap      = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
             val bos         = ByteArrayOutputStream()
@@ -134,6 +134,16 @@ class Order(var context: Activity) {
             bitMap.compress(CompressFormat.JPEG, 100, bos)
 
             val base64String = Base64.encode(bos.toByteArray())
+
+            // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+
+            val partSize = 1024
+
+            val base64Sliced:List<String> = base64String.chunked(partSize)
+
+//            list.forEach {
+//                textView.append("$it\n")
+//            }
 
             val maxSize = maxOf( it.imageFormat!!.heightPix , it.imageFormat!!.widthPix)
 
@@ -144,26 +154,27 @@ class Order(var context: Activity) {
             }
 
 
-            cv.put("name"           , it.name)
-            cv.put("materialPhoto"  , it.materialPhoto!!.uid)
-            cv.put("imageFormat"    , it.imageFormat!!.uid)
-            cv.put("price"          , it.imageFormat!!.price.toString())
-            cv.put("qty"            , it.qty)
-            //cv.put("byteArray"      , Base64.encode(byteArray))
-            cv.put("base64String"    , base64String)
-            cv.put("thumbB64String" , it.imageThumbBase64)
-            cv.put("imageUri"       , it.imageUri)
-            cv.put("lastOne"        , it.lastOne)
-            cv.put("size"           , imageOrderList.size )
+            jsonObj.put("name"           , it.name)
+            jsonObj.put("materialPhoto"  , it.materialPhoto!!.uid)
+            jsonObj.put("imageFormat"    , it.imageFormat!!.uid)
+            jsonObj.put("price"          , it.imageFormat!!.price.toString())
+            jsonObj.put("qty"            , it.qty)
+            jsonObj.put("base64String"   , base64Sliced)
+            jsonObj.put("base64Count"    , base64Sliced.size)
+            jsonObj.put("base64Sliced"   , base64String)
+            jsonObj.put("thumbB64String" , it.imageThumbBase64)
+            jsonObj.put("imageUri"       , it.imageUri)
+            jsonObj.put("lastOne"        , it.lastOne)
+            jsonObj.put("size"           , imageOrderList.size )
 
             val result = JSONObject()
 
-            result.put("mValues", cv)
+            result.put("mValues", jsonObj)
 
-            cvArrayList.put(result)
+            jsonArrayList.put(result)
         //}
 
-        return cvArrayList
+        return jsonArrayList
     }
 
     private fun getJSONArrayList() : JSONArray{
@@ -258,16 +269,16 @@ class Order(var context: Activity) {
 
 
 
-    suspend fun sendPhoto(index :Int, imageOrder :ImageOrder, dl : DataLoader , outputJson : String):String {
-
-        imageOrder.isLastOne(imageOrderList.size-1 ==  index)
-
-        val cvArrayList             = getJSONArrayListSingle(imageOrder)
-        val jsoCvArrayList: String  = cvArrayList.toString()
-        val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
-
-        return sendResult
-    }
+//    suspend fun sendPhoto(index :Int, imageOrder :ImageOrder, dl : DataLoader , outputJson : String):String {
+//
+//        imageOrder.isLastOne(imageOrderList.size-1 ==  index)
+//
+//        val cvArrayList             = getJSONArrayListSingle(imageOrder)
+//        val jsoCvArrayList: String  = cvArrayList.toString()
+//        val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+//
+//        return sendResult
+//    }
 
 
 
@@ -354,9 +365,9 @@ class Order(var context: Activity) {
 
  */
 
-                val cvArrayList             = getJSONArrayListSingle(imageOrder)
-                val jsoCvArrayList: String  = cvArrayList.toString()
-                    sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
+                val jSONArray = getJSONArrayListSingle(imageOrder)
+//                val jsoCvArrayList: String   = jsonObj.toString()
+                sendResult  = dl.sendOrder(outputJson, jSONArray)
 
 
 /*
@@ -404,14 +415,14 @@ class Order(var context: Activity) {
 
                     name            = mValues.getString("orderName")
                     orderStatus     = mValues.getString("orderStatus")
-                    uuid            = mValues.getString("orderUuid")
+//                    uuid            = mValues.getString("orderUuid")
                     orderSendResult = name
                     status          = SENT
 
                     mainAct.runOnUiThread {
                         fragment.arguments?.putString("orderName"   , name)
                         fragment.arguments?.putString("orderStatus" , orderStatus)
-                        fragment.arguments?.putString("orderUuid"   , uuid)
+                        fragment.arguments?.putString("orderUuid"   ,  mValues.getString("orderUuid"))
 
                         fragment.fillBySend(fragment.requireView().rootView)
                         //  progressBar.progress
