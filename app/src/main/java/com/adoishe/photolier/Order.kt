@@ -120,128 +120,55 @@ class Order(var context: Activity) {
 
  */
 
-    private fun getJSONArrayListSingle(it : ImageOrder) : JSONArray{
+    private fun getJSONArrayListSingle(imageOrder : ImageOrder) : JSONArray{
 
-        val jsonArrayList    =  JSONArray()
+        val jsonArrayList   =  JSONArray()
+        val byteArray       = context.contentResolver.openInputStream(imageOrder.imageUri!!)!!.readBytes()
+        val bitMap          = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
+        val bos             = ByteArrayOutputStream()
 
-        //imageOrderList.forEach{
+        bitMap.compress(CompressFormat.JPEG, 100, bos)
 
-            val jsonObj          = JSONObject()
-            val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
-            val bitMap      = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
-            val bos         = ByteArrayOutputStream()
+        val base64String                = Base64.encode(bos.toByteArray())
+        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+        val partSize                    = 1023
+        val base64Sliced:List<String>   = base64String.chunked(partSize)
+        val maxSize                     = maxOf( imageOrder.imageFormat!!.heightPix , imageOrder.imageFormat!!.widthPix)
 
-            bitMap.compress(CompressFormat.JPEG, 100, bos)
+        when (maxSize >0 )
+        {
+            true -> mainAct.resizeBitmap(bitMap, maxSize )
+        }
 
-            val base64String = Base64.encode(bos.toByteArray())
+        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
 
-            // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+            val jsonObj = JSONObject()
 
-            val partSize = 1024
-
-            val base64Sliced:List<String> = base64String.chunked(partSize)
-
-//            list.forEach {
-//                textView.append("$it\n")
-//            }
-
-            val maxSize = maxOf( it.imageFormat!!.heightPix , it.imageFormat!!.widthPix)
-
-            when (maxSize >0 )
-            {
-
-                true -> mainAct.resizeBitmap(bitMap, maxSize )
-            }
-
-
-            jsonObj.put("name"           , it.name)
-            jsonObj.put("materialPhoto"  , it.materialPhoto!!.uid)
-            jsonObj.put("imageFormat"    , it.imageFormat!!.uid)
-            jsonObj.put("price"          , it.imageFormat!!.price.toString())
-            jsonObj.put("qty"            , it.qty)
-            jsonObj.put("base64String"   , base64Sliced)
-            jsonObj.put("base64Count"    , base64Sliced.size)
-            jsonObj.put("base64Sliced"   , base64String)
-            jsonObj.put("thumbB64String" , it.imageThumbBase64)
-            jsonObj.put("imageUri"       , it.imageUri)
-            jsonObj.put("lastOne"        , it.lastOne)
-            jsonObj.put("size"           , imageOrderList.size )
+            jsonObj.put("name"           , imageOrder.name)
+            jsonObj.put("materialPhoto"  , imageOrder.materialPhoto!!.uid)
+            jsonObj.put("imageFormat"    , imageOrder.imageFormat!!.uid)
+            jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
+            jsonObj.put("qty"            , imageOrder.qty)
+            jsonObj.put("base64String"   , pieceOfB64string)
+            jsonObj.put("base64Size"     , base64Sliced.size)
+            jsonObj.put("base64Index"    , index)
+            jsonObj.put("base64Sliced"   , pieceOfB64string)
+            jsonObj.put("thumbB64String" , imageOrder.imageThumbBase64)
+            jsonObj.put("imageUri"       , imageOrder.imageUri)
+            jsonObj.put("lastOne"        , imageOrder.lastOne)
+            jsonObj.put("size"           , imageOrderList.size)
 
             val result = JSONObject()
 
             result.put("mValues", jsonObj)
 
             jsonArrayList.put(result)
-        //}
+        }
 
         return jsonArrayList
     }
 
-    private fun getJSONArrayList() : JSONArray{
 
-        val cvArrayList    =  JSONArray()
-
-        imageOrderList.forEach{
-
-            val cv          = JSONObject()
-            val byteArray   = context.contentResolver.openInputStream(it.imageUri!!)!!.readBytes()
-            val bitMap      = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
-            val bos         = ByteArrayOutputStream()
-
-            bitMap.compress(CompressFormat.JPEG, 100, bos)
-
-            val base64String = Base64.encode(bos.toByteArray())
-
-            val maxSize = maxOf( it.imageFormat!!.heightPix , it.imageFormat!!.widthPix)
-
-            when (maxSize >0 )
-                {
-
-                true -> mainAct.resizeBitmap(bitMap, maxSize )
-            }
-
-
-            cv.put("name"           , it.name)
-            cv.put("materialPhoto"  , it.materialPhoto!!.uid)
-            cv.put("imageFormat"    , it.imageFormat!!.uid)
-            cv.put("price"          , it.imageFormat!!.price.toString())
-            cv.put("qty"            , it.qty)
-            //cv.put("byteArray"      , Base64.encode(byteArray))
-            cv.put("base64String"    , base64String)
-            cv.put("thumbB64String" , it.imageThumbBase64)
-            cv.put("imageUri"       , it.imageUri)
-
-            val result = JSONObject()
-
-            result.put("mValues", cv)
-
-            cvArrayList.put(result)
-        }
-
-        return cvArrayList
-    }
-
-    /*
-    private fun getCvForWs() : ContentValues{
-
-        val cv = ContentValues()
-
-        (context as MainActivity).log.add("cv + orderuuid ="    + this.uuid)
-        (context as MainActivity).log.add("cv + displayName = " + (context as MainActivity).auth.currentUser?.displayName)
-        (context as MainActivity).log.add("cv + email = "       + (context as MainActivity).auth.currentUser?.email)
-        (context as MainActivity).log.add("cv + phoneNumber = " + (context as MainActivity).auth.currentUser?.phoneNumber)
-        (context as MainActivity).log.add("cv + uid = "         + (context as MainActivity).auth.currentUser?.uid)
-
-        cv.put("orderUid"       , this.uuid)
-        cv.put("displayName"    , (context as MainActivity).auth.currentUser?.displayName.toString())
-        cv.put("email"          , (context as MainActivity).auth.currentUser?.email.toString())
-        cv.put("phoneNumber"    , (context as MainActivity).auth.currentUser?.phoneNumber.toString())
-        cv.put("uid"            , (context as MainActivity).auth.currentUser?.uid.toString())
-
-        return cv
-    }
-
-     */
 
     private fun getJSONForWs() : JSONObject{
 
@@ -250,10 +177,7 @@ class Order(var context: Activity) {
 
 
         json.put("orderUid"         , this.uuid)
-        //json.put("imageFormat"      , this.imageFormat?.uid)
-        //json.put("materialPhoto"    , this.materialPhoto?.uid)
         json.put("session"          , this.session)
-        //json.put("uuid"             , this.uuid)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
@@ -266,35 +190,15 @@ class Order(var context: Activity) {
         return result
     }
 
-
-
-
-//    suspend fun sendPhoto(index :Int, imageOrder :ImageOrder, dl : DataLoader , outputJson : String):String {
-//
-//        imageOrder.isLastOne(imageOrderList.size-1 ==  index)
-//
-//        val cvArrayList             = getJSONArrayListSingle(imageOrder)
-//        val jsoCvArrayList: String  = cvArrayList.toString()
-//        val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
-//
-//        return sendResult
-//    }
-
-
-
     private fun getSendThread(fragment: OrderFragment) : Thread {
         return Thread {
 
-            //mainAct.log.add("send thread create")
             mainAct.saveLog("send thread create")
 
-
-            //byteArrayList               = getByteArrayList()
             val jsonObject              = getJSONForWs()
             val dl                      = DataLoader()
             val outputJson              = jsonObject.toString()
 
-            //mainAct.log.add("json to send = $outputJson")
 /*
             mainAct.runOnUiThread(Runnable {
                 mainAct.progressBar.max = imageOrderList.size-1
@@ -344,12 +248,11 @@ class Order(var context: Activity) {
                 val uiInfo  = Runnable {
 
                     fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
-//                         + " " + index.toString() + "/" + imageOrderList.size.toString()
                     fragment.progressBar.progress   = index
 
                 }
 
-                    mainAct.runOnUiThread(uiInfo) ;
+                    mainAct.runOnUiThread(uiInfo)
 
                     //uiInfo.wait() ; // unlocks myRunable while waiting
               //  }
@@ -367,7 +270,32 @@ class Order(var context: Activity) {
 
                 val jSONArray = getJSONArrayListSingle(imageOrder)
 //                val jsoCvArrayList: String   = jsonObj.toString()
-                sendResult  = dl.sendOrder(outputJson, jSONArray)
+
+                val piecesCount = jSONArray.length();
+
+                mainAct.runOnUiThread{
+                    fragment.progressBarPiece.visibility         = View.VISIBLE
+                    fragment.progressBarPiece.isIndeterminate    = false
+                    fragment.progressBarPiece.max                = piecesCount
+                    fragment.progressBarPiece.min                = 0
+                }
+
+                for (pieceIndex in 0 until piecesCount) {
+
+//                    mainAct.saveLog("send $pieceIndex  of $piecesCount")
+
+                    val jsonObj     = jSONArray.getJSONObject(pieceIndex)
+                        sendResult  = dl.sendOrder(outputJson, jsonObj)
+
+                    val uiInfoPiece  = Runnable {
+
+                        fragment.progressBarPiece.progress   = pieceIndex
+
+                    }
+
+                    mainAct.runOnUiThread(uiInfoPiece)
+
+                }
 
 
 /*

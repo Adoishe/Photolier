@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 )
 
      lateinit   var progressBar         : ProgressBar
+     lateinit   var progressBarPiece    : ProgressBar
                 var imageUriList        : MutableList<Uri>      = ArrayList()
                 var log                 : MutableList<String>   = ArrayList()
 
@@ -516,6 +517,7 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
         progressBar                 = findViewById(R.id.progressBar)
 
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
 
             item.isChecked = true
@@ -536,6 +538,7 @@ class MainActivity : AppCompatActivity() {
                     //if (askForPermissions()) {
 
                         progressBar.visibility = ProgressBar.VISIBLE
+                    progressBarPiece.visibility = ProgressBar.VISIBLE
 
                         findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
 

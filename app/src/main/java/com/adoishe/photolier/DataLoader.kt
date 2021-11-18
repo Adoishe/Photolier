@@ -134,7 +134,7 @@ class DataLoader () {
         }
     }
 
-    fun sendOrder(jsonString: String, jSONArray: JSONArray): String {
+    fun sendOrder(jsonString: String, jsonObject: JSONObject): String {
 
         var res = ""
 
@@ -143,7 +143,8 @@ class DataLoader () {
             val request = SoapObject(NAMESPACE, SEND_ORDER_METHOD_NAME)
 
             request.addProperty("ID"    , jsonString)
-            request.addProperty("Num"   , jSONArray.toString())
+            request.addProperty("Num"   , jsonObject.toString())
+
 //-----------------------------------------------------------------------------
             res = sendSoapObject(request, SEND_ORDER_ACTION)
 
