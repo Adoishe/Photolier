@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Base64.encodeToString
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
@@ -23,7 +24,8 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
-import org.kobjects.base64.Base64
+//import org.kobjects.base64.Base64
+import android.util.Base64
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
@@ -123,22 +125,30 @@ class Order(var context: Activity) {
     private fun getJSONArrayListSingle(imageOrder : ImageOrder) : JSONArray{
 
         val jsonArrayList   =  JSONArray()
-        val byteArray       = context.contentResolver.openInputStream(imageOrder.imageUri!!)!!.readBytes()
-        val bitMap          = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
+        var byteArray       = context.contentResolver.openInputStream(imageOrder.imageUri!!)!!.readBytes()
+        var bitMap          = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
         val bos             = ByteArrayOutputStream()
 
-        bitMap.compress(CompressFormat.JPEG, 100, bos)
-
-        val base64String                = Base64.encode(bos.toByteArray())
-        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-        val partSize                    = 1023
-        val base64Sliced:List<String>   = base64String.chunked(partSize)
+//        bitMap.compress(CompressFormat.JPEG, 100, bos)
+//
+//        val base64String                = Base64.encode(bos.toByteArray())
+//        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+//        val partSize                    = 1023
+//        val base64Sliced:List<String>   = base64String.chunked(partSize)
         val maxSize                     = maxOf( imageOrder.imageFormat!!.heightPix , imageOrder.imageFormat!!.widthPix)
 
         when (maxSize >0 )
         {
-            true -> mainAct.resizeBitmap(bitMap, maxSize )
+            true -> bitMap = mainAct.resizeBitmap(bitMap, maxSize )
         }
+
+        bitMap.compress(CompressFormat.JPEG, 100, bos)
+        byteArray                       = bos.toByteArray()
+//        val base64String                = Base64.encode(byteArray)
+        val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
+        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+        val partSize                    = 8192//4096 //8192
+        val base64Sliced:List<String>   = base64String.chunked(partSize)
 
         base64Sliced.forEachIndexed{ index, pieceOfB64string ->
 
@@ -282,7 +292,7 @@ class Order(var context: Activity) {
 
                 for (pieceIndex in 0 until piecesCount) {
 
-//                    mainAct.saveLog("send $pieceIndex  of $piecesCount")
+                    mainAct.saveLog("send $pieceIndex  of $piecesCount")
 
                     val jsonObj     = jSONArray.getJSONObject(pieceIndex)
                         sendResult  = dl.sendOrder(outputJson, jsonObj)
