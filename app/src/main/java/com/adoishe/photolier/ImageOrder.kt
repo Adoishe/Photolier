@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.net.Uri
 import org.kobjects.base64.Base64
 import java.math.BigDecimal
+import java.util.*
 
 class ImageOrder(name: String) {
 
@@ -15,12 +16,15 @@ class ImageOrder(name: String) {
     var imageFormat         : ImageFormat?      = null
     var qty                 : Int               = 1
     var materialPhoto       : MaterialPhoto?    = null
-    var price               = BigDecimal("0")
-    var lastOne             = false
+    var price                                   = BigDecimal("0")
+    var lastOne                                 = false
+
+     var uuid                :String             = ""
 
     init {
 
         this.name = name
+        this.uuid = UUID.randomUUID().toString()
 
         paper.put("uid"     , "")
         paper.put("name"    , "")

@@ -147,7 +147,7 @@ class Order(var context: Activity) {
 //        val base64String                = Base64.encode(byteArray)
         val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
         // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-        val partSize                    = 8192//4096 //8192
+        val partSize                    = 16384//8192//4096 //8192
         val base64Sliced:List<String>   = base64String.chunked(partSize)
 
         base64Sliced.forEachIndexed{ index, pieceOfB64string ->
@@ -155,6 +155,7 @@ class Order(var context: Activity) {
             val jsonObj = JSONObject()
 
             jsonObj.put("name"           , imageOrder.name)
+            jsonObj.put("uuid"           , imageOrder.uuid)
             jsonObj.put("materialPhoto"  , imageOrder.materialPhoto!!.uid)
             jsonObj.put("imageFormat"    , imageOrder.imageFormat!!.uid)
             jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
@@ -286,13 +287,13 @@ class Order(var context: Activity) {
                 mainAct.runOnUiThread{
                     fragment.progressBarPiece.visibility         = View.VISIBLE
                     fragment.progressBarPiece.isIndeterminate    = false
-                    fragment.progressBarPiece.max                = piecesCount
+                    fragment.progressBarPiece.max                = piecesCount-1
                     fragment.progressBarPiece.min                = 0
                 }
 
                 for (pieceIndex in 0 until piecesCount) {
 
-                    mainAct.saveLog("send $pieceIndex  of $piecesCount")
+                    mainAct.saveLog("send $pieceIndex   of $piecesCount")
 
                     val jsonObj     = jSONArray.getJSONObject(pieceIndex)
                         sendResult  = dl.sendOrder(outputJson, jsonObj)

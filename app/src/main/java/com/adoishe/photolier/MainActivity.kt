@@ -386,17 +386,19 @@ class MainActivity : AppCompatActivity() {
 
     fun saveLog(msg:String){
 
-        log.add(msg)
+        val logs                = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("logs")
+        val date                = java.util.Calendar.getInstance().time
+        val formatter           = SimpleDateFormat("dd-MM-yyyy")//SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
+        val formattedDate       = formatter.format(date)
+        val formatterMsg        = SimpleDateFormat("HH:mm:ss")
+        val formattedDateMsg    = formatterMsg.format(date)
 
-        val logs            = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("logs")
-        val date            = java.util.Calendar.getInstance().time
-        val formatter       = SimpleDateFormat("dd-MM-yyyy")//SimpleDateFormat.getDateTimeInstance() //or use getDateInstance()
-        val formattedDate   = formatter.format(date)
+        log.add("$formattedDateMsg->$msg")
 
         logs
+            .child(formattedDate)
             .child(auth.currentUser!!.uid)
             .child(session)
-            .child(formattedDate)
             .setValue(log)
             .addOnCompleteListener {
 
