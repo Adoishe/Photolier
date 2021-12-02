@@ -163,12 +163,9 @@ class Profile () {
 
         fun load(uid: String) {
 
-
-
             Log.d("FirebaseActivity", uid)
 
-            val ref =
-                FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
+            val ref = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
 
             val valueEventListener = object : ValueEventListener {
 
