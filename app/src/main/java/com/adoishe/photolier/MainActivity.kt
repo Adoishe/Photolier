@@ -47,6 +47,8 @@ import android.annotation.SuppressLint
 
 import android.os.Build
 import android.util.Log
+import androidx.annotation.UiThread
+import com.google.android.gms.common.util.UidVerifier
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 
@@ -404,6 +406,8 @@ class MainActivity : AppCompatActivity() {
 
            Log.d("FirebaseActivity", msg)
         }
+
+//        launch(UiThread)
     }
 
     private fun isPermissionsAllowed(): Boolean {
