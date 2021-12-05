@@ -191,8 +191,8 @@ class Order(var context: Activity) {
         val result  = JSONObject()
 
 
-        json.put("orderUid"         , this.uuid)
-        json.put("session"          , this.session)
+        json.put("orderUid"         , uuid)
+        json.put("session"          , session)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
@@ -222,7 +222,7 @@ class Order(var context: Activity) {
 
         mainAct.saveLog("sendResult $sendResult")
 
-
+//        return@async sendResult
 //        if (thisIsLastIO && thisIsLastPiece)  workWithResult(sendResult, fragment)
 
     }
@@ -288,15 +288,19 @@ class Order(var context: Activity) {
 
         for (pieceIndex in 0 until piecesCount) {
 
-            sendImageOrderPieceAsync(
-                    pieceIndex
-                ,   piecesCount
-                ,   jSONArray
-                ,   outputJson
-                ,   fragment
-                ,   imageOrder
-                ,   thisIsLastOne
-            ).start()
+//            scope.launch {
+                sendImageOrderPieceAsync(
+                                    pieceIndex
+                                ,   piecesCount
+                                ,   jSONArray
+                                ,   outputJson
+                                ,   fragment
+                                ,   imageOrder
+                                ,   thisIsLastOne
+                            ).start()
+
+//                mainAct.saveLog("sendResult $sendResult")
+//            }
 
 
 
