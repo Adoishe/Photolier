@@ -220,7 +220,7 @@ class Order(var context: Activity) {
         val jsonObj             = jSONArray.getJSONObject(pieceIndex)
         val sendResult          = dl.sendOrder(outputJson, jsonObj)
 
-        mainAct.saveLog("sendResult $sendResult")
+//        mainAct.saveLog("sendResult $sendResult")
 
 //        return@async sendResult
 //        if (thisIsLastIO && thisIsLastPiece)  workWithResult(sendResult, fragment)
