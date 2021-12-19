@@ -76,7 +76,7 @@ class RootFragment : Fragment() {
         return root
     }
 
-    private fun sync(){
+    private fun sync() : Boolean{
 
         val mainAct = (context as MainActivity)
 
@@ -89,7 +89,9 @@ class RootFragment : Fragment() {
 
         mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
 
-        when (ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC){
+        val successfully = ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC
+
+        when (successfully){
             true ->{
                 //Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
                 //(context as MainActivity).setTheme(R.style.Theme_Photolier)
@@ -100,52 +102,65 @@ class RootFragment : Fragment() {
                 mainAct.saveLog("SYNC failed")
             }
         }
+
+        return successfully
+    }
+
+    private fun doWithIntentData(view: View){
+
+        val mainAct = (context as MainActivity)
+        val orderId = mainAct.intent.getStringExtra("orderId")
+
+        when (orderId){
+            ""   -> {}
+            else -> {
+
+                val orderText   = mainAct.intent.getStringExtra("orderText")
+                val bundle      = Bundle()
+
+                bundle.putString    ("orderUuid"        , orderId)
+                bundle.putString    ("orderName"        , orderText)
+                bundle.putString    ("orderText"        , orderText)
+                bundle.putBoolean   ("ordersHistory"    , true)
+
+                when(mainAct.intent.getStringExtra("messageId")){
+                    "GOT_LAST_IMAGE_OF_ORDER" -> {}
+                    "GOT_A_NEW_ORDER_PAYMENT" -> {
+
+                            view.findNavController().navigate(
+                                  R.id.orderFragment
+                                , bundle
+                                )
+                    }
+                }//when
+            }//whenelse
+        }//when
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
 
-        sync()
+        val successfully    = sync()
+        val mainAct         = (context as MainActivity)
 
-        val mainAct = (context as MainActivity)
+        if (successfully) {
 
-        Profile.load(mainAct.auth.currentUser!!.uid)
+            Profile.load(mainAct.auth.currentUser!!.uid)
 
-        when (mainAct.intent.extras == null) {
+            if  (mainAct.intent.extras != null)
+                doWithIntentData(view)
 
-            true -> {}
-            false ->{
+        }// if successfully
+        else {
 
-                val orderId  = mainAct.intent.getStringExtra("orderId")
+                val printPhotos     :TextView   = requireView().findViewById(R.id.printPhotos)
+                val profileButton   :TextView   = requireView().findViewById(R.id.profileButton)
 
-                when (orderId){
-                    ""   -> {}
-                    else -> {
+                printPhotos.text = "Полный швах"
+                printPhotos.isEnabled = false
+                profileButton.isEnabled = false
 
-                        val orderText   = mainAct.intent.getStringExtra("orderText")
-                        val bundle      = Bundle()
-
-                        bundle.putString    ("orderUuid",orderId)
-                        //bundle.putInt ("orderId", orderId)
-                        bundle.putString    ("orderName", orderText)
-                        bundle.putString    ("orderText", orderText)
-                        bundle.putBoolean   ("ordersHistory", true)
-
-                        when(mainAct.intent.getStringExtra("messageId")){
-                            "GOT_LAST_IMAGE_OF_ORDER" -> {}
-                            "GOT_A_NEW_ORDER_PAYMENT" -> {
-
-                                view.findNavController().navigate(
-                                    //R.id.action_rootFragment_to_orderFragment,
-                                    R.id.orderFragment,
-                                    bundle
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+            }//if not successfully
+        }//onViewCreated
 }

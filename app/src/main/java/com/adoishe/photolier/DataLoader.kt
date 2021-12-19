@@ -15,6 +15,10 @@ import org.ksoap2.SoapFault
 import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
+import android.R.string.no
+
+
+
 
 class DataLoader () {
 
@@ -161,11 +165,13 @@ class DataLoader () {
     private fun sendSoapObject(soapObject: SoapObject, action: String): String {
 
         val envelope = SoapSerializationEnvelope(SoapEnvelope.VER12)
-
+        val timeOut = 60000
         envelope.setOutputSoapObject(soapObject)
 
-        val androidHttpTransport        = HttpTransportSE(URL)
+        val androidHttpTransport        = HttpTransportSE(URL, timeOut)
             androidHttpTransport.debug  = true
+
+
         var res                         = ""
 
         try {
@@ -196,6 +202,9 @@ class DataLoader () {
 
             } catch (e: Exception) {
 
+                androidHttpTransport.reset()
+                androidHttpTransport.serviceConnection.disconnect()
+
                 e.printStackTrace()
 
                 res = e.toString()
@@ -213,8 +222,6 @@ class DataLoader () {
                     GET_FORMATS_SOAP_ACTION ->{
                         ImageFormat.status = ImageFormat.SYNCERR
                         ImageFormat.syncerr = res
-
-
                     }
                     GET_MATERIALS_SOAP_ACTION ->{
 
@@ -235,6 +242,9 @@ class DataLoader () {
 
             res = e.toString()
         }
+
+        androidHttpTransport.reset()
+        androidHttpTransport.serviceConnection.disconnect()
 
         return res
     }
@@ -319,8 +329,8 @@ class DataLoader () {
                 val item        = JSONObject(resArray[i].toString())//resArray.getJSONObject(i)
                 val height      = item.getInt("height")
                 val width       = item.getInt("width")
-                val heightPix      = item.getInt("heightPix")
-                val widthPix       = item.getInt("widthPix")
+                val heightPix   = item.getInt("heightPix")
+                val widthPix    = item.getInt("widthPix")
                 val hash        = item.getInt("hash")
                 val uid         = item.getString("uid")
                 val name        = item.getString("name")
@@ -368,7 +378,7 @@ class DataLoader () {
             var succ: Boolean                   = (sendResult != "")
             progressBar.visibility              = View.INVISIBLE
 
-            (context as MainActivity).saveLog("result $sourceName : $sendResult")
+            //(context as MainActivity).saveLog("result $sourceName : $sendResult")
 
             val c   : Collection<String>
 

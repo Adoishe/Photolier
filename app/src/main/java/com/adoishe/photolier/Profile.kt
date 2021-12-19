@@ -12,10 +12,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Profile () {
 
     var uid = ""
+    var guid = ""
     var email = ""
     var displayName = ""
     var firstName = ""
@@ -32,8 +35,15 @@ class Profile () {
         this.displayName    = auth.currentUser!!.displayName.toString()
         this.email          = auth.currentUser?.email.toString()
 
+       //this.load_(this.uid)
     }
 
+    private fun setGuid (){
+
+        this.guid = UUID.randomUUID().toString()
+
+        save()
+    }
 
     fun save() {
 
@@ -64,6 +74,17 @@ class Profile () {
     }
 
     fun load_(uid: String) {
+
+
+//        val ref =
+//            FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
+//
+//
+//        ref.child(uid).setValue(this).addOnCompleteListener {
+//
+//            Log.d("FirebaseActivity", it.toString())
+//        }
+//
 
         val ref =
             FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("profiles")
@@ -176,6 +197,8 @@ class Profile () {
                     if (gottenValue != null) {
 
                         profile = gottenValue
+
+                        if (profile.guid == "") profile.setGuid()
 
                         updateToken()
                     }

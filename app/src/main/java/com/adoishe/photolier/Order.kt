@@ -61,7 +61,8 @@ class Order(var context: Activity) {
     init {
         this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
         this.session    = mainAct.session
-        this.uuid       =  UUID.randomUUID().toString()
+        this.uuid       = UUID.randomUUID().toString()
+        this.userId     = mainAct.auth.currentUser?.uid.toString()
     }
 
 
@@ -159,7 +160,7 @@ class Order(var context: Activity) {
             val jsonObj = JSONObject()
 
             jsonObj.put("name"           , imageOrder.name)
-            jsonObj.put("uuid"           , imageOrder.uuid)
+            jsonObj.put("imageUuid"      , imageOrder.uuid)
             jsonObj.put("materialPhoto"  , imageOrder.materialPhoto!!.uid)
             jsonObj.put("imageFormat"    , imageOrder.imageFormat!!.uid)
             jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
@@ -183,8 +184,6 @@ class Order(var context: Activity) {
         return jsonArrayList
     }
 
-
-
     private fun getJSONForWs() : JSONObject{
 
         val json    = JSONObject()
@@ -196,7 +195,7 @@ class Order(var context: Activity) {
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
         json.put("email"            , mainAct.auth.currentUser?.email.toString())
         json.put("phoneNumber"      , mainAct.auth.currentUser?.phoneNumber.toString())
-        json.put("uid"              , userId)//mainAct.auth.currentUser?.uid.toString())
+        json.put("uid"              , Profile.profile.guid)//mainAct.auth.currentUser?.uid.toString())
         json.put("indexInPacket"    , this.indexInPacket)
         json.put("countOfPacket"    , this.countOfPacket)
 
@@ -214,18 +213,65 @@ class Order(var context: Activity) {
                                             ,   thisIsLastIO : Boolean
                                         ) : Deferred<Unit> = scope.async {
 
-        mainAct.saveLog("send $pieceIndex   of $piecesCount")
+        //mainAct.saveLog("send $pieceIndex   of $piecesCount")
         val dl                  = DataLoader()
         val thisIsLastPiece     = pieceIndex == piecesCount -1
         val jsonObj             = jSONArray.getJSONObject(pieceIndex)
         val sendResult          = dl.sendOrder(outputJson, jsonObj)
 
-//        mainAct.saveLog("sendResult $sendResult")
+
+        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
+        val valueEventListener  = object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                when (snapshot.value){
+                    true -> workWithResult(sendResult , fragment)
+                            //mainAct.saveLog("заказ загружен")
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
+
+
+
+
+        //mainAct.saveLog("sendResult $sendResult")
 
 //        return@async sendResult
 //        if (thisIsLastIO && thisIsLastPiece)  workWithResult(sendResult, fragment)
 
     }
+
+//    private fun workWithResultAcync() : Deferred<Unit> = scope.async {
+//
+//
+//        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
+//        val valueEventListener  = object : ValueEventListener {
+//
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//
+//                when (snapshot.value){
+//                    true-> mainAct.saveLog("заказ загружен")
+//                }
+//
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//        }
+//
+//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
+//
+//
+//    }
 
     private fun sendImageOrderAsync(imageOrder: ImageOrder, index : Int , fragment: OrderFragment): Unit{
 
@@ -238,8 +284,8 @@ class Order(var context: Activity) {
 
         when (thisIsLastOne) {
 
-            true    -> mainAct.saveLog("sending $index img")
-            false   -> mainAct.saveLog("lastOne sending $index img")
+            true    -> mainAct.saveLog("lastOne sending $index img")
+            false   -> mainAct.saveLog("sending $index img")
         }
 
         imageOrder.isLastOne(thisIsLastOne)
@@ -256,34 +302,37 @@ class Order(var context: Activity) {
         val jSONArray   = getJSONArrayListSingle(imageOrder)
         val piecesCount = jSONArray.length();
 
-        mainAct.runOnUiThread{
-            fragment.progressBarPiece.visibility         = View.VISIBLE
-            fragment.progressBarPiece.isIndeterminate    = false
-            fragment.progressBarPiece.max                = piecesCount-1
-            fragment.progressBarPiece.min                = 0
-        }
+//        mainAct.runOnUiThread{
+//            fragment.progressBarPiece.visibility         = View.VISIBLE
+//            fragment.progressBarPiece.isIndeterminate    = false
+//            fragment.progressBarPiece.max                = piecesCount-1
+//            fragment.progressBarPiece.min                = 0
+//        }
 
-        val uiInfoPiece  = Runnable {
-
-            val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
-            val valueEventListener  = object : ValueEventListener {
-
-                override fun onDataChange(snapshot: DataSnapshot) {
-
-                    fragment.progressBarPiece.progress   = snapshot.childrenCount.toInt()
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            }
-
-            ref.child(session).child(imageOrder.uuid).addListenerForSingleValueEvent(valueEventListener)
-
-        }
-
-        mainAct.runOnUiThread(uiInfoPiece)
+//        val uiInfoPiece  = Runnable {
+//
+//            val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
+//            val valueEventListener  = object : ValueEventListener {
+//
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    fragment.progressBarPiece.progress   = snapshot.childrenCount.toInt()
+//
+//
+//
+//                    mainAct.saveLog(snapshot.childrenCount.toString())
+//
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    TODO("Not yet implemented")
+//                }
+//            }
+//
+//            ref.child(session).child(imageOrder.uuid).addListenerForSingleValueEvent(valueEventListener)
+//
+//        }
+//
+//        mainAct.runOnUiThread(uiInfoPiece)
 
 
         for (pieceIndex in 0 until piecesCount) {
@@ -355,8 +404,8 @@ class Order(var context: Activity) {
 
         when (thisIsLastOne) {
 
-            true    -> mainAct.saveLog("sending $index img")
-            false   -> mainAct.saveLog("lastOne sending $index img")
+            true    -> mainAct.saveLog("lastOne sending $index img")
+            false   -> mainAct.saveLog("sending $index img")
         }
 
         imageOrder.isLastOne(thisIsLastOne)
@@ -521,9 +570,10 @@ class Order(var context: Activity) {
         imageOrderList.forEachIndexed  { index, imageOrder ->
 
             scope.launch() {
-                val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
 
+                val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
                 deferred.await()
+
             }
         }
 
