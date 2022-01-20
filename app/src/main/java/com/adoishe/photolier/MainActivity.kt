@@ -361,11 +361,15 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+        Toast.makeText(this, "STARTED!!!!!", Toast.LENGTH_LONG).show()
+
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
 
         super.onWindowFocusChanged(hasFocus)
+
+        Toast.makeText(this, "onWindowFocusChanged!!!!!", Toast.LENGTH_LONG).show()
 
         if (hasFocus) {
 
@@ -376,12 +380,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onResume() {
 
         super.onResume()
 
-        //Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
 
     }
 
@@ -397,9 +400,21 @@ class MainActivity : AppCompatActivity() {
 
         log.add("$formattedDateMsg->$msg")
 
+        var userId = ""
+
+        try {
+
+            userId = auth.currentUser!!.uid
+        }
+        catch(e : Exception) {
+
+            userId = "auto_" + UUID.randomUUID().toString()
+
+        }
+
         logs
             .child(formattedDate)
-            .child(auth.currentUser!!.uid)
+            .child(userId)
             .child(session)
             .setValue(log)
             .addOnCompleteListener {
@@ -514,8 +529,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        Toast.makeText(this, "CREATED!!!!!", Toast.LENGTH_LONG).show()
+
+        saveLog("setTheme(R.style.Theme_Photolier)")
         setTheme(R.style.Theme_Photolier)
+        saveLog("super.onCreate(savedInstanceState)")
         super.onCreate(savedInstanceState)
+        saveLog("setContentView(R.layout.activity_main)")
         setContentView(R.layout.activity_main)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)

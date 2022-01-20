@@ -127,6 +127,35 @@ class Order(var context: Activity) {
 
  */
 
+    private fun splitByCount(count : Int , source :String) : List<String>{
+
+        var result: MutableList<String> = mutableListOf()
+
+        var stepsQty = (source.length / count).toInt()
+
+        var index = 0
+
+        for (indexStep  in 0 until count){
+
+            try{
+
+                var subResult = source.slice(index until (index + stepsQty))
+
+                result.add(subResult)
+
+            }catch (e:Exception){
+
+                var subResult = source.slice(index until source.length)
+
+                result.add(subResult)
+            }
+
+            index += stepsQty
+        }
+
+        return result.toList()
+    }
+
     private fun getJSONArrayListSingle(imageOrder : ImageOrder) : JSONArray{
 
         val jsonArrayList   =  JSONArray()
@@ -151,11 +180,18 @@ class Order(var context: Activity) {
         byteArray                       = bos.toByteArray()
 //        val base64String                = Base64.encode(byteArray)
         val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
-        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-        val partSize                    = 16384//8192//4096 //8192
-        val base64Sliced:List<String>   = base64String.chunked(partSize)
 
-        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
+
+
+//        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+//        val partSize                    = 16384//8192//4096 //8192
+//        val base64Sliced:List<String>   = base64String.chunked(partSize)
+
+
+        var base64Splitted = splitByCount(20, base64String)
+
+//        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
+        base64Splitted.forEachIndexed{ index, pieceOfB64string ->
 
             val jsonObj = JSONObject()
 
@@ -166,7 +202,7 @@ class Order(var context: Activity) {
             jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
             jsonObj.put("qty"            , imageOrder.qty)
             jsonObj.put("base64String"   , pieceOfB64string)
-            jsonObj.put("base64Size"     , base64Sliced.size)
+            jsonObj.put("base64Size"     , base64Splitted.size)
             jsonObj.put("base64Index"    , index)
 //            jsonObj.put("base64Sliced"   , pieceOfB64string)
             jsonObj.put("thumbB64String" , imageOrder.imageThumbBase64)

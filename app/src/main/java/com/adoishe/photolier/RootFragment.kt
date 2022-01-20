@@ -11,7 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
+//import com.google.firebase.iid.FirebaseInstanceId
 
 class RootFragment : Fragment() {
 
@@ -20,6 +20,9 @@ class RootFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val mainAct = (context as MainActivity)
+        mainAct.saveLog("onCreateView")
 
         val root                        = inflater.inflate(R.layout.fragment_root, container, false)
         val goToPhotoButton : Button    = root.findViewById(R.id.goToPhotobutton)

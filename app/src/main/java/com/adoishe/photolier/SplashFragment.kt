@@ -16,7 +16,7 @@ class SplashFragment : Fragment(), CoroutineScope {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-                return inflater.inflate(R.layout.splash_fragment, container, false)
+        return inflater.inflate(R.layout.splash_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
