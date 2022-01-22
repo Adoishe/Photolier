@@ -53,7 +53,7 @@ class Order(var context: Activity) {
                 var status          : Int                       = NEW
                 var payed           : Boolean                   = false
     private     val mainAct                                     = context as MainActivity
-                var userId          : String                    = mainAct.auth.currentUser?.uid.toString()
+    lateinit    var userId          : String                    //= mainAct.auth.currentUser?.uid.toString()
 
     private     val job                                         = SupervisorJob()
     private     val scope                                       = CoroutineScope(Dispatchers.Default + job)
@@ -62,7 +62,15 @@ class Order(var context: Activity) {
         this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
         this.session    = mainAct.session
         this.uuid       = UUID.randomUUID().toString()
-        this.userId     = mainAct.auth.currentUser?.uid.toString()
+
+        mainAct.authenticate()
+
+        when(mainAct.auth.currentUser){
+            null -> Toast.makeText(mainAct, "NO AUTH!!!!!", Toast.LENGTH_LONG).show()
+            else -> this.userId     = mainAct.auth.currentUser?.uid.toString()
+        }
+
+
     }
 
 
@@ -489,6 +497,8 @@ class Order(var context: Activity) {
 
             val jsonObj     = jSONArray.getJSONObject(pieceIndex)
                 sendResult  = dl.sendOrder(outputJson, jsonObj)
+
+                mainAct.saveLog(sendResult)
 
             val uiInfoPiece  = Runnable {
 

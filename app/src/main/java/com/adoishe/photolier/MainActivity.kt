@@ -44,6 +44,7 @@ import android.app.NotificationManager
 import android.app.NotificationChannel
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 
 import android.os.Build
 import android.util.Log
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 var dbSq                : DatabaseHelper    = DatabaseHelper(this);
-                val auth                                    = FirebaseAuth.getInstance()
+    lateinit    var auth                : FirebaseAuth                    //= FirebaseAuth.getInstance()
                 var session             : String            = UUID.randomUUID().toString()
     internal    var output              : File?             = null
     private     val pickImage                               = 100
@@ -80,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     private     val REQ_CODE_PICK_IMAGE                     = 0
     private     val SELECT_PHOTO                            = 100
     private     val CAMERA_REQUEST                          = 101
-                var order               : Order             = Order(this)
+    lateinit    var order               : Order             //= Order(this)
                 val providers                               = arrayListOf(
                     //   AuthUI.IdpConfig.EmailBuilder().build(),
                     //   AuthUI.IdpConfig.PhoneBuilder().build(),
@@ -102,6 +103,10 @@ class MainActivity : AppCompatActivity() {
                 val FIREINSTANCE    = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
         const   val CHANNEL_ID      = "photolier.app.CHANNEL_ID"
         const   val CHANNEL_NAME    = "photolier.app.Notification"
+    }
+    fun authIsInitialized():Boolean{
+
+        return this::auth.isInitialized
     }
 
     fun resizeBitmap(source: Bitmap, maxLength: Int): Bitmap {
@@ -344,7 +349,9 @@ class MainActivity : AppCompatActivity() {
         return Base64.getEncoder().encodeToString(b)
     }
 
-    private fun authenticate(){
+    fun authenticate(){
+
+        auth = FirebaseAuth.getInstance()
 
         startActivityForResult(
             AuthUI.getInstance()
@@ -361,7 +368,9 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        Toast.makeText(this, "STARTED!!!!!", Toast.LENGTH_LONG).show()
+        authenticate()
+
+//        Toast.makeText(this, "STARTED!!!!!", Toast.LENGTH_LONG).show()
 
     }
 
@@ -369,14 +378,28 @@ class MainActivity : AppCompatActivity() {
 
         super.onWindowFocusChanged(hasFocus)
 
-        Toast.makeText(this, "onWindowFocusChanged!!!!!", Toast.LENGTH_LONG).show()
+//        Toast.makeText(this, "onWindowFocusChanged!!!!!", Toast.LENGTH_LONG).show()
 
         if (hasFocus) {
 
-            when (auth.currentUser) {
-                null -> authenticate()
-                else -> setAppTitle()
+            try {
+
+//                auth = FirebaseAuth.getInstance()
+
+                when (this::auth.isInitialized) {
+                    false -> authenticate()
+                    true -> setAppTitle()
+                }
+
+            }catch(e:Exception){
+
+                Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+
             }
+
+
+
+
         }
     }
 
@@ -384,7 +407,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onResume()
 
-        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
+//        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
 
     }
 
@@ -529,13 +552,30 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        Toast.makeText(this, "CREATED!!!!!", Toast.LENGTH_LONG).show()
+//        Toast.makeText(this, "CREATED!!!!!", Toast.LENGTH_LONG).show()
+// Приложение запущено впервые или восстановлено из памяти?
+//        if ( savedInstanceState == null )   // приложение запущено впервые
+//        {
+//            saveLog("savedInstanceState == null")
+//            // другой код
+//        }
+//        else // приложение восстановлено из памяти
+//        {
+//            saveLog("savedInstanceState != null")
+//            // инициализация суммы счета сохранённой в памяти суммой
+////            currentBillTotal = savedInstanceState.getDouble(BILL_TOTAL);
+//        }
 
-        saveLog("setTheme(R.style.Theme_Photolier)")
-        setTheme(R.style.Theme_Photolier)
-        saveLog("super.onCreate(savedInstanceState)")
+//        saveLog("setTheme(R.style.Theme_Photolier)")
+
+//        setTheme(R.style.Theme_Photolier)
+
+//        saveLog("super.onCreate(savedInstanceState)")
         super.onCreate(savedInstanceState)
-        saveLog("setContentView(R.layout.activity_main)")
+
+        setTheme(R.style.Theme_Photolier)
+        requestedOrientation =  (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        saveLog("setContentView(R.layout.activity_main)")
         setContentView(R.layout.activity_main)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
@@ -563,10 +603,10 @@ class MainActivity : AppCompatActivity() {
 
                     //if (askForPermissions()) {
 
-                        progressBar.visibility = ProgressBar.VISIBLE
+                    progressBar.visibility      = ProgressBar.VISIBLE
                     progressBarPiece.visibility = ProgressBar.VISIBLE
 
-                        findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
+                    findNavController(R.id.fragment).navigate(R.id.ordersHistoryFragment)
 
                     //}
                 }

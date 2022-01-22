@@ -22,7 +22,7 @@ class RootFragment : Fragment() {
     ): View? {
 
         val mainAct = (context as MainActivity)
-        mainAct.saveLog("onCreateView")
+//        mainAct.saveLog("onCreateView")
 
         val root                        = inflater.inflate(R.layout.fragment_root, container, false)
         val goToPhotoButton : Button    = root.findViewById(R.id.goToPhotobutton)
@@ -36,17 +36,14 @@ class RootFragment : Fragment() {
 
         profileButton.setOnClickListener {
 
-
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
 
         }
 
-
-
-
         photosPrint.setOnClickListener {
 
-            //(context as MainActivity).showPhotos()
+            mainAct.order = Order(mainAct)
+
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_getMaterialFragment)
         }
 
@@ -85,7 +82,7 @@ class RootFragment : Fragment() {
 
         mainAct.progressBar.visibility = ProgressBar.VISIBLE
 
-        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+//        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
         mainAct.saveLog(resources.getString(R.string.sync))
         ImageFormat.sync(mainAct)
         MaterialPhoto.sync(mainAct)
@@ -144,26 +141,37 @@ class RootFragment : Fragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        val successfully    = sync()
         val mainAct         = (context as MainActivity)
+        //this::name.isInitialized
+        when(mainAct.authIsInitialized()){
+            true -> {
 
-        if (successfully) {
+                val successfully = sync()
 
-            Profile.load(mainAct.auth.currentUser!!.uid)
+                if (successfully) {
 
-            if  (mainAct.intent.extras != null)
-                doWithIntentData(view)
+                    Profile.load(mainAct.auth.currentUser!!.uid)
 
-        }// if successfully
-        else {
+                }// if successfully
+                else {
 
-                val printPhotos     :TextView   = requireView().findViewById(R.id.printPhotos)
-                val profileButton   :TextView   = requireView().findViewById(R.id.profileButton)
+                    val printPhotos     :TextView   = requireView().findViewById(R.id.printPhotos)
+                    val profileButton   :TextView   = requireView().findViewById(R.id.profileButton)
 
-                printPhotos.text = "Полный швах"
-                printPhotos.isEnabled = false
-                profileButton.isEnabled = false
+                    printPhotos.text = "Полный швах"
+                    printPhotos.isEnabled = false
+                    profileButton.isEnabled = false
 
-            }//if not successfully
+                }//if not successfully
+
+                if  (mainAct.intent.extras != null)
+                    doWithIntentData(view)
+            }
+
+            else -> {
+            }
+        }
+
+
         }//onViewCreated
 }
