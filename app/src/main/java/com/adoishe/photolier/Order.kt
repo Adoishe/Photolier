@@ -182,6 +182,8 @@ class Order(var context: Activity) {
         when (maxSize >0 )
         {
             true -> bitMap = mainAct.resizeBitmap(bitMap, maxSize )
+            false -> {}
+            else -> {}
         }
 
         bitMap.compress(CompressFormat.JPEG, 100, bos)
