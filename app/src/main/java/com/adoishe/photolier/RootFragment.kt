@@ -71,40 +71,40 @@ class RootFragment : Fragment() {
         }
         syncButton.setOnClickListener{
 
-            sync()
+            mainAct.sync()
         }
         return root
     }
 
-    private fun sync() : Boolean{
-
-        val mainAct = (context as MainActivity)
-
-        mainAct.progressBar.visibility = ProgressBar.VISIBLE
-
-//        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
-        mainAct.saveLog(resources.getString(R.string.sync))
-        ImageFormat.sync(mainAct)
-        MaterialPhoto.sync(mainAct)
-
-        mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
-
-        val successfully = ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC
-
-        when (successfully){
-            true ->{
-                //Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
-                //(context as MainActivity).setTheme(R.style.Theme_Photolier)
-            }
-
-            false ->{
-
-                mainAct.saveLog("SYNC failed")
-            }
-        }
-
-        return successfully
-    }
+//    private fun sync() : Boolean{
+//
+//        val mainAct = (context as MainActivity)
+//
+//        mainAct.progressBar.visibility = ProgressBar.VISIBLE
+//
+////        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+//        mainAct.saveLog(resources.getString(R.string.sync))
+//        ImageFormat.sync(mainAct)
+//        MaterialPhoto.sync(mainAct)
+//
+//        mainAct.progressBar.visibility  = ProgressBar.INVISIBLE
+//
+//        val successfully = ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC
+//
+//        when (successfully){
+//            true ->{
+//                //Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+//                //(context as MainActivity).setTheme(R.style.Theme_Photolier)
+//            }
+//
+//            false ->{
+//
+//                mainAct.saveLog("SYNC failed")
+//            }
+//        }
+//
+//        return successfully
+//    }
 
     private fun doWithIntentData(view: View){
 
@@ -146,9 +146,9 @@ class RootFragment : Fragment() {
         when(mainAct.authIsInitialized()){
             true -> {
 
-                val successfully = sync()
+//                val successfully = sync()
 
-                if (successfully) {
+                if (mainAct.syncSuccessful) {
 
                     Profile.load(mainAct.auth.currentUser!!.uid)
 

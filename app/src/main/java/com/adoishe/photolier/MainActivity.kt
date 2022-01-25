@@ -99,6 +99,8 @@ class MainActivity : AppCompatActivity() {
     private     var PATTERN                 : Pattern           = Pattern.compile(REG)
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
 
+                var syncSuccessful           :Boolean            = false
+
     companion object {
                 val FIREINSTANCE    = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
         const   val CHANNEL_ID      = "photolier.app.CHANNEL_ID"
@@ -411,6 +413,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+     fun sync() : Boolean{
+
+        //        val mainAct =  MainActivity
+
+        progressBar.visibility = ProgressBar.VISIBLE
+
+        //        Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+        saveLog(resources.getString(R.string.sync))
+        ImageFormat.sync(this)
+        MaterialPhoto.sync(this)
+
+        progressBar.visibility  = ProgressBar.INVISIBLE
+        syncSuccessful          = ImageFormat.status == ImageFormat.SYNC && MaterialPhoto.status == MaterialPhoto.SYNC
+
+        when (syncSuccessful){
+            true ->{
+                //Toast.makeText(context, resources.getString(R.string.sync), Toast.LENGTH_LONG).show()
+                //(context as MainActivity).setTheme(R.style.Theme_Photolier)
+            }
+
+            false ->{
+
+                saveLog("SYNC failed")
+            }
+        }
+
+        return syncSuccessful
+    }
+
+
 
     fun saveLog(msg:String){
 
@@ -583,6 +615,8 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
         progressBar                 = findViewById(R.id.progressBar)
 
+        progressBar.visibility      = ProgressBar.INVISIBLE
+//        progressBarPiece.visibility = ProgressBar.INVISIBLE
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
 

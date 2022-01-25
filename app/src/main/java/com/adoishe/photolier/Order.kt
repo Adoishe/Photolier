@@ -193,15 +193,15 @@ class Order(var context: Activity) {
 
 
 
-//        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-//        val partSize                    = 16384//8192//4096 //8192
-//        val base64Sliced:List<String>   = base64String.chunked(partSize)
+        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
+        val partSize                    = 32768//16384//8192//4096 //8192
+        val base64Sliced:List<String>   = base64String.chunked(partSize)
 
 
-        var base64Splitted = splitByCount(20, base64String)
+//        var base64Splitted = splitByCount(20, base64String)
 
-//        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
-        base64Splitted.forEachIndexed{ index, pieceOfB64string ->
+        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
+//        base64Splitted.forEachIndexed{ index, pieceOfB64string ->
 
             val jsonObj = JSONObject()
 
@@ -212,7 +212,7 @@ class Order(var context: Activity) {
             jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
             jsonObj.put("qty"            , imageOrder.qty)
             jsonObj.put("base64String"   , pieceOfB64string)
-            jsonObj.put("base64Size"     , base64Splitted.size)
+            jsonObj.put("base64Size"     , base64Sliced.size)
             jsonObj.put("base64Index"    , index)
 //            jsonObj.put("base64Sliced"   , pieceOfB64string)
             jsonObj.put("thumbB64String" , imageOrder.imageThumbBase64)
