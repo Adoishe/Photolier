@@ -371,6 +371,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         authenticate()
+        sync()
 
 //        Toast.makeText(this, "STARTED!!!!!", Toast.LENGTH_LONG).show()
 
@@ -614,6 +615,7 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView    = findViewById<View>(R.id.bottom_navigation) as BottomNavigationView
         progressBar                 = findViewById(R.id.progressBar)
+//        progressBarPiece            = findViewById(R.id.progressBarSendPiece)
 
         progressBar.visibility      = ProgressBar.INVISIBLE
 //        progressBarPiece.visibility = ProgressBar.INVISIBLE
