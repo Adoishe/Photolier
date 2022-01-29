@@ -71,7 +71,7 @@ class RootFragment : Fragment() {
         }
         syncButton.setOnClickListener{
 
-            mainAct.sync()
+//            mainAct.sync()
         }
         return root
     }

@@ -370,8 +370,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        authenticate()
-        sync()
+
 
 //        Toast.makeText(this, "STARTED!!!!!", Toast.LENGTH_LONG).show()
 
@@ -654,6 +653,8 @@ class MainActivity : AppCompatActivity() {
 
         //val intent = intent
 
+        authenticate()
+        sync()
 
 
     }

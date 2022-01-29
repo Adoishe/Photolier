@@ -19,15 +19,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import android.util.Base64
 import androidx.annotation.UiThread
+import com.google.firebase.database.*
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
@@ -47,14 +44,14 @@ class Order(var context: Activity) {
                 var imageOrderList  : MutableList<ImageOrder>   = ArrayList()
                 var result                                      = String()
                 var orderStatus     : String                    = ""
-                var orderSendResult : String                    = ""
+//                var orderSendResult : String                    = ""
                 var indexInPacket   : Int                       = 0
                 var countOfPacket   : Int                       = 0
                 var status          : Int                       = NEW
                 var payed           : Boolean                   = false
     private     val mainAct                                     = context as MainActivity
     lateinit    var userId          : String                    //= mainAct.auth.currentUser?.uid.toString()
-
+    lateinit    var orderSendResult          : String
     private     val job                                         = SupervisorJob()
     private     val scope                                       = CoroutineScope(Dispatchers.Default + job)
 
@@ -265,30 +262,7 @@ class Order(var context: Activity) {
         val jsonObj             = jSONArray.getJSONObject(pieceIndex)
         val sendResult          = dl.sendOrder(outputJson, jsonObj)
 
-
-        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
-        val valueEventListener  = object : ValueEventListener {
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                when (snapshot.value){
-                    true -> workWithResult(sendResult , fragment)
-                            //mainAct.saveLog("заказ загружен")
-                }
-
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        }
-
-        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
-
-
-
-
-        //mainAct.saveLog("sendResult $sendResult")
+//        mainAct.saveLog("sendResult $sendResult")
 
 //        return@async sendResult
 //        if (thisIsLastIO && thisIsLastPiece)  workWithResult(sendResult, fragment)
@@ -604,7 +578,7 @@ class Order(var context: Activity) {
 
     private fun sendByCoroutines(fragment: OrderFragment) {
 
-        mainAct.saveLog("send coroutine begin")
+//        mainAct.saveLog("send by coroutine begin")
 
         var sendResult = ""
 
@@ -614,6 +588,79 @@ class Order(var context: Activity) {
             fragment.progressBar.max                = imageOrderList.size-1
             fragment.progressBar.min                = 0
         }
+
+
+        val ref                 = FirebaseDatabase
+                                    .getInstance(MainActivity.FIREINSTANCE)
+                                    .getReference("orders")
+                                    .child(session)
+
+        val listener = object :ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                when (snapshot.key) {
+                    "sendResult" -> workWithResult(snapshot.value.toString() , fragment)
+//                    {
+//                        when (snapshot.value.toString().toBoolean()){
+//                            true ->
+
+//                                workWithResult(snapshot.value.toString() , fragment)
+
+                           else -> {}
+                        }
+//                    }
+//                    "sendResult" -> sendResult = snapshot.value.toString()
+                }
+
+
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                when (snapshot.key) {
+                    "receivedOrder" -> {
+                        when (snapshot.value.toString().toBoolean()){
+                            true -> workWithResult(sendResult , fragment)
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        ref.addChildEventListener(listener)
+
+
+
+//        val valueEventListener  = object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                when (snapshot.value){
+//                    true -> workWithResult(sendResult , fragment)
+//                }
+//            }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//        }
+//
+//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
+
+//        reference1!!.addChildEventListener(object : ChildEventListener {
+//            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String) {
+//                val map = dataSnapshot.getValue<Map<*, *>>(Map<*, *>::class.java)
+//                val message = map.get("message").toString()
+//                val userName = map.get("user").toString()
+
+
 
         imageOrderList.forEachIndexed  { index, imageOrder ->
 
@@ -625,7 +672,27 @@ class Order(var context: Activity) {
             }
         }
 
-        mainAct.saveLog("send coroutine end")
+
+
+
+
+//        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
+//        val valueEventListener  = object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                when (snapshot.child("receivedOrder").value.toString().toBoolean()){
+//                    true -> workWithResult(sendResult , fragment)
+//                }
+//            }
+//            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+//            }
+//        }
+//        ref.child(session).addListenerForSingleValueEvent(valueEventListener)
+
+
+//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
+
+//        mainAct.saveLog("send coroutine end")
 
     }
 
