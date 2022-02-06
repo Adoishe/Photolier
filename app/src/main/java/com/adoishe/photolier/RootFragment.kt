@@ -1,16 +1,18 @@
 package com.adoishe.photolier
 
+import android.content.Intent.getIntent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import com.google.android.gms.tasks.OnCompleteListener
+import com.google.gson.JsonObject
+
+
 //import com.google.firebase.iid.FirebaseInstanceId
 
 class RootFragment : Fragment() {
@@ -123,9 +125,20 @@ class RootFragment : Fragment() {
                 bundle.putString    ("orderText"        , orderText)
                 bundle.putBoolean   ("ordersHistory"    , true)
 
+
+
+//                val mJsonObject = JsonObject(getIntent().getStringExtra("json"))
                 when(mainAct.intent.getStringExtra("messageId")){
-                    "GOT_LAST_IMAGE_OF_ORDER" -> {}
-                    "GOT_A_NEW_ORDER_PAYMENT" -> {
+//                    "GOT_AN_ORDER"              -> {
+//                                                    val sendResult = mainAct.intent.getStringExtra("receivedJSONObject")!!
+//
+//
+////                                                    val orderFragment =    parentFragmentManager.findFragmentById(R.id.orderFragment)
+////                                                    mainAct.order.workWithResult( sendResult , orderFragment as OrderFragment)
+//
+//
+//                    }//{view.findNavController().navigate(R.id.ordersHistoryFragment)}
+                    "GOT_AN_ORDER"   -> {
 
                             view.findNavController().navigate(
                                   R.id.orderFragment

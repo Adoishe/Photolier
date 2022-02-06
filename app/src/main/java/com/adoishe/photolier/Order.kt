@@ -8,22 +8,13 @@ import android.app.Activity
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.provider.Contacts
 import android.util.Base64.encodeToString
-import android.util.Log
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-import androidx.navigation.findNavController
-import com.firebase.ui.auth.AuthUI
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import android.util.Base64
-import androidx.annotation.UiThread
 import com.google.firebase.database.*
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -264,8 +255,6 @@ class Order(var context: Activity) {
 
 //        mainAct.saveLog("sendResult $sendResult")
 
-//        return@async sendResult
-//        if (thisIsLastIO && thisIsLastPiece)  workWithResult(sendResult, fragment)
 
     }
 
@@ -302,22 +291,17 @@ class Order(var context: Activity) {
         val lastIndex               = imageOrderList.size -1
         val thisIsLastOne           = (lastIndex ==  index)
 
-        when (thisIsLastOne) {
+//        when (thisIsLastOne) {
+//
+//            true    -> mainAct.saveLog("lastOne sending $index img")
+//            false   -> mainAct.saveLog("sending $index img")
+//        }
 
-            true    -> mainAct.saveLog("lastOne sending $index img")
-            false   -> mainAct.saveLog("sending $index img")
-        }
+        mainAct.saveLog("sending $index img")
 
-        imageOrder.isLastOne(thisIsLastOne)
+//        imageOrder.isLastOne(thisIsLastOne)
 
-        val uiInfo  = Runnable {
 
-            fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
-            fragment.progressBar.progress   = index
-
-        }
-
-        mainAct.runOnUiThread(uiInfo)
 
         val jSONArray   = getJSONArrayListSingle(imageOrder)
         val piecesCount = jSONArray.length();
@@ -533,11 +517,11 @@ class Order(var context: Activity) {
 
     }
 
-    private fun workWithResult(sendResult:String, fragment: OrderFragment){
+     fun workWithResult(sendResult:String, fragment: OrderFragment){
         try {
 
             val resultJSSONObj  = JSONObject(sendResult)
-            val mValues         = resultJSSONObj.getJSONObject("mValues")
+            val mValues         = resultJSSONObj//.getJSONObject("mValues")
             result              = resultJSSONObj.toString()
 
             //mainAct.log.add("result = $result")
@@ -552,11 +536,13 @@ class Order(var context: Activity) {
             mainAct.runOnUiThread {
                 fragment.arguments?.putString("orderName"   , name)
                 fragment.arguments?.putString("orderStatus" , orderStatus)
-                fragment.arguments?.putString("orderUuid"   ,  mValues.getString("orderUuid"))
+                fragment.arguments?.putString("orderUuid"   , mValues.getString("orderUuid"))
 
                 fragment.fillBySend(fragment.requireView().rootView)
                 //  progressBar.progress
             }
+
+            mainAct.sendNotification(null, resultJSSONObj)
         }
         catch (e: Exception) {
 
@@ -598,7 +584,7 @@ class Order(var context: Activity) {
         val listener = object :ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
-                    "sendResult" -> workWithResult(snapshot.value.toString() , fragment)
+                    "sendResult" -> {} // workWithResult(snapshot.value.toString() , fragment)
 //                    {
 //                        when (snapshot.value.toString().toBoolean()){
 //                            true ->
@@ -664,11 +650,21 @@ class Order(var context: Activity) {
 
         imageOrderList.forEachIndexed  { index, imageOrder ->
 
+            val uiInfo  = Runnable {
+
+                fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
+                fragment.progressBar.progress   = index
+
+            }
+
+
+
             scope.launch() {
 
                 val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
-                deferred.await()
-
+//                deferred.await()
+                deferred.start()
+                mainAct.runOnUiThread(uiInfo)
             }
         }
 

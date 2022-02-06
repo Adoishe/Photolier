@@ -4,18 +4,14 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 //import com.google.firebase.iid.FirebaseInstanceId
-import android.R
-import android.app.Notification
 import org.json.JSONObject
 
 
@@ -35,11 +31,11 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
 //        Log.e(TAG, receivedJSONObject.toString())
 
-        val messageId = receivedJSONObject.optString("message_id"    , "")
-
-        Log.d(TAG, "got $messageId From: " + remoteMessage!!.from)
-
-
+//        val messageId = receivedJSONObject.optString("message_id"    , "")
+//
+//        val intent = Intent(applicationContext, MainActivity::class.java)
+//
+//        (baseContext as MainActivity).saveLog("got $messageId From: " + remoteMessage.from)
 
         sendNotification(remoteMessage , receivedJSONObject)
 
@@ -49,15 +45,22 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
     }
 
-    private fun sendNotification(remoteMessage: RemoteMessage , receivedJSONObject : JSONObject) {
+    private fun sendNotification(remoteMessage: RemoteMessage, receivedJSONObject : JSONObject) {
 
         val intent = Intent(applicationContext, MainActivity::class.java)
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        intent.putExtra("orderId"   , receivedJSONObject.optString("orderId"    , ""));
-        intent.putExtra("orderText" , receivedJSONObject.optString("title"      , ""));
-        intent.putExtra("messageId" , receivedJSONObject.optString("message_id" , ""));
+        intent.putExtra("orderId"       , receivedJSONObject.optString("orderId"    , ""));
+        intent.putExtra("orderText"     , receivedJSONObject.optString("title"      , ""));
+        intent.putExtra("messageId"     , receivedJSONObject.optString("message_id" , ""));
+        intent.putExtra("orderName"     , receivedJSONObject.optString("orderName"  , ""));
+        intent.putExtra("orderUuid"     , receivedJSONObject.optString("orderUuid"   , ""));
+        intent.putExtra("orderStatus"   , receivedJSONObject.optString("orderStatus" , ""));
+
+        intent.putExtra("receivedJSONObject"   , receivedJSONObject.toString());
+
+//        getJSONObject("sendResult").toString());
 
         // FLAG_ACTIVITY_CLEAR_TASK
         //https://startandroid.ru/ru/uroki/vse-uroki-spiskom/190-urok-116-povedenie-activity-v-task-intent-flagi-launchmode-affinity.html
@@ -92,7 +95,7 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         val notificationBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(receivedJSONObject.getString("title"))
             .setContentText(receivedJSONObject.getString("content"))
-            .setSmallIcon(R.drawable.ic_media_play)
+            .setSmallIcon(R.drawable.button_bg_round)
             .setContentIntent(pendingIntent)
             //.setChannel(channelId)
             /*
@@ -112,6 +115,10 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         notificationManager.notify(111111 /* ID of notification */
                                     , notificationBuilder.build())
+
+
+
+
 
 
     }
