@@ -66,7 +66,7 @@ fun showSnackbar(id : Int){
 class MainActivity : AppCompatActivity() {
 
 
-                var dbSq                : DatabaseHelper    = DatabaseHelper(this);
+//                var dbSq                : DatabaseHelper    = DatabaseHelper(this);
     lateinit    var auth                : FirebaseAuth                    //= FirebaseAuth.getInstance()
                 var session             : String            = UUID.randomUUID().toString()
     internal    var output              : File?             = null
@@ -82,13 +82,13 @@ class MainActivity : AppCompatActivity() {
     private     val SELECT_PHOTO                            = 100
     private     val CAMERA_REQUEST                          = 101
     lateinit    var order               : Order             //= Order(this)
-                val providers                               = arrayListOf(
-                    //   AuthUI.IdpConfig.EmailBuilder().build(),
-                    //   AuthUI.IdpConfig.PhoneBuilder().build(),
-                    AuthUI.IdpConfig.GoogleBuilder().build()
-                    //    AuthUI.IdpConfig.FacebookBuilder().build(),
-                    //    AuthUI.IdpConfig.TwitterBuilder().build()
-                )
+//                val providers                               = arrayListOf(
+//                    //   AuthUI.IdpConfig.EmailBuilder().build(),
+//                    //   AuthUI.IdpConfig.PhoneBuilder().build(),
+//                    AuthUI.IdpConfig.GoogleBuilder().build()
+//                    //    AuthUI.IdpConfig.FacebookBuilder().build(),
+//                    //    AuthUI.IdpConfig.TwitterBuilder().build()
+//                )
 
      lateinit   var progressBar         : ProgressBar
      lateinit   var progressBarPiece    : ProgressBar
@@ -366,7 +366,13 @@ class MainActivity : AppCompatActivity() {
     fun authenticate(){
 
         auth = FirebaseAuth.getInstance()
-
+        val providers                               = arrayListOf(
+            //   AuthUI.IdpConfig.EmailBuilder().build(),
+            //   AuthUI.IdpConfig.PhoneBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+            //    AuthUI.IdpConfig.FacebookBuilder().build(),
+            //    AuthUI.IdpConfig.TwitterBuilder().build()
+        )
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
@@ -401,7 +407,11 @@ class MainActivity : AppCompatActivity() {
 //                auth = FirebaseAuth.getInstance()
 
                 when (this::auth.isInitialized) {
-                    false -> authenticate()
+                    false -> {
+//                        authenticate()
+//                        sync()
+//                        Profile.load(auth.currentUser!!.uid)
+                    }
                     true -> setAppTitle()
                 }
 
@@ -700,9 +710,13 @@ class MainActivity : AppCompatActivity() {
         progressBar.visibility      = ProgressBar.INVISIBLE
 //        progressBarPiece.visibility = ProgressBar.INVISIBLE
 
+        auth = FirebaseAuth.getInstance()
+
+        if(auth.currentUser != null)  Profile.load(auth.currentUser!!.uid)
+
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
 
-            item.isChecked = true
+        item.isChecked = true
 
             when (item.itemId) {
                 R.id.action_map -> {
@@ -732,10 +746,11 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
         //val intent = intent
 
-        authenticate()
-        sync()
+//        authenticate()
+//        sync()
 
 
     }

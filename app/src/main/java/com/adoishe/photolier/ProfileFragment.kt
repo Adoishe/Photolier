@@ -180,9 +180,6 @@ class ProfileFragment : Fragment() {
             }
 
 
-
-
-
             holder.largeTextView?.setOnKeyListener { v, keyCode, event ->
                 // if the event is a key down event on the enter button
                 if (event.action == KeyEvent.ACTION_DOWN
@@ -202,8 +199,6 @@ class ProfileFragment : Fragment() {
             }
 
 
-
-
             when (key){
                 "E-mail"    -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                 "Phone"     -> {
@@ -217,7 +212,6 @@ class ProfileFragment : Fragment() {
                 "Addresses" -> holder.largeTextView?.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
 
             }
-
 
 
             holder.largeTextView?.tag   = key

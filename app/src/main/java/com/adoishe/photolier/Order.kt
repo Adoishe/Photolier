@@ -51,7 +51,7 @@ class Order(var context: Activity) {
         this.session    = mainAct.session
         this.uuid       = UUID.randomUUID().toString()
 
-        mainAct.authenticate()
+//        mainAct.authenticate()
 
         when(mainAct.auth.currentUser){
             null -> Toast.makeText(mainAct, "NO AUTH!!!!!", Toast.LENGTH_LONG).show()

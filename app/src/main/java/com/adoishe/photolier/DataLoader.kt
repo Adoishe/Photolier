@@ -174,7 +174,7 @@ class DataLoader () {
 
         var res                         = ""
 
-        try {
+//        try {
 
             val headerList      : MutableList<HeaderProperty>   = ArrayList()
             val basicAuthName   : String                        = "web"
@@ -198,6 +198,9 @@ class DataLoader () {
                 res = (envelope.bodyIn as SoapObject).getPropertyAsString(0)
 
                 androidHttpTransport.reset()
+
+
+
                 androidHttpTransport.serviceConnection.disconnect()
 
             } catch (e: Exception) {
@@ -208,6 +211,7 @@ class DataLoader () {
                 e.printStackTrace()
 
                 res = e.toString()
+
 
                 when(envelope.bodyIn){
                     null->{
@@ -234,17 +238,17 @@ class DataLoader () {
                 }
             }
 
-            return res
-
-        } catch (e: Exception) {
-
-            e.printStackTrace()
-
-            res = e.toString()
-        }
-
-        androidHttpTransport.reset()
-        androidHttpTransport.serviceConnection.disconnect()
+//            return res
+//
+//        } catch (e: Exception) {
+//
+//            e.printStackTrace()
+//
+//            res = e.toString()
+//        }
+//
+//        androidHttpTransport.reset()
+//        androidHttpTransport.serviceConnection.disconnect()
 
         return res
     }

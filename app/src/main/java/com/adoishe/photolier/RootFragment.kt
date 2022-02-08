@@ -38,11 +38,25 @@ class RootFragment : Fragment() {
 
         profileButton.setOnClickListener {
 
+            if(mainAct.auth.currentUser == null){
+                mainAct.authenticate()
+                Profile.load(mainAct.auth.currentUser!!.uid)
+            }
+
             view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
 
         }
 
         photosPrint.setOnClickListener {
+
+            if(mainAct.auth.currentUser == null){
+                mainAct.authenticate()
+                Profile.load(mainAct.auth.currentUser!!.uid)
+            }
+
+            if (!mainAct.syncSuccessful){
+                mainAct.sync()
+            }
 
             mainAct.order = Order(mainAct)
 
@@ -163,17 +177,17 @@ class RootFragment : Fragment() {
 
                 if (mainAct.syncSuccessful) {
 
-                    Profile.load(mainAct.auth.currentUser!!.uid)
+//                    Profile.load(mainAct.auth.currentUser!!.uid)
 
                 }// if successfully
                 else {
 
-                    val printPhotos     :TextView   = requireView().findViewById(R.id.printPhotos)
-                    val profileButton   :TextView   = requireView().findViewById(R.id.profileButton)
-
-                    printPhotos.text = "Полный швах"
-                    printPhotos.isEnabled = false
-                    profileButton.isEnabled = false
+//                    val printPhotos     :TextView   = requireView().findViewById(R.id.printPhotos)
+//                    val profileButton   :TextView   = requireView().findViewById(R.id.profileButton)
+//
+//                    printPhotos.text = "Полный швах"
+//                    printPhotos.isEnabled = false
+//                    profileButton.isEnabled = false
 
                 }//if not successfully
 
