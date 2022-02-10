@@ -182,7 +182,7 @@ class Order(var context: Activity) {
 
 
         // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-        val partSize                    = 32768//16384//8192//4096 //8192
+        val partSize                    = 65536//32768//16384//8192//4096 //8192
         val base64Sliced:List<String>   = base64String.chunked(partSize)
 
 
