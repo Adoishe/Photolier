@@ -15,7 +15,9 @@ import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import android.util.Base64
+import android.widget.ProgressBar
 import com.google.firebase.database.*
+import com.google.gson.JsonObject
 import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
@@ -45,6 +47,7 @@ class Order(var context: Activity) {
     lateinit    var orderSendResult          : String
     private     val job                                         = SupervisorJob()
     private     val scope                                       = CoroutineScope(Dispatchers.Default + job)
+//    private     val scope                                       = CoroutineScope(Dispatchers.Main + job)
 
     init {
         this.name       = "blanc"//(context as MainActivity ).resources.getString(R.string.netTrouble)
@@ -178,8 +181,10 @@ class Order(var context: Activity) {
         byteArray                       = bos.toByteArray()
 //        val base64String                = Base64.encode(byteArray)
         val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
+        
+        var byteArraySliced = byteArray.toList().chunked(65536)
 
-
+//        byteArraySliced[0].toByteArray()
 
         // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
         val partSize                    = 65536//32768//16384//8192//4096 //8192
@@ -188,8 +193,9 @@ class Order(var context: Activity) {
 
 //        var base64Splitted = splitByCount(20, base64String)
 
-        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
+//        base64Sliced.forEachIndexed{ index, pieceOfB64string ->
 //        base64Splitted.forEachIndexed{ index, pieceOfB64string ->
+        byteArraySliced.forEachIndexed{ index, pieceOfData ->
 
             val jsonObj = JSONObject()
 
@@ -199,11 +205,13 @@ class Order(var context: Activity) {
             jsonObj.put("imageFormat"    , imageOrder.imageFormat!!.uid)
             jsonObj.put("price"          , imageOrder.imageFormat!!.price.toString())
             jsonObj.put("qty"            , imageOrder.qty)
-            jsonObj.put("base64String"   , pieceOfB64string)
-            jsonObj.put("base64Size"     , base64Sliced.size)
+            jsonObj.put("base64String"   , "")//pieceOfB64string)
+//            jsonObj.put("base64Size"     , base64Sliced.size)
+            jsonObj.put("base64Size"     , byteArraySliced.size)
             jsonObj.put("base64Index"    , index)
+            jsonObj.put("pieceOfData"    , pieceOfData.toByteArray())
 //            jsonObj.put("base64Sliced"   , pieceOfB64string)
-            jsonObj.put("thumbB64String" , imageOrder.imageThumbBase64)
+            jsonObj.put("thumbB64String" , "")//imageOrder.imageThumbBase64)
             jsonObj.put("imageUri"       , imageOrder.imageUri)
             jsonObj.put("lastOne"        , imageOrder.lastOne)
             jsonObj.put("size"           , imageOrderList.size)
@@ -241,17 +249,32 @@ class Order(var context: Activity) {
     private fun sendImageOrderPieceAsync(       pieceIndex  : Int
                                             ,   piecesCount : Int
                                             ,   jSONArray   : JSONArray
-                                            ,   outputJson  : String
+//                                            ,   outputJson  : String
+                                            ,   jsonObjHead  : JSONObject
                                             ,   fragment    : OrderFragment
                                             ,   imageOrder  : ImageOrder
                                             ,   thisIsLastIO : Boolean
                                         ) : Deferred<Unit> = scope.async {
 
-        //mainAct.saveLog("send $pieceIndex   of $piecesCount")
+
+//        mainAct.saveLog("sendinf  $pieceIndex   of $piecesCount")
+
+//        mainAct.runOnUiThread{
+//
+//            val progressByImage = 100000 / imageOrderList.size
+//            val progressByPiece = (progressByImage / piecesCount).toInt()
+//
+//            mainAct.saveLog("progressByPiece  $progressByPiece ")
+//
+//            fragment.progressBar.incrementProgressBy(progressByPiece)
+//        }
+
+
         val dl                  = DataLoader()
         val thisIsLastPiece     = pieceIndex == piecesCount -1
         val jsonObj             = jSONArray.getJSONObject(pieceIndex)
-        val sendResult          = dl.sendOrder(outputJson, jsonObj)
+//        val sendResult          = dl.sendOrder(outputJson, jsonObj, context as MainActivity)
+        val sendResult          = dl.sendOrderOverHTTP(jsonObjHead, jsonObj, context as MainActivity)
 
 //        mainAct.saveLog("sendResult $sendResult")
 
@@ -288,8 +311,9 @@ class Order(var context: Activity) {
         val jsonObject              = getJSONForWs()
         val dl                      = DataLoader()
         val outputJson              = jsonObject.toString()
-        val lastIndex               = imageOrderList.size -1
-        val thisIsLastOne           = (lastIndex ==  index)
+        val jsonObjHead             = jsonObject
+        val imagesCount             = imageOrderList.size -1
+        val thisIsLastOne           = (imagesCount ==  index)
 
 //        when (thisIsLastOne) {
 //
@@ -297,7 +321,7 @@ class Order(var context: Activity) {
 //            false   -> mainAct.saveLog("sending $index img")
 //        }
 
-        mainAct.saveLog("sending $index img")
+//        mainAct.saveLog("sending $index img")
 
 //        imageOrder.isLastOne(thisIsLastOne)
 
@@ -338,19 +362,85 @@ class Order(var context: Activity) {
 //
 //        mainAct.runOnUiThread(uiInfoPiece)
 
+//        var fileProgressBarID = 0
+//
+////        val uiInfo  = Runnable {
+////
+////            val fileProgressBar = fragment.createFileProgressbar(fragment.requireView(), piecesCount)
+////
+////            fileProgressBarID = fileProgressBar.id
+////
+////
+////        }
+
+//        mainAct.runOnUiThread(uiInfo)
+
+//        val progressByImage = 100000 / imageOrderList.size
+//
+//        val progressByPiece = (progressByImage / piecesCount).toInt()
+//
+//        val uiInfo  = Runnable {
+//
+//            fragment.progressBar.incrementProgressBy(progressByPiece)
+//        }
+
+
 
         for (pieceIndex in 0 until piecesCount) {
 
+//            val uiInfo  = Runnable {
+//
+////                fragment.
+//
+//                val fileProgressBar = fragment.requireView().findViewById<ProgressBar>(imageOrder.progressBarId)
+//
+//                fileProgressBar.max = piecesCount
+//
+//                fileProgressBar.incrementProgressBy(1)
+////                fileProgressBar.sec
+//
+//            }
+//
+//            val uiInfo  = Runnable {
+//
+////                fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
+//                fragment.progressBar.progress   = index
+//
+//            }
+
 //            scope.launch {
-                sendImageOrderPieceAsync(
+
+            mainAct.runOnUiThread{
+
+                val progressByImage = 100000 / imageOrderList.size
+                val progressByPiece = (progressByImage / piecesCount).toInt()
+
+                fragment.progressBar.incrementProgressBy(progressByPiece)
+            }
+//                sendImageOrderPieceAsync(
+//                                    pieceIndex
+//                                ,   piecesCount
+//                                ,   jSONArray
+//                                ,   outputJson
+//                                ,   fragment
+//                                ,   imageOrder
+//                                ,   thisIsLastOne
+//                            ).start()
+            sendImageOrderPieceAsync(
                                     pieceIndex
                                 ,   piecesCount
                                 ,   jSONArray
-                                ,   outputJson
+                                ,   jsonObjHead
                                 ,   fragment
                                 ,   imageOrder
                                 ,   thisIsLastOne
                             ).start()
+
+
+
+//                    mainAct.runOnUiThread(uiInfo)
+
+//                    mainAct.runOnUiThread(uiInfo)
 
 //                mainAct.saveLog("sendResult $sendResult")
 //            }
@@ -456,7 +546,7 @@ class Order(var context: Activity) {
             mainAct.saveLog("send $pieceIndex   of $piecesCount")
 
             val jsonObj     = jSONArray.getJSONObject(pieceIndex)
-                sendResult  = dl.sendOrder(outputJson, jsonObj)
+                sendResult  = dl.sendOrder(outputJson, jsonObj, context as MainActivity)
 
                 mainAct.saveLog(sendResult)
 
@@ -571,7 +661,7 @@ class Order(var context: Activity) {
         mainAct.runOnUiThread{
             fragment.progressBar.visibility         = View.VISIBLE
             fragment.progressBar.isIndeterminate    = false
-            fragment.progressBar.max                = imageOrderList.size-1
+            fragment.progressBar.max                = 100000//imageOrderList.size-1
             fragment.progressBar.min                = 0
         }
 
@@ -650,10 +740,14 @@ class Order(var context: Activity) {
 
         imageOrderList.forEachIndexed  { index, imageOrder ->
 
+//            val fileProgressBar = fragment.createFileProgressbar(fragment.requireView(), 500 , index)
+//
+//            imageOrder.progressBarId = fileProgressBar.id
+
             val uiInfo  = Runnable {
 
                 fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
-                fragment.progressBar.progress   = index
+//                fragment.progressBar.progress   = index
 
             }
 
@@ -815,7 +909,9 @@ class Order(var context: Activity) {
 //
 //                sendThread.start()
 
-               sendByCoroutines(fragment)
+                mainAct.setWakeLock()
+
+                sendByCoroutines(fragment)
 
             }//else ->{
         }//when (imageOrderList.size)

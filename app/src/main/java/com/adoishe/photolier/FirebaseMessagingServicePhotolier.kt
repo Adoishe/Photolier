@@ -49,6 +49,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
 
         val intent = Intent(applicationContext, MainActivity::class.java)
 
+
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         intent.putExtra("orderId"       , receivedJSONObject.optString("orderId"    , ""));
@@ -65,10 +67,23 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         // FLAG_ACTIVITY_CLEAR_TASK
         //https://startandroid.ru/ru/uroki/vse-uroki-spiskom/190-urok-116-povedenie-activity-v-task-intent-flagi-launchmode-affinity.html
 
+
+
+        var pendingIntentFlag = PendingIntent.FLAG_ONE_SHOT
+
+        when (Build.VERSION.SDK_INT) {
+            in 1..30    -> pendingIntentFlag = PendingIntent.FLAG_ONE_SHOT
+            else        -> pendingIntentFlag = PendingIntent.FLAG_MUTABLE
+        }
+
         val pendingIntent       = PendingIntent.getActivity(applicationContext
-                                                    , 11111 /* Request code */
-                                                    , intent
-                                                    , PendingIntent.FLAG_ONE_SHOT)
+            , 11111 /* Request code */
+            , intent
+            , pendingIntentFlag)
+
+
+
+
         val defaultSoundUri     = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 

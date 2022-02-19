@@ -47,6 +47,7 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.annotation.UiThread
 import com.google.android.gms.common.util.UidVerifier
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
 
                 var syncSuccessful           :Boolean            = false
+    private lateinit    var wakeLock         : PowerManager.WakeLock
 
     companion object {
                 val FIREINSTANCE    = "https://photolier-ru-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -143,6 +145,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun CharSequence.isPhoneNumber() : Boolean  = PATTERN.matcher(this).find()
+
+    fun setWakeLock(){
+
+
+        wakeLock =
+            (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").apply {
+                    acquire()
+                }
+            }
+
+    }
+
+    fun releaseWakeLock(){
+
+        wakeLock.release()
+    }
 
     fun getFormatsByMaterialThread(materialUid: String): Thread{
 
@@ -241,7 +260,7 @@ class MainActivity : AppCompatActivity() {
         return imageView
     }
 
-    fun generateTextView(string : String) :TextView {
+    fun generateTextView(string : String ) :TextView {
 
         val textView = TextView(this)
         val params = LinearLayout.LayoutParams(
@@ -257,6 +276,38 @@ class MainActivity : AppCompatActivity() {
 
         return textView
 
+    }
+
+    fun generateProgressbar(max :Int, imageOrderIndex : Int) : ProgressBar{
+
+        val progressBar = ProgressBar(this, null , android.R.style.Widget_ProgressBar_Horizontal)
+//        val progressBar = ProgressBar(this)
+
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+
+//        android:layout_width="match_parent"
+//        android:layout_height="200dp"
+//        android:layout_marginTop="16dp"
+//        android:scaleY="25"
+
+        params.gravity              = Gravity.CENTER
+
+        progressBar.layoutParams    = params
+        progressBar.layoutParams.height = 200
+        progressBar.layoutParams.width = 200
+
+        progressBar.visibility      = ProgressBar.VISIBLE
+        progressBar.max             = 500
+        progressBar.min             = 0
+        progressBar.progress        = 1
+        progressBar.id              = imageOrderIndex + 1
+//            android.R.style.Widget_ProgressBar_Horizontal
+//        progressBar.             = uid
+
+        return progressBar
     }
 
 

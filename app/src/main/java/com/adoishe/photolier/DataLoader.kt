@@ -16,8 +16,10 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
 import android.R.string.no
-
-
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 
 
 class DataLoader () {
@@ -138,7 +140,7 @@ class DataLoader () {
         }
     }
 
-    fun sendOrder(jsonString: String, jsonObject: JSONObject): String {
+    fun sendOrder(jsonString: String, jsonObject: JSONObject, mainAct : MainActivity): String {
 
         var res = ""
 
@@ -157,22 +159,95 @@ class DataLoader () {
             e.printStackTrace()
 
             res = e.toString()
+
+            mainAct.saveLog("Ошибка!---$res")
+
+//            saveLog("sending $index img")
         }
 
         return res
     }
 
+
+    fun sendOrderOverHTTP(jsonObjHead: JSONObject, jsonObject: JSONObject, mainAct : MainActivity): String {
+
+        val client = OkHttpClient()
+
+
+
+        val pieceByteArray = (jsonObject.get("mValues") as JSONObject).get("pieceOfData") as ByteArray
+
+        val mediaType = MediaType.parse("application/octet-stream")
+        val body = RequestBody.create(mediaType, pieceByteArray )
+
+//        jsonObject.remove("pieceOfData")
+//        jsonObject.remove("thumbB64String")
+        val basicAuthName   : String                        = "web"
+        val basicAuthPass   : String                        = "web"
+
+        val token = "$basicAuthName:$basicAuthPass".toByteArray()
+
+
+        val request = Request.Builder()
+            .header("Authorization", "Basic " + Base64.encode(token))
+            .url("https://seawolf.auxi.ru/photolier/hs/App/Order/New")
+//            .url("https://seawolf.auxi.ru/photolier/hs/App/OrderNew")
+            .post(body)
+//            .addHeader("Content-Type", "image/png")
+//            .addHeader("Content-Type", "application/octet-stream")
+            .header("id", jsonObjHead.toString())
+//            .addHeader("ID", jsonObjHead.toString())
+            .header("num", jsonObject.toString())
+//            .addHeader("Num", jsonObject.toString())
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val res = response.body().string()
+
+//        mainAct.saveLog(jsonObject.toString())
+//        mainAct.saveLog(res)
+
+//        var res = ""
+//
+//        try {
+//
+//            val request = SoapObject(NAMESPACE, SEND_ORDER_METHOD_NAME)
+//
+//            request.addProperty("ID"    , jsonString)
+//            request.addProperty("Num"   , jsonObject.toString())
+//
+////-----------------------------------------------------------------------------
+//            res = sendSoapObject(request, SEND_ORDER_ACTION)
+//
+//        } catch (e: Exception) {
+//
+//            e.printStackTrace()
+//
+//            res = e.toString()
+//
+//            mainAct.saveLog("Ошибка!---$res")
+//
+////            saveLog("sending $index img")
+//        }
+
+        return res
+    }
+
+
+
     private fun sendSoapObject(soapObject: SoapObject, action: String): String {
 
         val envelope = SoapSerializationEnvelope(SoapEnvelope.VER12)
-        val timeOut = 60000
+        val timeOut = 120000//60000
+
         envelope.setOutputSoapObject(soapObject)
 
         val androidHttpTransport        = HttpTransportSE(URL, timeOut)
             androidHttpTransport.debug  = true
 
 
-        var res                         = ""
+        var res = ""
 
 //        try {
 
@@ -187,7 +262,9 @@ class DataLoader () {
                 headerList.add(HeaderProperty("Authorization", "Basic " + Base64.encode(token)))
             }
 
-            headerList.add(HeaderProperty("Connection", "Close"))
+//            headerList.add(HeaderProperty("Connection", "Close"))
+//            headerList.add(HeaderProperty("Connection", "keep-alive"))
+//            headerList.add(HeaderProperty("Keep-Alive", "100"))
 
             try {
 
@@ -198,9 +275,6 @@ class DataLoader () {
                 res = (envelope.bodyIn as SoapObject).getPropertyAsString(0)
 
                 androidHttpTransport.reset()
-
-
-
                 androidHttpTransport.serviceConnection.disconnect()
 
             } catch (e: Exception) {

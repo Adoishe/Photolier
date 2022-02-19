@@ -18,6 +18,7 @@ class ImageOrder(name: String) {
     var materialPhoto       : MaterialPhoto?    = null
     var price                                   = BigDecimal("0")
     var lastOne                                 = false
+    var progressBarId       :Int                = 0
 
      var uuid                :String             = ""
 

@@ -1,8 +1,10 @@
 package com.adoishe.photolier
 
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +18,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import android.widget.LinearLayout.LayoutParams
 import android.widget.ProgressBar
+import androidx.core.content.ContextCompat.getSystemService
 import java.math.BigDecimal
 
 
@@ -286,9 +289,29 @@ class OrderFragment : Fragment() {
         fillWebView(v , order1c.getUuid())
     }
 
+    fun createFileProgressbar(v: View , max : Int, imageOrderIndex: Int) : ProgressBar{
+
+        val orderLinearLayout   = v.findViewById<LinearLayout>(R.id.orderLinear)
+        val mainAct             = (requireActivity() as MainActivity)
+        val content             = LinearLayout(mainAct)
+        val fileProgressBar     = mainAct.generateProgressbar(max , imageOrderIndex)
+
+        content.layoutParams    = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        content.orientation     = LinearLayout.HORIZONTAL
+
+        content.addView(fileProgressBar)
+
+        orderLinearLayout.addView(content)
+
+        return fileProgressBar
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
+
+
 
         when {
             sendorder!! -> {
@@ -314,6 +337,7 @@ class OrderFragment : Fragment() {
     ): View? {
 
         val root            = inflater.inflate(R.layout.fragment_order, container, false)
+
             sendorder       = arguments?.getBoolean("sendorder")
             ordersHistory   = arguments?.getBoolean("ordersHistory")
             progressBar     = root.findViewById(R.id.progressBarSend)
