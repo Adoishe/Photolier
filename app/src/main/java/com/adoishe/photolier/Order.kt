@@ -180,15 +180,15 @@ class Order(var context: Activity) {
         bitMap.compress(CompressFormat.JPEG, 100, bos)
         byteArray                       = bos.toByteArray()
 //        val base64String                = Base64.encode(byteArray)
-        val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
-
-        var byteArraySliced = byteArray.toList().chunked(65536)
+//        val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
+        val partSize                    = 65536//32768//16384//8192//4096 //8192
+        var byteArraySliced             = byteArray.toList().chunked(partSize)
 
 //        byteArraySliced[0].toByteArray()
 
         // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
-        val partSize                    = 65536//32768//16384//8192//4096 //8192
-        val base64Sliced:List<String>   = base64String.chunked(partSize)
+
+//        val base64Sliced:List<String>   = base64String.chunked(partSize)
 
 
 //        var base64Splitted = splitByCount(20, base64String)
