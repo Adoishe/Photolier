@@ -247,7 +247,7 @@ class PhotosFragment : Fragment() {
 
         selectButton.setOnClickListener {
 
-            val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
+//            val spinnerFormat       = requireView().findViewById<Spinner>(R.id.spinnerFormat)
 
             //spinnerFormat.visibility = View.GONE
 
@@ -256,11 +256,9 @@ class PhotosFragment : Fragment() {
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
 
-            intent.setFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            intent.flags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
                             or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                            or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-            )
+                            or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
 
             startActivityForResult(
                     Intent.createChooser(intent, resources.getString(R.string.selectPic)),
@@ -321,22 +319,20 @@ class PhotosFragment : Fragment() {
 
                     dialog.dismiss()
 
+//                    var rootLinearlayout = requireView().findViewById<LinearLayout>(R.id.rootPRVLayout)
+//
+//                    rootLinearlayout.setBackgroundColor(16777215);
+
                     //Order.sendAll()
 
-                   // when (this.indexInPacket == this.countOfPacket ) {
-                   //     true -> {
+                    val bundle = Bundle()
 
-                            val bundle = Bundle()
+                    bundle.putBoolean("sendorder"   , true)
+                   // bundle.putString("orderName"    , name)
+                    //bundle.putString("orderStatus"  , orderStatus)
+                    //bundle.putString("orderUuid"    , uuid)
 
-                            bundle.putBoolean("sendorder"   , true)
-                           // bundle.putString("orderName"    , name)
-                            //bundle.putString("orderStatus"  , orderStatus)
-                            //bundle.putString("orderUuid"    , uuid)
-
-                            mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
-
-                        //}
-                  //  }
+                    mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
 
                 //    progressBar.visibility  = ProgressBar.GONE

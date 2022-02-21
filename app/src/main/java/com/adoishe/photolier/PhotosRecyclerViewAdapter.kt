@@ -34,6 +34,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
         var crop            : Button?   = null
         var delete          : Button?   = null
         var material        : TextView?  = null
+        var progressBar     : ProgressBar? = null
 
         init {
             largeTextView   = itemView.findViewById(R.id.textViewLarge)
@@ -46,6 +47,7 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
             crop            = itemView.findViewById(R.id.editPhoto)
             delete          = itemView.findViewById(R.id.deletePhoto)
             material        = itemView.findViewById(R.id.material)
+            progressBar     = itemView.findViewById(R.id.progressBar)
         }
     }
 

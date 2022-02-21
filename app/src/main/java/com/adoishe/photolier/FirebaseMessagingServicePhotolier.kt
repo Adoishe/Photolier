@@ -29,6 +29,8 @@ class FirebaseMessagingServicePhotolier : FirebaseMessagingService() {
         val params: Map<String?, String?>   = remoteMessage.data
         val receivedJSONObject              = JSONObject(params)
 
+//        applicationContext.
+
 //        Log.e(TAG, receivedJSONObject.toString())
 
 //        val messageId = receivedJSONObject.optString("message_id"    , "")

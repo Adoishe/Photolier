@@ -6,6 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="1dp"
+    android:id="@+id/rootPRVLayout"
+    android:background="#fff"
     >
 
     <ImageView

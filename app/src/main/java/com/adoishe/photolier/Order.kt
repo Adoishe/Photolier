@@ -181,7 +181,7 @@ class Order(var context: Activity) {
         byteArray                       = bos.toByteArray()
 //        val base64String                = Base64.encode(byteArray)
         val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
-        
+
         var byteArraySliced = byteArray.toList().chunked(65536)
 
 //        byteArraySliced[0].toByteArray()
@@ -674,28 +674,35 @@ class Order(var context: Activity) {
         val listener = object :ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
-                    "sendResult" -> {} // workWithResult(snapshot.value.toString() , fragment)
+                    "sendResult" ->  // workWithResult(snapshot.value.toString() , fragment)
+//                        if (snapshot.value.toString().toBoolean())
+                            workWithResult(snapshot.value.toString() , fragment)
 //                    {
 //                        when (snapshot.value.toString().toBoolean()){
 //                            true ->
 
 //                                workWithResult(snapshot.value.toString() , fragment)
 
-                           else -> {}
+                    else -> {}
+                    }
                         }
 //                    }
 //                    "sendResult" -> sendResult = snapshot.value.toString()
-                }
+//                }
 
 
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
-                    "receivedOrder" -> {
-                        when (snapshot.value.toString().toBoolean()){
-                            true -> workWithResult(sendResult , fragment)
-                            else -> {}
-                        }
+                    "sendResult" -> {
+
+//                        if (snapshot.value.toString().toBoolean())
+                            workWithResult(snapshot.value.toString() , fragment)
+
+//                        when (snapshot.value.toString().toBoolean()){
+//                            true -> workWithResult(sendResult , fragment)
+//                            else -> {}
+//                        }
                     }
                 }
             }
@@ -756,8 +763,8 @@ class Order(var context: Activity) {
             scope.launch() {
 
                 val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
-//                deferred.await()
-                deferred.start()
+                deferred.await()
+//                deferred.start()
                 mainAct.runOnUiThread(uiInfo)
             }
         }

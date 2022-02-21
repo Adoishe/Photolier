@@ -67,7 +67,7 @@ class OrdersHistoryFragment : Fragment() {
              mainAct.saveLog("getOrders requested")
              mainAct.saveLog("uid = " + mainAct.auth.currentUser!!.uid)
 
-            val sendResult = dl.getOrders(mainAct.auth.currentUser!!.uid , mainAct.auth.currentUser!!.displayName!!)
+            val sendResult = dl.getOrders(Profile.profile.guid , Profile.profile.displayName)
 
             //mainAct.log.add(sendResult)
              mainAct.saveLog(sendResult)
