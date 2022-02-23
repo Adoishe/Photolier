@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Photolier"
         android:usesCleartextTraffic="true"
-
+        android:largeHeap="true"
         >
 
 

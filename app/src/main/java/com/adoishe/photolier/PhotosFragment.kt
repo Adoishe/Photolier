@@ -169,6 +169,8 @@ class PhotosFragment : Fragment() {
         setQtyText()
     }
 
+
+
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -331,9 +333,10 @@ class PhotosFragment : Fragment() {
                    // bundle.putString("orderName"    , name)
                     //bundle.putString("orderStatus"  , orderStatus)
                     //bundle.putString("orderUuid"    , uuid)
-
+//                    imageUriList.clear()
+//                    updateList()
                     mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
-
+//                    mainAct.clearFragment(this)
 
                 //    progressBar.visibility  = ProgressBar.GONE
                 //    progressBar.isIndeterminate = true

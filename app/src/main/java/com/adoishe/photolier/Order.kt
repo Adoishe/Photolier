@@ -158,9 +158,13 @@ class Order(var context: Activity) {
     private fun getJSONArrayListSingle(imageOrder : ImageOrder) : JSONArray{
 
         val jsonArrayList   =  JSONArray()
-        var byteArray       = context.contentResolver.openInputStream(imageOrder.imageUri!!)!!.readBytes()
-        var bitMap          = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
-        val bos             = ByteArrayOutputStream()
+//        var byteArray       = context.contentResolver.openInputStream(imageOrder.imageUri!!)!!.readBytes()
+
+//        // тут размер картинки приводится к номинальному для перчати. Но похоже оно жрет память. Отключаю
+//        var bitMap          = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.size)
+//        var bos             = ByteArrayOutputStream()
+//// тут размер картинки приводится к номинальному для перчати. Но похоже оно жрет память. Отключаю
+
 
 //        bitMap.compress(CompressFormat.JPEG, 100, bos)
 //
@@ -168,21 +172,43 @@ class Order(var context: Activity) {
 //        // Разбиваем строку на список строк с указанным числом символов. В последней строке может выводиться остаток
 //        val partSize                    = 1023
 //        val base64Sliced:List<String>   = base64String.chunked(partSize)
-        val maxSize                     = maxOf( imageOrder.imageFormat!!.heightPix , imageOrder.imageFormat!!.widthPix)
 
-        when (maxSize >0 )
-        {
-            true -> bitMap = mainAct.resizeBitmap(bitMap, maxSize )
-            false -> {}
-            else -> {}
-        }
+ // тут размер картинки приводится к номинальному для перчати. Но похоже оно жрет память. Отключаю
+//        val maxSize                     = maxOf( imageOrder.imageFormat!!.heightPix , imageOrder.imageFormat!!.widthPix)
+//
+//        when (maxSize >0 )
+//        {
+//            true -> bitMap = mainAct.resizeBitmap(bitMap, maxSize )
+//            false -> {}
+//            else -> {}
+//        }
+//
+//        bitMap.compress(CompressFormat.JPEG, 100, bos)
+//
+//
+////        bitMap = null
+//
+//        byteArray = bos.toByteArray()
+//
+//        bos.flush()
+//        bos.close()
+//
+//       bitMap.recycle()
+//-------------------------------------------------------------------------------------------------------------
 
-        bitMap.compress(CompressFormat.JPEG, 100, bos)
-        byteArray                       = bos.toByteArray()
+//        bos = null
+
 //        val base64String                = Base64.encode(byteArray)
 //        val base64String                =  encodeToString(byteArray, Base64.NO_WRAP)
         val partSize                    = 65536//32768//16384//8192//4096 //8192
-        var byteArraySliced             = byteArray.toList().chunked(partSize)
+        var byteArraySliced             = context
+                                        .contentResolver
+                                        .openInputStream(imageOrder.imageUri!!)!!
+                                        .readBytes()
+                                        .toList()
+                                        .chunked(partSize)
+
+//        byteArray = ByteArray(0)
 
 //        byteArraySliced[0].toByteArray()
 
@@ -223,6 +249,8 @@ class Order(var context: Activity) {
             jsonArrayList.put(result)
         }
 
+        byteArraySliced = listOf()
+
         return jsonArrayList
     }
 
@@ -246,7 +274,8 @@ class Order(var context: Activity) {
         return result
     }
 
-    private fun sendImageOrderPieceAsync(       pieceIndex  : Int
+    private fun sendImageOrderPieceAsync(
+                                                pieceIndex  : Int
                                             ,   piecesCount : Int
                                             ,   jSONArray   : JSONArray
 //                                            ,   outputJson  : String
@@ -254,6 +283,7 @@ class Order(var context: Activity) {
                                             ,   fragment    : OrderFragment
                                             ,   imageOrder  : ImageOrder
                                             ,   thisIsLastIO : Boolean
+                                            ,   jsonObj : JSONObject
                                         ) : Deferred<Unit> = scope.async {
 
 
@@ -271,8 +301,10 @@ class Order(var context: Activity) {
 
 
         val dl                  = DataLoader()
-        val thisIsLastPiece     = pieceIndex == piecesCount -1
-        val jsonObj             = jSONArray.getJSONObject(pieceIndex)
+//        val thisIsLastPiece     = pieceIndex == piecesCount -1
+
+//        val jsonObj             = jSONArray.getJSONObject(pieceIndex)
+
 //        val sendResult          = dl.sendOrder(outputJson, jsonObj, context as MainActivity)
         val sendResult          = dl.sendOrderOverHTTP(jsonObjHead, jsonObj, context as MainActivity)
 
@@ -426,6 +458,11 @@ class Order(var context: Activity) {
 //                                ,   imageOrder
 //                                ,   thisIsLastOne
 //                            ).start()
+
+            val jsonObj = jSONArray.getJSONObject(pieceIndex)
+
+            jSONArray.put(pieceIndex , JSONObject())
+
             sendImageOrderPieceAsync(
                                     pieceIndex
                                 ,   piecesCount
@@ -434,9 +471,10 @@ class Order(var context: Activity) {
                                 ,   fragment
                                 ,   imageOrder
                                 ,   thisIsLastOne
+                                ,   jsonObj
                             ).start()
 
-
+//            jSONArray.put(pieceIndex , JSONObject())
 
 //                    mainAct.runOnUiThread(uiInfo)
 
@@ -767,6 +805,10 @@ class Order(var context: Activity) {
 //                deferred.start()
                 mainAct.runOnUiThread(uiInfo)
             }
+
+//            sendImageOrderAsync(imageOrder, index , fragment)
+
+
         }
 
 

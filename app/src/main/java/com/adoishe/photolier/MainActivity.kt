@@ -50,6 +50,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.fragment.app.Fragment
 import com.google.android.gms.common.util.UidVerifier
 import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
@@ -805,7 +806,17 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+     fun clearFragment(fragment : Fragment){
 
+        val fragments = supportFragmentManager.fragments
+        for (frag in fragments){
+
+            if(frag == fragment)
+                supportFragmentManager.beginTransaction().remove(frag).commit()
+        }
+
+        supportFragmentManager.popBackStack(null , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+    }
     override fun onSupportNavigateUp(): Boolean {
 
         var rootReached = false

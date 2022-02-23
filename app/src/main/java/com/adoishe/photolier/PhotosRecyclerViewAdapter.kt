@@ -196,10 +196,10 @@ class PhotosRecyclerViewAdapter(private val values: List<Uri>, private val fragm
             .into(holder.imageView)
 
         //-------------thumb
-
-        val setThumbnailThread = setThumbnail((holder.itemView.context as MainActivity) , position )
-
-        setThumbnailThread.start()
+// TODO включить thumbnails
+//        val setThumbnailThread = setThumbnail((holder.itemView.context as MainActivity) , position )
+//
+//        setThumbnailThread.start()
 
   //-----------------------------spinner
         val spinnerAdapter              = PhotosFragment.getSpinnerFormatAdapter(holder.itemView.context)

@@ -20,12 +20,15 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import org.json.JSONException
+import java.io.IOException
 
 
 class DataLoader () {
 
     private var byteArrayList: MutableList<ByteArray> = ArrayList()
     private var stringArrayList: MutableList<String> = ArrayList()
+    val clientGlobal          = OkHttpClient()
 
     private fun threadFormats(
         context: Context,
@@ -170,40 +173,54 @@ class DataLoader () {
 
 
     fun sendOrderOverHTTP(jsonObjHead: JSONObject, jsonObject: JSONObject, mainAct : MainActivity): String {
+        try {
 
-        val client = OkHttpClient()
+//            val client          = OkHttpClient()
+            val client          =  clientGlobal
+            val pieceByteArray  = (jsonObject.get("mValues") as JSONObject).get("pieceOfData") as ByteArray
+            val mediaType       = MediaType.parse("application/octet-stream")
+            val body            = RequestBody.create(mediaType, pieceByteArray )
+            val basicAuthName   = "web"
+            val basicAuthPass   = "web"
+            val token           = "$basicAuthName:$basicAuthPass".toByteArray()
+            val request         = Request.Builder()
+                                .header("Authorization", "Basic " + Base64.encode(token))
+                                .url("https://seawolf.auxi.ru/photolier/hs/App/Order/New")
+                    //            .url("https://seawolf.auxi.ru/photolier/hs/App/OrderNew")
+                                .post(body)
+                    //            .addHeader("Content-Type", "image/png")
+                    //            .addHeader("Content-Type", "application/octet-stream")
+                                .header("id", jsonObjHead.toString())
+                                .header("num", jsonObject.toString())
+                                .build()
 
+            val response        = client.newCall(request).execute()
+            val res             = response.body().string()
 
+            response.body().close()
 
-        val pieceByteArray = (jsonObject.get("mValues") as JSONObject).get("pieceOfData") as ByteArray
+            when (val responseCode = response.code()){
+                200 ->{}
+                else -> {
 
-        val mediaType = MediaType.parse("application/octet-stream")
-        val body = RequestBody.create(mediaType, pieceByteArray )
+                    mainAct.saveLog("responseCode = $responseCode")
+                    mainAct.saveLog(res)
+
+                }
+            }
+
+        } catch ( e : IOException) {
+            val res = "IOException $e"
+            mainAct.saveLog(res)
+        } catch ( e : JSONException) {
+            val res = "JSONException $e"
+            mainAct.saveLog(res)
+        }
+
 
 //        jsonObject.remove("pieceOfData")
 //        jsonObject.remove("thumbB64String")
-        val basicAuthName   : String                        = "web"
-        val basicAuthPass   : String                        = "web"
 
-        val token = "$basicAuthName:$basicAuthPass".toByteArray()
-
-
-        val request = Request.Builder()
-            .header("Authorization", "Basic " + Base64.encode(token))
-            .url("https://seawolf.auxi.ru/photolier/hs/App/Order/New")
-//            .url("https://seawolf.auxi.ru/photolier/hs/App/OrderNew")
-            .post(body)
-//            .addHeader("Content-Type", "image/png")
-//            .addHeader("Content-Type", "application/octet-stream")
-            .header("id", jsonObjHead.toString())
-//            .addHeader("ID", jsonObjHead.toString())
-            .header("num", jsonObject.toString())
-//            .addHeader("Num", jsonObject.toString())
-            .build()
-
-        val response = client.newCall(request).execute()
-
-        val res = response.body().string()
 
 //        mainAct.saveLog(jsonObject.toString())
 //        mainAct.saveLog(res)
