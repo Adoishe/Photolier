@@ -35,9 +35,10 @@ android {
         minSdkVersion 28
         targetSdkVersion 31
         versionCode 3
-        versionName '1.0004'
+        versionName '1.0006'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionNameSuffix 'DBG'
     }
 
     buildTypes {
@@ -94,21 +95,22 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:26.4.0')
    // implementation 'com.google.firebase:firebase-database-ktx:19.6.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:20.0.2'
-    implementation 'com.google.firebase:firebase-core:20.0.2'
+    implementation 'com.google.firebase:firebase-analytics-ktx:20.1.0'
+    implementation 'com.google.firebase:firebase-core:20.1.0'
     implementation 'com.google.firebase:firebase-database:20.0.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
 
     // Declare the dependencies for the Crashlytics NDK and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation 'com.google.firebase:firebase-crashlytics-ndk:18.2.7'
-    implementation 'com.google.firebase:firebase-analytics-ktx:20.0.2'
+    implementation 'com.google.firebase:firebase-crashlytics-ndk:18.2.8'
+    implementation 'com.google.firebase:firebase-analytics-ktx:20.1.0'
 
 
     implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.google.android.material:material:1.6.0-alpha02'
     implementation 'com.google.firebase:firebase-messaging:23.0.0'
     //implementation 'com.google.firebase:firebase-messaging-directboot:22.0.0'
@@ -127,7 +129,7 @@ dependencies {
         // Java language implementation
       //  implementation "androidx.fragment:fragment:$fragment_version"
         // Kotlin
-        implementation "androidx.fragment:fragment-ktx:1.4.0"
+        implementation "androidx.fragment:fragment-ktx:1.4.1"
     }
     dependencies {
         implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.1'

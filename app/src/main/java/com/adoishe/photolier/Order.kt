@@ -690,31 +690,14 @@ class Order(var context: Activity) {
 
     }
 
-    private fun sendByCoroutines(fragment: OrderFragment) {
+    fun getNewChildListener(fragment: OrderFragment,  ref : DatabaseReference) :ChildEventListener{
 
-//        mainAct.saveLog("send by coroutine begin")
-
-        var sendResult = ""
-
-        mainAct.runOnUiThread{
-            fragment.progressBar.visibility         = View.VISIBLE
-            fragment.progressBar.isIndeterminate    = false
-            fragment.progressBar.max                = 100000//imageOrderList.size-1
-            fragment.progressBar.min                = 0
-        }
-
-
-        val ref                 = FirebaseDatabase
-                                    .getInstance(MainActivity.FIREINSTANCE)
-                                    .getReference("orders")
-                                    .child(session)
-
-        val listener = object :ChildEventListener {
+        return object :ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
                     "sendResult" ->  // workWithResult(snapshot.value.toString() , fragment)
 //                        if (snapshot.value.toString().toBoolean())
-                            workWithResult(snapshot.value.toString() , fragment)
+                        workWithResult(snapshot.value.toString() , fragment)
 //                    {
 //                        when (snapshot.value.toString().toBoolean()){
 //                            true ->
@@ -722,8 +705,8 @@ class Order(var context: Activity) {
 //                                workWithResult(snapshot.value.toString() , fragment)
 
                     else -> {}
-                    }
-                        }
+                }
+            }
 //                    }
 //                    "sendResult" -> sendResult = snapshot.value.toString()
 //                }
@@ -735,7 +718,9 @@ class Order(var context: Activity) {
                     "sendResult" -> {
 
 //                        if (snapshot.value.toString().toBoolean())
-                            workWithResult(snapshot.value.toString() , fragment)
+                        ref.removeEventListener(this)
+
+                        workWithResult(snapshot.value.toString() , fragment)
 
 //                        when (snapshot.value.toString().toBoolean()){
 //                            true -> workWithResult(sendResult , fragment)
@@ -757,6 +742,29 @@ class Order(var context: Activity) {
                 TODO("Not yet implemented")
             }
         }
+
+    }
+
+    private fun sendByCoroutines(fragment: OrderFragment) {
+
+//        mainAct.saveLog("send by coroutine begin")
+
+        var sendResult = ""
+
+        mainAct.runOnUiThread{
+            fragment.progressBar.visibility         = View.VISIBLE
+            fragment.progressBar.isIndeterminate    = false
+            fragment.progressBar.max                = 100000//imageOrderList.size-1
+            fragment.progressBar.min                = 0
+        }
+
+
+        val ref         = FirebaseDatabase
+                                    .getInstance(MainActivity.FIREINSTANCE)
+                                    .getReference("orders")
+                                    .child(session)
+
+        val listener    = getNewChildListener(fragment , ref)
 
         ref.addChildEventListener(listener)
 
@@ -801,8 +809,9 @@ class Order(var context: Activity) {
             scope.launch() {
 
                 val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
-                deferred.await()
-//                deferred.start()
+//                deferred.await()
+
+                deferred.start()
                 mainAct.runOnUiThread(uiInfo)
             }
 

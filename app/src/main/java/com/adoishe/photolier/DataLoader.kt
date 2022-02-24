@@ -16,19 +16,28 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
 import android.R.string.no
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+//import okhttp3.internal.Util
 import org.json.JSONException
 import java.io.IOException
+import java.util.*
+import java.util.Arrays.asList
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 class DataLoader () {
 
     private var byteArrayList: MutableList<ByteArray> = ArrayList()
     private var stringArrayList: MutableList<String> = ArrayList()
-    val clientGlobal          = OkHttpClient()
+//    private var protocols: MutableList<String> = ArrayList<Protocol>()//.add(Protocol.HTTP_2)
+//    val clientGlobal          = OkHttpClient().protocols(Util.immutableList(Protocol.HTTP_2, Protocol.HTTP_1_1))
+//    val clientGlobal          = OkHttpClient().newBuilder().protocols()
+    var protocols = arrayListOf(Protocol.HTTP_2 , Protocol.HTTP_1_1)
+//    val timeOut =  20
+    private val clientGlobal          = OkHttpClient().newBuilder().protocols(protocols).callTimeout(20, TimeUnit.SECONDS).build()
 
     private fun threadFormats(
         context: Context,
@@ -178,8 +187,8 @@ class DataLoader () {
 //            val client          = OkHttpClient()
             val client          =  clientGlobal
             val pieceByteArray  = (jsonObject.get("mValues") as JSONObject).get("pieceOfData") as ByteArray
-            val mediaType       = MediaType.parse("application/octet-stream")
-            val body            = RequestBody.create(mediaType, pieceByteArray )
+            val mediaType       = "application/octet-stream".toMediaTypeOrNull()
+            val body            = pieceByteArray.toRequestBody(mediaType, 0, pieceByteArray.size)
             val basicAuthName   = "web"
             val basicAuthPass   = "web"
             val token           = "$basicAuthName:$basicAuthPass".toByteArray()
@@ -192,14 +201,20 @@ class DataLoader () {
                     //            .addHeader("Content-Type", "application/octet-stream")
                                 .header("id", jsonObjHead.toString())
                                 .header("num", jsonObject.toString())
+
                                 .build()
 
+//             var protocols = arrayListOf(Protocol.HTTP_2)
+
+//            var clientH2 = client.newBuilder().protocols(protocols).build()
+
             val response        = client.newCall(request).execute()
-            val res             = response.body().string()
+//            val response        = clientH2.newCall(request).execute()
+            val res             = response.body!!.string()
 
-            response.body().close()
+            response.body?.close()
 
-            when (val responseCode = response.code()){
+            when (val responseCode = response.code){
                 200 ->{}
                 else -> {
 
