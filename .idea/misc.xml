@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/drawable/button_bg_round.xml" value="0.1975" />
+        <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/drawable/custom_border.xml" value="0.1975" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/drawable/launch_screen.xml" value="0.22552083333333334" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/drawable/logo.xml" value="0.3880208333333333" />
         <entry key="..\:/Users/mado/AndroidStudioProjects/Photolier/app/src/main/res/layout/activity_main.xml" value="0.24365942028985507" />

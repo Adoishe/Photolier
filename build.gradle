@@ -9,7 +9,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'androidx.test:runner:1.4.0@aar'
@@ -25,7 +25,7 @@ buildscript {
             //implementation "androidx.fragment:fragment-ktx:$fragment_version"
             //implementation "androidx.fragment:fragment-ktx:1.2.5"
         classpath 'org.moallemi.gradle.advanced-build-version:gradle-plugin:1.5.0'
-
+//        classpath 'com.squareup.okhttp3:okhttp:4.3.1'
 
 
     //    api 'com.theartofdev.edmodo:android-image-cropper:'
