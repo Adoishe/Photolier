@@ -49,6 +49,7 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.util.UidVerifier
@@ -102,6 +103,8 @@ class MainActivity : AppCompatActivity() {
                 var availableImageFormats   : MutableList<Any>  = ArrayList()
 
                 var syncSuccessful           :Boolean            = false
+
+
     private lateinit    var wakeLock         : PowerManager.WakeLock
 
     companion object {
@@ -417,25 +420,41 @@ class MainActivity : AppCompatActivity() {
 
     fun authenticate(){
 
-        auth = FirebaseAuth.getInstance()
-        val providers                               = arrayListOf(
+            auth        = FirebaseAuth.getInstance()
+        val providers   = arrayListOf(
             //   AuthUI.IdpConfig.EmailBuilder().build(),
             //   AuthUI.IdpConfig.PhoneBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build()
             //    AuthUI.IdpConfig.FacebookBuilder().build(),
             //    AuthUI.IdpConfig.TwitterBuilder().build()
         )
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                .setAvailableProviders(providers)
-                //     .setTosUrl("link to app terms and service")
-                //    .setPrivacyPolicyUrl("link to app privacy policy")
-                .build()
-            , RC_SIGN_IN
-        )
+
+        val intent = AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setIsSmartLockEnabled(!BuildConfig.DEBUG)
+                        .setAvailableProviders(providers)
+                        //     .setTosUrl("link to app terms and service")
+                        //    .setPrivacyPolicyUrl("link to app privacy policy")
+                        .build()
+        getResult.launch(intent)
+
+//        startActivityForResult(
+//
+//            , RC_SIGN_IN
+//        )
     }
+
+    // Receiver
+    private val getResult =
+        registerForActivityResult(
+                                        ActivityResultContracts.StartActivityForResult()
+                                    ) {
+            if(it.resultCode == Activity.RESULT_OK){
+//                val value = it.data?.getStringExtra("input")
+
+                doAfterAuth(-1, it.resultCode, it.data)
+            }
+        }
 
     override fun onStart() {
         super.onStart()
@@ -888,17 +907,15 @@ class MainActivity : AppCompatActivity() {
         //Profile.load(auth.currentUser!!.uid)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    private fun doAfterAuth(requestCode: Int, resultCode: Int, data: Intent?){
 
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode == RC_SIGN_IN){
+        if(requestCode == RC_SIGN_IN || requestCode == -1){
             /*
                 this checks if the activity result we are getting is for the sign in
                 as we can have more than activity to be started in our Activity.
              */
 
-          //  println("8089845216".isPhoneNumber())
+            //  println("8089845216".isPhoneNumber())
 
             val response = IdpResponse.fromResultIntent(data)
 
@@ -906,14 +923,14 @@ class MainActivity : AppCompatActivity() {
                 /*
                     Checks if the User sign in was successful
                  */
-    //                startActivity(Next Activity)
+                //                startActivity(Next Activity)
                 //showSnackbar(R.string.signed_in)
                 if(auth.currentUser != null){ //If user is signed in
 
                     setAppTitle()
+                    Profile.load(auth.currentUser!!.uid)
 
-
-    //                startActivity(Next Activity)
+                    //                startActivity(Next Activity)
                 }
 
 
@@ -923,7 +940,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 if(response == null){
                     //If no response from the Server
-                  //  showSnackbar(R.string.sign_in_cancelled)
+                    //  showSnackbar(R.string.sign_in_cancelled)
                     return
                 }
                 /*
@@ -939,9 +956,18 @@ class MainActivity : AppCompatActivity() {
                 }
                 */
             }
+
+        }
     }
-   // showSnackbar(R.string.unknown_sign_in_response) //if the sign in response was unknown
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        super.onActivityResult(requestCode, resultCode, data)
+
+        doAfterAuth(requestCode, resultCode, data)
 }
+   // showSnackbar(R.string.unknown_sign_in_response) //if the sign in response was unknown
+
 
 //        imageView = findViewById(R.id.imageView)
 

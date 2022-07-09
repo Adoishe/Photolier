@@ -39,11 +39,18 @@ class RootFragment : Fragment() {
         profileButton.setOnClickListener {
 
             if(mainAct.auth.currentUser == null){
+
                 mainAct.authenticate()
+
+
+            }
+            else{
                 Profile.load(mainAct.auth.currentUser!!.uid)
+                view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
             }
 
-            view?.findNavController()?.navigate(R.id.action_rootFragment_to_profileFragment)
+
+
 
         }
 
