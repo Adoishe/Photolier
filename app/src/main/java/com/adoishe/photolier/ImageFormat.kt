@@ -2,9 +2,7 @@ package com.adoishe.photolier
 
 import android.content.ContentValues
 import android.content.Context
-import android.provider.ContactsContract
 import android.util.Log
-import com.google.firebase.FirebaseError
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase

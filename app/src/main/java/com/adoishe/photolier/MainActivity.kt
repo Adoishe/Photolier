@@ -1,27 +1,34 @@
 package com.adoishe.photolier
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
@@ -29,32 +36,17 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
-import android.app.NotificationManager
-
-import android.app.NotificationChannel
-
-import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
-
-import android.os.Build
-import android.os.PowerManager
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.UiThread
-import androidx.fragment.app.Fragment
-import com.google.android.gms.common.util.UidVerifier
-import com.google.firebase.database.FirebaseDatabase
-import java.text.SimpleDateFormat
 
 
 private val RC_SIGN_IN = 123 //the request code could be any Integer
@@ -437,12 +429,41 @@ class MainActivity : AppCompatActivity() {
                         //    .setPrivacyPolicyUrl("link to app privacy policy")
                         .build()
         getResult.launch(intent)
+//        signInLauncher.launch(intent)
+
+
 
 //        startActivityForResult(
 //
 //            , RC_SIGN_IN
 //        )
     }
+
+    // See: https://developer.android.com/training/basics/intents/result
+//    private val signInLauncher = registerForActivityResult(
+//        FirebaseAuthUIActivityResultContract()
+//    ) { res ->
+//        this.onSignInResult(res)
+//    }
+    // Receiver2
+//    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+//
+//        val response = result.idpResponse
+//
+//        if (result.resultCode == RESULT_OK) {
+//            // Successfully signed in
+//            //val user = FirebaseAuth.getInstance().currentUser
+//            // ...
+//
+//            doAfterAuth2(-1, result.resultCode, response)
+//
+//        } else {
+//            // Sign in failed. If response is null the user canceled the
+//            // sign-in flow using the back button. Otherwise check
+//            // response.getError().getErrorCode() and handle the error.
+//            // ...
+//        }
+//    }
 
     // Receiver
     private val getResult =
@@ -453,6 +474,12 @@ class MainActivity : AppCompatActivity() {
 //                val value = it.data?.getStringExtra("input")
 
                 doAfterAuth(-1, it.resultCode, it.data)
+            }
+            else {
+                moveTaskToBack(true)
+                exitProcess(-1)
+//            или
+//            finishAffinity()
             }
         }
 
@@ -492,15 +519,17 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-
-
-
         }
     }
 
     override fun onResume() {
 
         super.onResume()
+
+        if(auth.currentUser == null){
+            authenticate()
+            //Profile.load(mainAct.auth.currentUser!!.uid)
+        }
 
 //        Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show()
 
@@ -905,6 +934,59 @@ class MainActivity : AppCompatActivity() {
 
 
         //Profile.load(auth.currentUser!!.uid)
+    }
+
+    private fun doAfterAuth2(requestCode: Int, resultCode: Int, response: IdpResponse?){
+
+        if(requestCode == RC_SIGN_IN || requestCode == -1){
+            /*
+                this checks if the activity result we are getting is for the sign in
+                as we can have more than activity to be started in our Activity.
+             */
+
+            //  println("8089845216".isPhoneNumber())
+
+//            val response = IdpResponse.fromResultIntent(data)
+
+            if(resultCode == Activity.RESULT_OK){
+                /*
+                    Checks if the User sign in was successful
+                 */
+                //                startActivity(Next Activity)
+                //showSnackbar(R.string.signed_in)
+                if(auth.currentUser != null){ //If user is signed in
+
+                    setAppTitle()
+                    Profile.load(auth.currentUser!!.uid)
+
+                    //                startActivity(Next Activity)
+                }
+
+
+                //finish()
+                //return
+            }
+            else {
+                if(response == null){
+                    //If no response from the Server
+                    //  showSnackbar(R.string.sign_in_cancelled)
+                    return
+                }
+                /*
+                if(response. == ErrorCodes.NO_NETWORK){
+                    //If there was a network problem the user's phone
+                    showSnackbar(R.string.no_internet_connection)
+                    return
+                }
+                if(response.errorCode == ErrorCodes.UNKNOWN_ERROR){
+                    //If the error cause was unknown
+                    showSnackbar(R.string.unknown_error)
+                    return
+                }
+                */
+            }
+
+        }
     }
 
     private fun doAfterAuth(requestCode: Int, resultCode: Int, data: Intent?){

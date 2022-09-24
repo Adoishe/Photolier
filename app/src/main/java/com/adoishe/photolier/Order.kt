@@ -5,22 +5,14 @@ package com.adoishe.photolier
 
 //import org.kobjects.base64.Base64
 import android.app.Activity
-import android.graphics.Bitmap.CompressFormat
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Base64.encodeToString
 import android.view.View
 import android.widget.Toast
+import com.google.firebase.database.*
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
-import android.util.Base64
-import android.widget.ProgressBar
-import com.google.firebase.database.*
-import com.google.gson.JsonObject
-import java.io.ByteArrayOutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class Order(var context: Activity) {
@@ -945,6 +937,7 @@ class Order(var context: Activity) {
                     //mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
 
                 }
+                else -> {}
             }
 
              */
