@@ -2,9 +2,9 @@
 <resources>
     <string name="app_name">Photolier</string>
     <string name="crop">Обрезать</string>
-    <string name="selectPic">Добавить фото  в папку</string>
+    <string name="selectPic">Добавить фото</string>
     <string name="photos">Фото</string>
-    <string name="printPhotos">Печать фото</string>
+    <string name="printPhotos">Новый заказ</string>
     <string name="selectCrop">Выбрать и обрезать фото</string>
     <string name="signed_in">signed_in</string>
     <string name="sign_in_cancelled">sign_in_cancelled</string>
@@ -13,7 +13,7 @@
     <string name="unknown_sign_in_response">unknown_sign_in_response</string>
     <string name="ffor">" для "</string>
     <string name="send_photos">Отправить заказ</string>
-    <string name="get_orders">Отправленные заказы</string>
+    <string name="get_orders">Отправлено</string>
     <string name="display_name">Имя</string>
     <string name="email">Электропочта</string>
     <string name="phoneNumber">Номер телефона</string>
@@ -22,7 +22,15 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="add_order">Добавить папку в заказ</string>
-    <string name="photosInPack">"  фото в папке"</string>
-    <string name="packsInOrder">"  папок в заказе"</string>
+    <string name="photosInPack">фото в папке</string>
+    <string name="packsInOrder">папок в заказе</string>
     <string name="netTrouble">Проблемы со связью. Попробуйте позже</string>
+    <string name="delete">delete</string>
+    <string name="sync">Обновление</string>
+    <string name="prinWide">Интерьерная  печать</string>
+    <string name="qty">Количество</string>
+    <string name="saveProfile">Сохранить данные</string>
+    <string name="Profile">Личный кабинет</string>
+    <string name="reloadData">Обновить</string>
+    <string name="sending">Отправка %1$d из  %2$d</string>
 </resources>

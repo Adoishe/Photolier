@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="1dp"
+    android:id="@+id/rootPRVLayout"
+    android:background="#fff"
+    >
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="fill_horizontal"
+        android:contentDescription="@string/photos"
+        android:layout_weight="250"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="180"
+
+        android:background="@drawable/custom_border"
+        >
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1500"
+
+            >
+
+
+            <Spinner
+                android:id="@+id/spinnerFormat"
+
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="35"
+                android:layout_gravity="center"
+                android:textSize="400sp"
+
+
+                android:textColor="@color/black"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/material"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="65"
+
+                android:gravity="fill_horizontal" />
+
+        </LinearLayout>
+
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/editPhoto"
+            android:text="@string/crop"
+            android:visibility="gone"
+
+            />
+
+        <LinearLayout
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_vertical"
+            android:orientation="vertical"
+            android:weightSum="100">
+            <Button
+                android:id="@+id/qtyPlus"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/button_bg_round"
+
+                android:padding="1dp"
+                android:text="@string/plus"
+                android:textColor="@color/white"
+
+                app:iconPadding="0dp" />
+
+
+            <EditText
+                android:id="@+id/qty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_weight="10"
+
+                android:ems="10"
+                android:inputType="numberDecimal"
+                android:textAlignment="center"
+
+                />
+            <Button
+                android:id="@+id/qtyMinus"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+
+                android:layout_weight="10"
+
+                android:background="@drawable/custom_border_filled"
+                android:padding="1dp"
+                android:text="@string/minus"
+                android:textColor="@color/white" />
+
+
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:width="50dp"
+            android:id="@+id/deletePhoto"
+            android:layout_gravity="center"
+            android:background="@drawable/button_bg_round"
+            android:text="@string/x"
+            android:visibility="gone"
+            android:textColor="@color/white"/>
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textViewLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/textViewSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone"/>
+</LinearLayout>
