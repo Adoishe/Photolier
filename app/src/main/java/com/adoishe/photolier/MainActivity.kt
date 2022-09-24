@@ -794,9 +794,10 @@ class MainActivity : AppCompatActivity() {
 //        setTheme(R.style.Theme_Photolier)
 
 //        saveLog("super.onCreate(savedInstanceState)")
+        setTheme(R.style.Theme_Photolier)
+
         super.onCreate(savedInstanceState)
 
-        setTheme(R.style.Theme_Photolier)
         requestedOrientation =  (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 //        saveLog("setContentView(R.layout.activity_main)")
         setContentView(R.layout.activity_main)

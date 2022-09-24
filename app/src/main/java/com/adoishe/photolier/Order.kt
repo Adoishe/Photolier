@@ -5,14 +5,22 @@ package com.adoishe.photolier
 
 //import org.kobjects.base64.Base64
 import android.app.Activity
+import android.graphics.Bitmap.CompressFormat
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64.encodeToString
 import android.view.View
 import android.widget.Toast
-import com.google.firebase.database.*
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
+import android.util.Base64
+import android.widget.ProgressBar
+import com.google.firebase.database.*
+import com.google.gson.JsonObject
+import java.io.ByteArrayOutputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class Order(var context: Activity) {
@@ -260,6 +268,7 @@ class Order(var context: Activity) {
         json.put("uid"              , Profile.profile.guid)//mainAct.auth.currentUser?.uid.toString())
         json.put("indexInPacket"    , this.indexInPacket)
         json.put("countOfPacket"    , this.countOfPacket)
+        json.put("tokenPush"        , Profile.profile.pushToken)
 
         result.put("mValues", json)
 
@@ -332,10 +341,10 @@ class Order(var context: Activity) {
     private fun sendImageOrderAsync(imageOrder: ImageOrder, index : Int , fragment: OrderFragment): Unit{
 
         var sendResult              = ""
-        val jsonObject              = getJSONForWs()
+//        val jsonObject              = getJSONForWs()
         val dl                      = DataLoader()
-        val outputJson              = jsonObject.toString()
-        val jsonObjHead             = jsonObject
+//        val outputJson              = jsonObject.toString()
+        val jsonObjHead             = getJSONForWs()//jsonObject
         val imagesCount             = imageOrderList.size -1
         val thisIsLastOne           = (imagesCount ==  index)
 
