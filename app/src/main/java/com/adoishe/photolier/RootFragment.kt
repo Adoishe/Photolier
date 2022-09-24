@@ -58,7 +58,7 @@ class RootFragment : Fragment() {
 
             if(mainAct.auth.currentUser == null){
                 mainAct.authenticate()
-                Profile.load(mainAct.auth.currentUser!!.uid)
+                //Profile.load(mainAct.auth.currentUser!!.uid)
             }
 
             if (!mainAct.syncSuccessful){

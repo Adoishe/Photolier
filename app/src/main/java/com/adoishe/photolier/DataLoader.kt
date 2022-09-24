@@ -1,12 +1,16 @@
 package com.adoishe.photolier
 
+//import okhttp3.MediaType.Companion.toMediaTypeOrNull
+//import okhttp3.RequestBody.Companion.toRequestBody
+
+//import okhttp3.internal.Util
 import android.content.Context
-import android.os.ParcelUuid
 import android.view.View
 import android.widget.ProgressBar
-import android.widget.Toast
 import com.google.gson.Gson
+import okhttp3.*
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import org.kobjects.base64.Base64
 import org.ksoap2.HeaderProperty
@@ -15,23 +19,8 @@ import org.ksoap2.SoapFault
 import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
-import android.R.string.no
-import okhttp3.*
-//import okhttp3.MediaType.Companion.toMediaTypeOrNull
-//import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-//import okhttp3.internal.Util
-import org.json.JSONException
 import java.io.IOException
 import java.util.*
-import java.util.Arrays.asList
-import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 
 class DataLoader () {
