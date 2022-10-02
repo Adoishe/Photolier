@@ -36,7 +36,10 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONArray
 import org.json.JSONObject
@@ -574,8 +577,8 @@ class MainActivity : AppCompatActivity() {
 //        orderStatus
 //        orderName
 
-        intent.putExtra("orderId"   , receivedJSONObject.optString("orderUuid"    , ""));
-        intent.putExtra("orderText" , receivedJSONObject.optString("orderName"      , ""));
+        intent.putExtra("orderId"   , receivedJSONObject.optString("orderUuid" , ""));
+        intent.putExtra("orderText" , receivedJSONObject.optString("orderName" , ""));
 //        intent.putExtra("messageId" , receivedJSONObject.optString("message_id" , ""));
 
         // FLAG_ACTIVITY_CLEAR_TASK
@@ -937,58 +940,58 @@ class MainActivity : AppCompatActivity() {
         //Profile.load(auth.currentUser!!.uid)
     }
 
-    private fun doAfterAuth2(requestCode: Int, resultCode: Int, response: IdpResponse?){
-
-        if(requestCode == RC_SIGN_IN || requestCode == -1){
-            /*
-                this checks if the activity result we are getting is for the sign in
-                as we can have more than activity to be started in our Activity.
-             */
-
-            //  println("8089845216".isPhoneNumber())
-
-//            val response = IdpResponse.fromResultIntent(data)
-
-            if(resultCode == Activity.RESULT_OK){
-                /*
-                    Checks if the User sign in was successful
-                 */
-                //                startActivity(Next Activity)
-                //showSnackbar(R.string.signed_in)
-                if(auth.currentUser != null){ //If user is signed in
-
-                    setAppTitle()
-                    Profile.load(auth.currentUser!!.uid)
-
-                    //                startActivity(Next Activity)
-                }
-
-
-                //finish()
-                //return
-            }
-            else {
-                if(response == null){
-                    //If no response from the Server
-                    //  showSnackbar(R.string.sign_in_cancelled)
-                    return
-                }
-                /*
-                if(response. == ErrorCodes.NO_NETWORK){
-                    //If there was a network problem the user's phone
-                    showSnackbar(R.string.no_internet_connection)
-                    return
-                }
-                if(response.errorCode == ErrorCodes.UNKNOWN_ERROR){
-                    //If the error cause was unknown
-                    showSnackbar(R.string.unknown_error)
-                    return
-                }
-                */
-            }
-
-        }
-    }
+//    private fun doAfterAuth2(requestCode: Int, resultCode: Int, response: IdpResponse?){
+//
+//        if(requestCode == RC_SIGN_IN || requestCode == -1){
+//            /*
+//                this checks if the activity result we are getting is for the sign in
+//                as we can have more than activity to be started in our Activity.
+//             */
+//
+//            //  println("8089845216".isPhoneNumber())
+//
+////            val response = IdpResponse.fromResultIntent(data)
+//
+//            if(resultCode == Activity.RESULT_OK){
+//                /*
+//                    Checks if the User sign in was successful
+//                 */
+//                //                startActivity(Next Activity)
+//                //showSnackbar(R.string.signed_in)
+//                if(auth.currentUser != null){ //If user is signed in
+//
+//                    setAppTitle()
+//                    Profile.load(auth.currentUser!!.uid)
+//
+//                    //                startActivity(Next Activity)
+//                }
+//
+//
+//                //finish()
+//                //return
+//            }
+//            else {
+//                if(response == null){
+//                    //If no response from the Server
+//                    //  showSnackbar(R.string.sign_in_cancelled)
+//                    return
+//                }
+//                /*
+//                if(response. == ErrorCodes.NO_NETWORK){
+//                    //If there was a network problem the user's phone
+//                    showSnackbar(R.string.no_internet_connection)
+//                    return
+//                }
+//                if(response.errorCode == ErrorCodes.UNKNOWN_ERROR){
+//                    //If the error cause was unknown
+//                    showSnackbar(R.string.unknown_error)
+//                    return
+//                }
+//                */
+//            }
+//
+//        }
+//    }
 
     private fun doAfterAuth(requestCode: Int, resultCode: Int, data: Intent?){
 
@@ -1041,6 +1044,42 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    fun newFirebaseUiPiece (path : String, fragment : Fragment , imageOrder : ImageOrder) : Runnable {
+
+        return Runnable {
+
+            val ref                 = FirebaseDatabase.getInstance(FIREINSTANCE).getReference(path)
+            val valueEventListener  = object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    when (path) {
+
+                        "orders" -> (fragment as OrderFragment).progressBarPiece.progress = snapshot.childrenCount.toInt()
+
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            }
+
+            when (path) {
+
+                "orders" -> ref
+                            .child(session)
+                            .child(imageOrder.uuid)
+                            .addListenerForSingleValueEvent(valueEventListener)
+
+            }
+
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

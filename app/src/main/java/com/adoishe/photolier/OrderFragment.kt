@@ -170,16 +170,23 @@ class OrderFragment : Fragment() {
         val orderUuid           = arguments?.getString("orderUuid")!!
         val orderName           = arguments?.getString("orderName")
         val orderStatus         = arguments?.getString("orderStatus")
-            textViewResult.text = orderUuid + "\n" + orderName+ "\n" + orderStatus
-        val getOrderThread      = getOrder(orderUuid!!)
+            textViewResult.text = "$orderUuid\n$orderName\n$orderStatus"
+        val getOrderThread      = getOrder(orderUuid)
 
         getOrderThread.start()
         getOrderThread.join()
 
         fillWebView(v , orderUuid)
 
+        progressBar.visibility  = ProgressBar.GONE
 
-         progressBar.visibility  = ProgressBar.GONE
+         (context as MainActivity).order.imageOrderList.forEachIndexed{ index, imageOrder ->
+
+            val progressBarImageOrder = requireView().findViewById<ProgressBar>(index)
+
+             progressBarImageOrder.visibility = ProgressBar.GONE
+
+         }
 
     }
 
@@ -188,68 +195,56 @@ class OrderFragment : Fragment() {
         return Thread {
 
             val mainAct    = (requireActivity() as MainActivity)
-
-            mainAct.saveLog("get order thread started")
-            //mainAct.log.add()
-
-            val dl = DataLoader()
-
-            mainAct.saveLog("getOrder requested")
-            mainAct.saveLog("orderUuid = $orderUuid")
-            //mainAct.log.add("getOrder requested")
-            //mainAct.log.add("orderUuid = $orderUuid")
-
-            val sendResult = dl.getOrder(orderUuid)
+            mainAct.saveLog("getOrder requested orderUuid = $orderUuid")
+            val dl          = DataLoader()
+            val sendResult  = dl.getOrder(orderUuid)
 
             mainAct.saveLog(sendResult)
-            //mainAct.log.add(sendResult)
 
             try {
 
-                        order1c             = Order(requireActivity())
-                val     orderItem           = JSONObject(sendResult)
-                        order1c.name        = orderItem.getJSONObject("mValues").getString("orderName")
-                        order1c.text        = orderItem.getJSONObject("mValues").getString("orderText")
-                val     uriJSONArray        = JSONArray(orderItem.getJSONObject("mValues").get("imageUriList").toString())
-                val     orderStatus         = orderItem.getJSONObject("mValues").getString("orderStatus")
-                val     orderPayed          = orderItem.getJSONObject("mValues").getBoolean("orderPayed")
+            val     imageUriList:MutableList<Uri>   = ArrayList()
 
-                        order1c.setUuid(orderItem.getJSONObject("mValues").getString("orderUuid"))
+                    order1c                         = Order(requireActivity())
+            val     orderItem                       = JSONObject(sendResult)
+                    order1c.name                    = orderItem.getJSONObject("mValues").getString("orderName")
+                    order1c.text                    = orderItem.getJSONObject("mValues").getString("orderText")
+            val     uriJSONArray                    = JSONArray(orderItem.getJSONObject("mValues").get("imageUriList").toString())
+            val     orderStatus                     = orderItem.getJSONObject("mValues").getString("orderStatus")
+            val     orderPayed                      = orderItem.getJSONObject("mValues").getBoolean("orderPayed")
+            val     orderUuid                       = orderItem.getJSONObject("mValues").getString("orderUuid")
 
-                val     imageUriList    : MutableList<Uri>      = ArrayList()
+                    order1c.setUuid(orderUuid)
 
+                    for (j in 0 until uriJSONArray.length()){
 
-                        for (j in 0 until uriJSONArray.length()){
+                        val jsonObject      = JSONObject(uriJSONArray.getString(j))
+                        val uri1c           = Uri.parse( jsonObject.get("imageUri").toString())
+                        val thumbB64String  = jsonObject.get("thumbB64String").toString()
+                        val formatString    = jsonObject.get("ФорматНаименование").toString()
+                        val materialString  = jsonObject.get("МатериалНаименование").toString()
+                        val qtyString       = jsonObject.get("Количество").toString()
+                        val priceString     = jsonObject.get("Цена").toString()
 
-                            val jsonObject      = JSONObject(uriJSONArray.getString(j))
-                            val uri1c           = Uri.parse( jsonObject.get("imageUri").toString())
-                            val thumbB64String  = jsonObject.get("thumbB64String").toString()
-                            val formatString    = jsonObject.get("ФорматНаименование").toString()
-                            val materialString  = jsonObject.get("МатериалНаименование").toString()
-                            val qtyString       = jsonObject.get("Количество").toString()
-                            val priceString     = jsonObject.get("Цена").toString()
+                        imageUriList.add(uri1c)
 
+                        val qty                     =  mainAct.resources.getString(R.string.qty)
+                        val imageOrder              = ImageOrder("$formatString $materialString $qty $qtyString ($priceString ₽)")
+                        imageOrder.imageThumbBase64 = thumbB64String
+                        imageOrder.price            = BigDecimal(priceString)
 
-                            imageUriList.add(uri1c)
+                        order1c.imageOrderList.add(imageOrder)
 
-                            val qty                     =  mainAct.resources.getString(R.string.qty)
-                            val imageOrder              = ImageOrder("$formatString $materialString $qty $qtyString ($priceString ₽)")
-                            imageOrder.imageThumbBase64 = thumbB64String
-                            imageOrder.price            = BigDecimal(priceString)
+                    }
 
-                            order1c.imageOrderList.add(imageOrder)
-
-                        }
-
-                        order1c.imageUriList    = imageUriList
-                        order1c.orderStatus     = orderStatus
-                        order1c.payed           = orderPayed
+                    order1c.imageUriList    = imageUriList
+                    order1c.orderStatus     = orderStatus
+                    order1c.payed           = orderPayed
 
             }
             catch (e: Exception) {
 
                 mainAct.saveLog(sendResult)
-                //mainAct.log.add(sendResult)
 
             }
 
