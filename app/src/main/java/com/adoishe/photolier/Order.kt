@@ -1,9 +1,5 @@
 package com.adoishe.photolier
 
-//import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
-
-
-//import org.kobjects.base64.Base64
 import android.app.Activity
 import android.net.Uri
 import android.view.View
@@ -17,7 +13,6 @@ import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
-
 
 class Order(var context: Activity) {
     private     var uuid            : String                    = "" //UUID.randomUUID().toString()
@@ -50,16 +45,11 @@ class Order(var context: Activity) {
         this.session    = mainAct.session
         this.uuid       = UUID.randomUUID().toString()
 
-//        mainAct.authenticate()
-
         when(mainAct.auth.currentUser){
             null -> Toast.makeText(mainAct, "NO AUTH!!!!!", Toast.LENGTH_LONG).show()
             else -> this.userId     = mainAct.auth.currentUser?.uid.toString()
         }
-
-
     }
-
 
     override fun toString() = name + "\n" + orderStatus
 
@@ -121,35 +111,6 @@ class Order(var context: Activity) {
     }
 
  */
-
-    private fun splitByCount(count : Int , source :String) : List<String>{
-
-        var result: MutableList<String> = mutableListOf()
-
-        var stepsQty = (source.length / count).toInt()
-
-        var index = 0
-
-        for (indexStep  in 0 until count){
-
-            try{
-
-                var subResult = source.slice(index until (index + stepsQty))
-
-                result.add(subResult)
-
-            }catch (e:Exception){
-
-                var subResult = source.slice(index until source.length)
-
-                result.add(subResult)
-            }
-
-            index += stepsQty
-        }
-
-        return result.toList()
-    }
 
     private fun getJSONArrayListSingle(imageOrder : ImageOrder) : JSONArray{
 
@@ -255,7 +216,6 @@ class Order(var context: Activity) {
         val json    = JSONObject()
         val result  = JSONObject()
 
-
         json.put("orderUid"         , uuid)
         json.put("session"          , session)
         json.put("displayName"      , mainAct.auth.currentUser?.displayName.toString())
@@ -272,100 +232,40 @@ class Order(var context: Activity) {
     }
 
     private fun sendImageOrderPieceAsync(
-                                                pieceIndex  : Int
-                                            ,   piecesCount : Int
-                                            ,   jSONArray   : JSONArray
-//                                            ,   outputJson  : String
-                                            ,   jsonObjHead  : JSONObject
-                                            ,   fragment    : OrderFragment
-                                            ,   imageOrder  : ImageOrder
-                                            ,   thisIsLastIO : Boolean
+//                                                pieceIndex  : Int
+//                                            ,   piecesCount : Int
+//                                            ,   jSONArray   : JSONArray
+//                                            ,
+                                                jsonObjHead  : JSONObject
+//                                            ,   fragment    : OrderFragment
+//                                            ,   imageOrder  : ImageOrder
+//                                            ,   thisIsLastIO : Boolean
                                             ,   jsonObj : JSONObject
                                         ) : Deferred<Unit> = scope.async {
 
-
-//        mainAct.saveLog("sendinf  $pieceIndex   of $piecesCount")
-
-//        mainAct.runOnUiThread{
-//
-//            val progressByImage = 100000 / imageOrderList.size
-//            val progressByPiece = (progressByImage / piecesCount).toInt()
-//
-//            mainAct.saveLog("progressByPiece  $progressByPiece ")
-//
-//            fragment.progressBar.incrementProgressBy(progressByPiece)
-//        }
-
-
         val dl                  = DataLoader()
-//        val thisIsLastPiece     = pieceIndex == piecesCount -1
-
-//        val jsonObj             = jSONArray.getJSONObject(pieceIndex)
-
-//        val sendResult          = dl.sendOrder(outputJson, jsonObj, context as MainActivity)
         val sendResult          = dl.sendOrderOverHTTP(jsonObjHead, jsonObj, context as MainActivity)
-
-//        mainAct.saveLog("sendResult $sendResult")
-
 
     }
 
-//    private fun workWithResultAcync() : Deferred<Unit> = scope.async {
-//
-//
-//        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
-//        val valueEventListener  = object : ValueEventListener {
-//
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//
-//                when (snapshot.value){
-//                    true-> mainAct.saveLog("заказ загружен")
-//                }
-//
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        }
-//
-//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
-//
-//
-//    }
 
     private fun sendImageOrderAsync(imageOrder: ImageOrder, index : Int , fragment: OrderFragment): Unit{
 
         var sendResult              = ""
-//        val jsonObject              = getJSONForWs()
         val dl                      = DataLoader()
-//        val outputJson              = jsonObject.toString()
         val jsonObjHead             = getJSONForWs()//jsonObject
         val imagesCount             = imageOrderList.size -1
         val thisIsLastOne           = (imagesCount ==  index)
+        val jSONArray               = getJSONArrayListSingle(imageOrder)
+        val piecesCount             = jSONArray.length();
 
-//        when (thisIsLastOne) {
-//
-//            true    -> mainAct.saveLog("lastOne sending $index img")
-//            false   -> mainAct.saveLog("sending $index img")
-//        }
-
-//        mainAct.saveLog("sending $index img")
-
-//        imageOrder.isLastOne(thisIsLastOne)
-
-
-
-        val jSONArray   = getJSONArrayListSingle(imageOrder)
-        val piecesCount = jSONArray.length();
-
-        imageOrder.piecesCount = piecesCount
+            imageOrder.piecesCount  = piecesCount
 
         val uiInfo  = Runnable {
 
             fragment.textViewResult.text    = String.format(mainAct.resources.getString(R.string.sending), index + 1, imageOrderList.size);
 
-            val progressBar                     = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal)
+        val progressBar                     = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal)
             progressBar.id                  = index
             progressBar.visibility          = ProgressBar.VISIBLE
             progressBar.isIndeterminate     = false
@@ -373,7 +273,7 @@ class Order(var context: Activity) {
             progressBar.min                 = 0
             progressBar.layoutParams        = LinearLayout.LayoutParams(MATCH_PARENT, 50)//,WRAP_CONTENT)
 
-            val orderRootLay                    = fragment.requireView().findViewById<LinearLayout>(R.id.orderRoot)
+        val orderRootLay                    = fragment.requireView().findViewById<LinearLayout>(R.id.orderRoot)
 
             orderRootLay.addView(progressBar)
 
@@ -393,21 +293,21 @@ class Order(var context: Activity) {
 
             val jsonObj = jSONArray.getJSONObject(pieceIndex)
 
-            jSONArray.put(pieceIndex , JSONObject())
+//            jSONArray.put(pieceIndex , JSONObject())
 
             sendImageOrderPieceAsync(
-                                            pieceIndex
-                                        ,   piecesCount
-                                        ,   jSONArray
-                                        ,   jsonObjHead
-                                        ,   fragment
-                                        ,   imageOrder
-                                        ,   thisIsLastOne
+//                                            pieceIndex
+//                                        ,   piecesCount
+//                                        ,   jSONArray
+//                                        ,
+                                            jsonObjHead
+//                                        ,   fragment
+//                                        ,   imageOrder
+//                                        ,   thisIsLastOne
                                         ,   jsonObj
                                     ).start()
         }
     }
-
 
     private fun sendImageOrder(imageOrder: ImageOrder, index : Int , fragment: OrderFragment): String {
 
@@ -435,20 +335,6 @@ class Order(var context: Activity) {
 
         mainAct.runOnUiThread(uiInfo)
 
-        //uiInfo.wait() ; // unlocks myRunable while waiting
-        //  }
-
-        // mainAct.runOnUiThread(uiInfo )
-
-/*
-
-                val photosFragment = mainAct.supportFragmentManager.fragments[0].childFragmentManager.fragments[0] as PhotosFragment
-
-                photosFragment.imageUriList.removeAt(index)
-                photosFragment.updateList()
-
- */
-
         val jSONArray   = getJSONArrayListSingle(imageOrder)
         val piecesCount = jSONArray.length()
 
@@ -470,53 +356,12 @@ class Order(var context: Activity) {
 
             val ordersUiInfoPiece  = mainAct.newFirebaseUiPiece ("orders", fragment, imageOrder)
 
-//            val ordersUiInfoPiece  = Runnable {
-//
-//                val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
-//                val valueEventListener  = object : ValueEventListener {
-//
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//
-//                        fragment.progressBarPiece.progress   = snapshot.childrenCount.toInt()
-//
-//                    }
-//
-//                    override fun onCancelled(error: DatabaseError) {
-//                        TODO("Not yet implemented")
-//                    }
-//
-//                }
-//                ref.child(session).child(imageOrder.uuid).addListenerForSingleValueEvent(valueEventListener)
-////                        fragment.progressBarPiece.progress   = pieceIndex
-//            }
             mainAct.runOnUiThread(ordersUiInfoPiece)
         }
 
         if (thisIsLastOne)  workWithResult(sendResult, fragment)
 
         return sendResult
-
-/*
-                GlobalScope.launch(Dispatchers.Main) {
-                    //val deferred              = async(Dispatchers.Default) { sendPhoto(index, imageOrder, dl , outputJson ) }
-                    sendResult             = withContext(Dispatchers.Default) { sendPhoto(index, imageOrder, dl , outputJson ) }
-
-
-
-                    val toast = Toast(mainAct)
-
-                    mainAct.progressBar.visibility = ProgressBar.VISIBLE
-                    mainAct.progressBar.progress = index
-                    mainAct.progressBar.isIndeterminate = true
-
-                    toast.setText(index.toString())
-
-                    toast.show()
-
-                }
-                \
- */
-
     }
 
      fun workWithResult(sendResult:String, fragment: OrderFragment){
@@ -554,21 +399,17 @@ class Order(var context: Activity) {
 
         val imageOrderFound = imageOrderList.find { imageOrder -> imageOrder.uuid == snapshot.key}
 
-
         when (imageOrderFound!!.piecesCount == snapshot.childrenCount.toInt()){
+
+            true -> imageOrderFound.sent = true
 
             false -> {
 
                 val indexImageOrder = imageOrderList.indices.find { imageOrderList[it].uuid == imageOrderFound.uuid }
                 val progressBar     = fragment.requireView().findViewById<ProgressBar>(indexImageOrder!!)
 
-//                progressBar.progress = progressBar.progress + 1
                 progressBar.incrementProgressBy(1)
             }
-
-//                            true ->
-//                        Toast.makeText(mainAct, snapshot.childrenCount.toInt(), Toast.LENGTH_LONG).show()
-            else -> {}
         }
     }
     private fun sendImageOrderByCoroutinesAsync(imageOrder: ImageOrder, index : Int , fragment: OrderFragment): Deferred<Unit> = scope.async {
@@ -582,49 +423,22 @@ class Order(var context: Activity) {
         return object :ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
-                    "sendResult" ->  // workWithResult(snapshot.value.toString() , fragment)
-//                        if (snapshot.value.toString().toBoolean())
-                        workWithResult(snapshot.value.toString() , fragment)
-//                    {
-//                        when (snapshot.value.toString().toBoolean()){
-//                            true ->
-
-//                                workWithResult(snapshot.value.toString() , fragment)
-
-                    else -> {
-
-                        // обработка результата получения части файла
-//                        mainAct.saveLog( snapshot.key + "onChildAdded---" +snapshot.childrenCount)
-                        workWithImageOrderLog(snapshot, fragment)
-
-
-
-
-                    }
+                    "sendResult" -> workWithResult(snapshot.value.toString() , fragment)
+                    // обработка результата получения части файла
+                    else ->  workWithImageOrderLog(snapshot, fragment)
                 }
             }
-//                    }
-//                    "sendResult" -> sendResult = snapshot.value.toString()
-//                }
-
-
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 when (snapshot.key) {
                     "sendResult" -> {
 
-//                        if (snapshot.value.toString().toBoolean())
                         ref.removeEventListener(this)
 
                         workWithResult(snapshot.value.toString() , fragment)
 
-//                        when (snapshot.value.toString().toBoolean()){
-//                            true -> workWithResult(sendResult , fragment)
-//                            else -> {}
-//                        }
                     }
                     else-> {
-//                        mainAct.saveLog(snapshot.key + "onChildChanged---" + snapshot.childrenCount)
                         workWithImageOrderLog(snapshot, fragment)
                     }
                 }
@@ -642,14 +456,9 @@ class Order(var context: Activity) {
                 TODO("Not yet implemented")
             }
         }
-
     }
 
     private fun sendByCoroutines(fragment: OrderFragment) {
-
-//        mainAct.saveLog("send by coroutine begin")
-
-//        var sendResult = ""
 
         mainAct.runOnUiThread{
             fragment.progressBar.visibility         = View.VISIBLE
@@ -667,105 +476,21 @@ class Order(var context: Activity) {
 
         ref.addChildEventListener(listener)
 
-
-//        val valueEventListener  = object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                when (snapshot.value){
-//                    true -> workWithResult(sendResult , fragment)
-//                }
-//            }
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        }
-//
-//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
-
-//        reference1!!.addChildEventListener(object : ChildEventListener {
-//            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String) {
-//                val map = dataSnapshot.getValue<Map<*, *>>(Map<*, *>::class.java)
-//                val message = map.get("message").toString()
-//                val userName = map.get("user").toString()
-
-
-
         imageOrderList.forEachIndexed  { index, imageOrder ->
-
-//            val fileProgressBar = fragment.createFileProgressbar(fragment.requireView(), 500 , index)
-//
-//            imageOrder.progressBarId = fileProgressBar.id
-
-
 
             scope.launch() {
 
                 val deferred = sendImageOrderByCoroutinesAsync(imageOrder, index , fragment)
 //                deferred.await()
-
                 deferred.start()
-                //mainAct.runOnUiThread(uiInfo)
             }
-
-//            sendImageOrderAsync(imageOrder, index , fragment)
-
-
         }
-
-
-
-
-
-//        val ref                 = FirebaseDatabase.getInstance(MainActivity.FIREINSTANCE).getReference("orders")
-//        val valueEventListener  = object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                when (snapshot.child("receivedOrder").value.toString().toBoolean()){
-//                    true -> workWithResult(sendResult , fragment)
-//                }
-//            }
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        }
-//        ref.child(session).addListenerForSingleValueEvent(valueEventListener)
-
-
-//        ref.child(session).child("receivedOrder").addListenerForSingleValueEvent(valueEventListener)
-
-//        mainAct.saveLog("send coroutine end")
-
     }
 
     private fun getSendThread(fragment: OrderFragment) : Thread {
         return Thread {
 
             mainAct.saveLog("send thread create")
-
-//            val jsonObject              = getJSONForWs()
-//            val dl                      = DataLoader()
-//            val outputJson              = jsonObject.toString()
-
-/*
-            mainAct.runOnUiThread(Runnable {
-                mainAct.progressBar.max = imageOrderList.size-1
-                mainAct.progressBar.min = 0
-                mainAct.progressBar.isIndeterminate = false
-
-                mainAct.progressBar.visibility =  ProgressBar.VISIBLE
-            })
-
- */
-/*
-            val layout = findView
-            val progressBar = ProgressBar(mainAct null, android.R.attr.progressBarStyleLarge)
-            val params = RelativeLayout.LayoutParams(100, 100)
-            params.addRule(RelativeLayout.CENTER_IN_PARENT)
-            layout.addView(progressBar, params)
-
- */
-
-           // val cvArrayList             = getJSONArrayList()
-            //val jsoCvArrayList: String  = cvArrayList.toString()
-            //val sendResult              = dl.sendOrder(outputJson, jsoCvArrayList)
 
             var sendResult = ""
 
@@ -776,90 +501,19 @@ class Order(var context: Activity) {
                 fragment.progressBar.min                = 0
             }
 
-
             imageOrderList.forEachIndexed  { index, imageOrder ->
-
-
-
                 sendResult = sendImageOrder(imageOrder, index , fragment)
             }
-
-//            workWithResult(sendResult, fragment)
-
-//            try {
-//
-//                    val resultJSSONObj  = JSONObject(sendResult)
-//                    val mValues         = resultJSSONObj.getJSONObject("mValues")
-//                    result              = resultJSSONObj.toString()
-//
-//                    //mainAct.log.add("result = $result")
-//                    mainAct.saveLog("result = $result")
-//
-//                    name            = mValues.getString("orderName")
-//                    orderStatus     = mValues.getString("orderStatus")
-////                    uuid            = mValues.getString("orderUuid")
-//                    orderSendResult = name
-//                    status          = SENT
-//
-//                    mainAct.runOnUiThread {
-//                        fragment.arguments?.putString("orderName"   , name)
-//                        fragment.arguments?.putString("orderStatus" , orderStatus)
-//                        fragment.arguments?.putString("orderUuid"   ,  mValues.getString("orderUuid"))
-//
-//                        fragment.fillBySend(fragment.requireView().rootView)
-//                        //  progressBar.progress
-//                    }
-//                }
-//            catch (e: Exception) {
-//
-//                // тууут ошибка загрузки заказа
-//                result = sendResult
-//                status = SEND_ERROR
-//
-//                //mainAct.log.add("result = $result")
-//                mainAct.saveLog("result = $result")
-//                }
-//------------------------------------------------------------------
-           // fragment.progressBar.visibility  = ProgressBar.GONE
-
-            /*
-            when (this.indexInPacket == this.countOfPacket ){
-                true -> {
-
-                    val bundle = Bundle()
-
-                    bundle.putBoolean("sendorder"   , true)
-                    bundle.putString("orderName"    , name)
-                    bundle.putString("orderStatus"  , orderStatus)
-                    bundle.putString("orderUuid"    , uuid)
-
-
-
-                    //mainAct.findNavController(R.id.fragment).navigate(R.id.orderFragment, bundle)
-
-                }
-                else -> {}
-            }
-
-             */
         }
     }
-
-
 
     fun send (fragment: OrderFragment){
 
         when (imageOrderList.size){
             0 -> {
-                // nothing
-                //mainAct.log.add("nothing to send ")
                 mainAct.saveLog("nothing to send ")
             }
             else ->{
-
-//                val sendThread = getSendThread(fragment)
-//
-//                sendThread.start()
 
                 mainAct.setWakeLock()
 
@@ -880,9 +534,6 @@ class Order(var context: Activity) {
 
                 it.send(fragment)
 
-              //  when (this.indexInPacket == this.countOfPacket ){
-                //    true -> {
-                  //  }
             }
         }
         @JvmStatic
